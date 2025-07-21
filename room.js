@@ -26,6 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Initialize room
     initRoom();
+    
+    // Thêm xử lý sự kiện cảm ứng cho thiết bị di động
+    setupTouchEvents();
 });
 
 // Initialize Room
@@ -626,10 +629,13 @@ function loadYouTubeAPI() {
             width: '100%',
             videoId: roomData.videoId,
             playerVars: {
-                'playsinline': 1,
+                'playsinline': 1, // Quan trọng cho iOS
                 'controls': 0,
                 'disablekb': 1,
-                'rel': 0
+                'rel': 0,
+                'modestbranding': 1,
+                'fs': 0, // Tắt nút toàn màn hình
+                'iv_load_policy': 3 // Ẩn chú thích
             },
             events: {
                 'onReady': onPlayerReady,
@@ -742,6 +748,86 @@ function formatTime(seconds) {
     const remainingSeconds = Math.floor(seconds % 60);
     
     return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+}
+
+// Thiết lập sự kiện cảm ứng cho thiết bị di động
+function setupTouchEvents() {
+    // Kiểm tra nếu đang sử dụng thiết bị di động
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+        const playerElement = document.getElementById('player');
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchStartTime = 0;
+        
+        // Xử lý sự kiện chạm vào màn hình
+        playerElement.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            touchStartTime = Date.now();
+        }, { passive: true });
+        
+        // Xử lý sự kiện kết thúc chạm
+        playerElement.addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
+            const touchEndTime = Date.now();
+            
+            // Tính toán khoảng cách và thời gian
+            const distanceX = Math.abs(touchEndX - touchStartX);
+            const distanceY = Math.abs(touchEndY - touchStartY);
+            const timeDiff = touchEndTime - touchStartTime;
+            
+            // Nếu là tap (chạm nhanh và không di chuyển nhiều)
+            if (timeDiff < 300 && distanceX < 20 && distanceY < 20) {
+                // Xử lý tương tự như click vào nút play/pause
+                const playPauseBtn = document.getElementById('playPauseBtn');
+                if (playPauseBtn) {
+                    playPauseBtn.click();
+                }
+            }
+            
+            // Xử lý vuốt ngang để tua video (chỉ cho host)
+            if (isHost && distanceX > 50 && timeDiff < 500) {
+                const direction = touchEndX > touchStartX ? 1 : -1; // 1 là tua tới, -1 là tua lùi
+                const currentTime = player.getCurrentTime();
+                const newTime = currentTime + (direction * 10); // Tua 10 giây
+                
+                player.seekTo(newTime, true);
+                
+                // Cập nhật thời gian hiện tại lên database
+                if (roomData.status === 'playing' || roomData.status === 'paused') {
+                    database.ref(`rooms/${roomId}`).update({
+                        currentTime: newTime
+                    });
+                }
+            }
+        }, { passive: true });
+        
+        // Tối ưu hóa giao diện cho thiết bị di động
+        optimizeForMobile();
+    }
+}
+
+// Tối ưu hóa giao diện cho thiết bị di động
+function optimizeForMobile() {
+    // Tăng kích thước các nút điều khiển
+    const controlButtons = document.querySelectorAll('.control-btn');
+    controlButtons.forEach(button => {
+        button.style.padding = '10px 15px';
+    });
+    
+    // Điều chỉnh kích thước font chữ cho dễ đọc
+    const chatMessages = document.querySelector('.chat-messages');
+    if (chatMessages) {
+        chatMessages.style.fontSize = '16px';
+    }
+    
+    // Đảm bảo các phần tử có thể cuộn mượt mà
+    document.querySelectorAll('.chat-messages, .participant-list').forEach(element => {
+        element.style.webkitOverflowScrolling = 'touch';
+    });
 }
 
 // Format Time Ago

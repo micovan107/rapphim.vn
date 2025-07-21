@@ -20,6 +20,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     behavior: 'smooth'
                 });
             }
+            
+            // Đóng menu trên thiết bị di động sau khi click
+            const navMenu = document.querySelector('nav ul');
+            if (window.innerWidth <= 768 && navMenu.classList.contains('active')) {
+                navMenu.classList.remove('active');
+            }
         });
     });
     
@@ -28,6 +34,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Check if user is coming from a shared link
     checkSharedLink();
+    
+    // Kiểm tra và tối ưu cho thiết bị di động
+    checkMobileDevice();
 });
 
 // Initialize tooltips
@@ -156,6 +165,73 @@ function checkSharedLink() {
         // Redirect to room page
         window.location.href = `room.html?id=${roomId}`;
     }
+}
+
+// Kiểm tra và tối ưu cho thiết bị di động
+function checkMobileDevice() {
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+        // Thêm class mobile vào body
+        document.body.classList.add('mobile-device');
+        
+        // Tạo nút toggle menu cho thiết bị di động
+        createMobileMenuToggle();
+        
+        // Tối ưu các phần tử cho thiết bị di động
+        optimizeForMobile();
+    }
+}
+
+// Tạo nút toggle menu cho thiết bị di động
+function createMobileMenuToggle() {
+    // Kiểm tra xem nút đã tồn tại chưa
+    if (document.querySelector('.mobile-menu-toggle')) return;
+    
+    const header = document.querySelector('header');
+    const nav = document.querySelector('nav');
+    
+    if (header && nav) {
+        // Tạo nút toggle menu
+        const menuToggle = document.createElement('button');
+        menuToggle.className = 'mobile-menu-toggle';
+        menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+        
+        // Thêm sự kiện click
+        menuToggle.addEventListener('click', () => {
+            const navMenu = nav.querySelector('ul');
+            navMenu.classList.toggle('active');
+            
+            // Thay đổi icon
+            const icon = menuToggle.querySelector('i');
+            if (navMenu.classList.contains('active')) {
+                icon.className = 'fas fa-times';
+            } else {
+                icon.className = 'fas fa-bars';
+            }
+        });
+        
+        // Thêm vào header
+        header.insertBefore(menuToggle, nav);
+    }
+}
+
+// Tối ưu các phần tử cho thiết bị di động
+function optimizeForMobile() {
+    // Tăng kích thước các nút để dễ chạm
+    document.querySelectorAll('.btn, button:not(.mobile-menu-toggle)').forEach(button => {
+        button.style.minHeight = '44px';
+    });
+    
+    // Tăng kích thước font chữ cho form
+    document.querySelectorAll('input, textarea, select').forEach(input => {
+        input.style.fontSize = '16px';
+    });
+    
+    // Đảm bảo các phần tử có thể cuộn mượt mà
+    document.querySelectorAll('.rooms-grid, .features-grid').forEach(element => {
+        element.style.webkitOverflowScrolling = 'touch';
+    });
 }
 
 // Copy room link to clipboard
