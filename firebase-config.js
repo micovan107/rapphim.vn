@@ -18,10 +18,20 @@ firebase.initializeApp(firebaseConfig);
 // Get references to Firebase services
 const auth = firebase.auth();
 const database = firebase.database();
+const storage = firebase.storage();
 
-// Export Firebase services for use in other files
+// Cloudinary configuration
+const cloudinaryConfig = {
+    cloudName: 'cinesync', // Thay thế bằng cloud name của bạn
+    uploadPreset: 'cinesync_videos', // Thay thế bằng upload preset của bạn
+    folder: 'cinesync_videos'
+};
+
+// Export Firebase services and Cloudinary config for use in other files
 window.auth = auth;
 window.database = database;
+window.storage = storage;
+window.cloudinaryConfig = cloudinaryConfig;
 
 // Helper function to generate a unique ID
 function generateId(length = 6) {

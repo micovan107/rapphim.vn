@@ -703,14 +703,39 @@ footer {
 .room-page {
     display: grid;
     grid-template-columns: 1fr 300px;
-    gap: 30px;
+    grid-template-areas: 
+        "video sidebar"
+        "info sidebar";
+    gap: 20px;
     padding: 40px 0;
+}
+
+.video-container {
+    grid-area: video;
+}
+
+.video-info {
+    grid-area: info;
+    background: #222;
+    color: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: var(--box-shadow);
+}
+
+.room-sidebar {
+    grid-area: sidebar;
 }
 
 /* Đảm bảo các phần tử có thể cuộn trên thiết bị di động */
 @media (max-width: 768px) {
     .room-page {
         grid-template-columns: 1fr;
+        grid-template-areas: 
+            "video"
+            "info"
+            "sidebar";
         padding: 20px 0;
     }
     
@@ -872,24 +897,21 @@ footer {
 }
 
 .room-sidebar {
-    background: white;
+    background: #222;
+    color: white;
     border-radius: 15px;
     overflow: hidden;
     box-shadow: var(--box-shadow);
 }
 
-.room-details {
-    padding: 20px;
-    border-bottom: 1px solid #eee;
-}
-
-.room-details h2 {
+.video-info h2 {
     margin-bottom: 10px;
     font-size: 1.5rem;
+    color: white;
 }
 
-.room-details p {
-    color: #666;
+.video-info p {
+    color: #ddd;
     margin-bottom: 15px;
 }
 
@@ -898,6 +920,7 @@ footer {
     align-items: center;
     gap: 10px;
     margin-bottom: 20px;
+    color: white;
 }
 
 .host-info img {
@@ -910,6 +933,8 @@ footer {
     height: 300px;
     display: flex;
     flex-direction: column;
+    background: #222;
+    color: white;
 }
 
 .chat-messages {
@@ -938,28 +963,32 @@ footer {
 .message-info .name {
     font-weight: 600;
     font-size: 0.9rem;
+    color: white;
 }
 
 .message-info .time {
     font-size: 0.8rem;
-    color: #888;
+    color: #bbb;
 }
 
 .message-content {
-    background: #f5f5f5;
+    background: #333;
     padding: 10px 15px;
     border-radius: 15px;
     font-size: 0.95rem;
+    color: white;
 }
 
 .message.own .message-content {
-    background: #e1f5fe;
+    background: #444;
+    color: white;
 }
 
 .chat-input {
     display: flex;
     padding: 15px;
-    border-top: 1px solid #eee;
+    border-top: 1px solid #444;
+    background: #222;
 }
 
 .chat-input input {
@@ -987,7 +1016,9 @@ footer {
 
 .participants {
     padding: 20px;
-    border-top: 1px solid #eee;
+    border-top: 1px solid #444;
+    background: #222;
+    color: white;
 }
 
 .participants h3 {
@@ -1015,6 +1046,7 @@ footer {
 
 .participant .name {
     font-size: 0.95rem;
+    color: white;
 }
 
 .host-badge {
@@ -1052,8 +1084,8 @@ footer {
 }
 
 .system-message {
-    background-color: rgba(0, 0, 0, 0.05);
-    color: #666;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #bbb;
     text-align: center;
     font-style: italic;
     padding: 8px 15px;

@@ -12,6 +12,7 @@ let roomId;
 let roomData;
 let currentUser;
 let isHost = false;
+let playerType; // 'youtube' or 'cloudinary'
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
@@ -125,19 +126,21 @@ function setupRoom() {
                     </div>
                 </div>
             </div>
-            <div class="room-sidebar">
-                <div class="room-details">
-                    <h2>${roomData.name}</h2>
-                    <p>${roomData.description}</p>
-                    <div class="host-info">
-                        <img src="${roomData.host.photoURL}" alt="${roomData.host.displayName}">
-                        <div>
-                            <span>${roomData.host.displayName}</span>
-                            <span class="host-badge">Chủ phòng</span>
-                        </div>
+            
+            <div class="video-info">
+                <h2>${roomData.name}</h2>
+                <p>${roomData.description}</p>
+                <div class="host-info">
+                    <img src="${roomData.host.photoURL}" alt="${roomData.host.displayName}">
+                    <div>
+                        <span>${roomData.host.displayName}</span>
+                        <span class="host-badge">Chủ phòng</span>
                     </div>
-                    ${roomData.requiresTicket ? `<div class="ticket-info"><i class="fas fa-ticket-alt"></i> Phòng yêu cầu vé để vào</div>` : ''}
                 </div>
+                ${roomData.requiresTicket ? `<div class="ticket-info"><i class="fas fa-ticket-alt"></i> Phòng yêu cầu vé để vào</div>` : ''}
+            </div>
+            
+            <div class="room-sidebar">
                 <div class="chat-container">
                     <div class="chat-messages" id="chatMessages"></div>
                     <div class="chat-input">
@@ -258,28 +261,127 @@ function listenForRoomUpdates() {
         
         // Update room status
         if (roomData.status === 'playing' && player) {
-            // Start video if not already playing
-            if (player.getPlayerState() !== YT.PlayerState.PLAYING) {
-                player.playVideo();
+            if (playerType === 'cloudinary') {
+                // For Cloudinary video
+                if (player.paused) {
+                    player.play();
+                    updatePlayPauseButton(true);
+                }
+            } else {
+                // For YouTube video
+                if (player.getPlayerState() !== YT.PlayerState.PLAYING) {
+                    player.playVideo();
+                    updatePlayPauseButton(true);
+                }
             }
         } else if (roomData.status === 'paused' && player) {
-            // Pause video if not already paused
-            if (player.getPlayerState() !== YT.PlayerState.PAUSED) {
-                player.pauseVideo();
+            if (playerType === 'cloudinary') {
+                // For Cloudinary video
+                if (!player.paused) {
+                    player.pause();
+                    updatePlayPauseButton(false);
+                }
+            } else {
+                // For YouTube video
+                if (player.getPlayerState() !== YT.PlayerState.PAUSED) {
+                    player.pauseVideo();
+                    updatePlayPauseButton(false);
+                }
             }
         }
         
         // Update video if changed
-        if (player && player.getVideoData().video_id !== roomData.videoId) {
-            player.loadVideoById(roomData.videoId);
+        if (roomData.videoUrl && roomData.videoUrl.includes('cloudinary')) {
+            // Handle Cloudinary video
+            if (player && (!playerType || playerType !== 'cloudinary')) {
+                // Remove YouTube player
+                if (player) {
+                    player.destroy();
+                }
+                
+                // Create Cloudinary video player
+                const playerContainer = document.getElementById('player');
+                playerContainer.innerHTML = `
+                    <video id="cloudinaryPlayer" controls style="width:100%;height:100%;">
+                        <source src="${roomData.videoUrl}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                `;
+                
+                player = document.getElementById('cloudinaryPlayer');
+                playerType = 'cloudinary';
+                
+                // Add event listeners for Cloudinary video
+                player.addEventListener('play', function() {
+                    if (isHost) {
+                        database.ref(`rooms/${roomId}`).update({
+                            status: 'playing',
+                            currentTime: player.currentTime
+                        });
+                    }
+                    updatePlayPauseButton(true);
+                });
+                
+                player.addEventListener('pause', function() {
+                    if (isHost) {
+                        database.ref(`rooms/${roomId}`).update({
+                            status: 'paused',
+                            currentTime: player.currentTime
+                        });
+                    }
+                    updatePlayPauseButton(false);
+                });
+                
+                player.addEventListener('timeupdate', function() {
+                    if (isHost) {
+                        // Update time every 5 seconds to avoid too many database writes
+                        const currentTime = Math.floor(player.currentTime);
+                        if (currentTime % 5 === 0 && currentTime !== lastTimeUpdate) {
+                            lastTimeUpdate = currentTime;
+                            database.ref(`rooms/${roomId}`).update({
+                                currentTime: player.currentTime
+                            });
+                        }
+                    }
+                    
+                    // Update time display
+                    updateTimeDisplay(player.currentTime, player.duration);
+                });
+            }
+        } else if (roomData.videoId) {
+            // Handle YouTube video
+            if (player && (!playerType || playerType !== 'youtube')) {
+                // Remove Cloudinary player if exists
+                if (playerType === 'cloudinary') {
+                    const playerContainer = document.getElementById('player');
+                    playerContainer.innerHTML = '';
+                    loadYouTubeAPI(); // Reload YouTube player
+                    return; // Exit function as loadYouTubeAPI will handle the rest
+                }
+            }
+            
+            if (player && player.getVideoData && player.getVideoData().video_id !== roomData.videoId) {
+                player.loadVideoById(roomData.videoId);
+                playerType = 'youtube';
+            }
         }
         
         // Sync video time if host updated it
         if (roomData.currentTime && !isHost && player) {
-            const currentPlayerTime = player.getCurrentTime();
-            // Only seek if the difference is more than 3 seconds
-            if (Math.abs(currentPlayerTime - roomData.currentTime) > 3) {
-                player.seekTo(roomData.currentTime);
+            if (playerType === 'cloudinary') {
+                // For Cloudinary video
+                const currentPlayerTime = player.currentTime;
+                // Only seek if the difference is more than 3 seconds
+                if (Math.abs(currentPlayerTime - roomData.currentTime) > 3) {
+                    player.currentTime = roomData.currentTime;
+                }
+            } else {
+                // For YouTube video
+                const currentPlayerTime = player.getCurrentTime();
+                // Only seek if the difference is more than 3 seconds
+                if (Math.abs(currentPlayerTime - roomData.currentTime) > 3) {
+                    player.seekTo(roomData.currentTime);
+                }
             }
         }
     });
@@ -554,20 +656,102 @@ async function startVideo() {
 async function changeVideo() {
     if (!isHost) return;
     
-    const newVideoUrl = document.getElementById('newVideoUrl').value;
-    const videoId = extractVideoId(newVideoUrl);
+    // Ask user if they want to upload a video or use YouTube
+    const choice = confirm('Bạn muốn tải lên video mới? Chọn OK để tải lên, hoặc Cancel để nhập URL YouTube');
     
-    if (!videoId) {
-        showNotification('URL video không hợp lệ!', 'error');
-        return;
+    let videoId = null;
+    let videoUrl = null;
+    let videoPublicId = null;
+    
+    if (choice) {
+        // Upload video to Cloudinary
+        try {
+            // Create and open Cloudinary upload widget
+            const uploadWidget = cloudinary.createUploadWidget({
+                cloudName: cloudinaryConfig.cloudName,
+                uploadPreset: cloudinaryConfig.uploadPreset,
+                folder: cloudinaryConfig.folder,
+                sources: ['local', 'url', 'camera'],
+                resourceType: 'video',
+                multiple: false,
+                maxFileSize: 100000000, // 100MB
+                styles: {
+                    palette: {
+                        window: "#FFFFFF",
+                        windowBorder: "#90A0B3",
+                        tabIcon: "#0078FF",
+                        menuIcons: "#5A616A",
+                        textDark: "#000000",
+                        textLight: "#FFFFFF",
+                        link: "#0078FF",
+                        action: "#FF620C",
+                        inactiveTabIcon: "#0E2F5A",
+                        error: "#F44235",
+                        inProgress: "#0078FF",
+                        complete: "#20B832",
+                        sourceBg: "#E4EBF1"
+                    }
+                }
+            }, (error, result) => {
+                if (!error && result && result.event === "success") {
+                    console.log('Upload success:', result.info);
+                    // Use the Cloudinary URL
+                    videoUrl = result.info.secure_url;
+                    videoPublicId = result.info.public_id;
+                    
+                    // Update video in database
+                    updateVideoInDatabase(null, videoUrl, videoPublicId);
+                }
+                if (error) {
+                    console.error('Upload error:', error);
+                    showNotification('Lỗi khi tải video lên!', 'error');
+                }
+            });
+            
+            uploadWidget.open();
+            return; // Exit function as the widget callback will handle the update
+        } catch (error) {
+            console.error('Cloudinary widget error:', error);
+            showNotification(`Lỗi mở widget tải lên: ${error.message}`, 'error');
+            return;
+        }
+    } else {
+        // Use YouTube URL
+        const newVideoUrl = document.getElementById('newVideoUrl').value;
+        videoId = extractVideoId(newVideoUrl);
+        
+        if (!videoId) {
+            showNotification('URL video không hợp lệ!', 'error');
+            return;
+        }
+        
+        // Update video in database
+        updateVideoInDatabase(videoId);
     }
-    
+}
+
+// Helper function to update video in database
+async function updateVideoInDatabase(videoId = null, videoUrl = null, videoPublicId = null) {
     try {
-        // Update room video
-        await database.ref(`rooms/${roomId}`).update({
-            videoId: videoId,
+        const updateData = {
             status: 'waiting'
-        });
+        };
+        
+        // Add appropriate video data
+        if (videoId) {
+            updateData.videoId = videoId;
+        }
+        
+        if (videoUrl) {
+            updateData.videoUrl = videoUrl;
+        }
+        
+        if (videoPublicId) {
+            updateData.videoPublicId = videoPublicId;
+        }
+        
+        // Update room video
+        await database.ref(`rooms/${roomId}`).update(updateData);
         
         // Add system message
         await database.ref(`rooms/${roomId}/messages`).push({
@@ -601,6 +785,39 @@ async function deleteRoom() {
     if (!confirm('Bạn có chắc chắn muốn xóa phòng này?')) return;
     
     try {
+        // Check if room has a Cloudinary video to delete
+        if (roomData.videoPublicId) {
+            try {
+                // Create a form to send to Cloudinary API for deletion
+                const formData = new FormData();
+                formData.append('public_id', roomData.videoPublicId);
+                formData.append('api_key', '123456789012345'); // Thay thế bằng API key của bạn
+                formData.append('timestamp', Math.round(new Date().getTime() / 1000));
+                
+                // Note: In a production environment, you should generate a secure signature on your server
+                // For demo purposes, we're just showing the concept
+                // formData.append('signature', signature);
+                
+                // Send deletion request to Cloudinary
+                // In a real implementation, this should be done through a secure backend
+                console.log('Deleting Cloudinary video:', roomData.videoPublicId);
+                
+                // For demo purposes, we'll just log the deletion
+                // In production, you would use fetch or XMLHttpRequest to send the deletion request
+                /*
+                const response = await fetch('https://api.cloudinary.com/v1_1/' + cloudinaryConfig.cloudName + '/video/destroy', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                console.log('Cloudinary deletion response:', data);
+                */
+            } catch (cloudinaryError) {
+                console.error('Error deleting Cloudinary video:', cloudinaryError);
+                // Continue with room deletion even if video deletion fails
+            }
+        }
+        
         // Delete room
         await database.ref(`rooms/${roomId}`).remove();
         
@@ -652,18 +869,38 @@ function onPlayerReady(event) {
     
     playPauseBtn.addEventListener('click', () => {
         if (isHost) {
-            if (player.getPlayerState() === YT.PlayerState.PLAYING) {
-                // Update room status
-                database.ref(`rooms/${roomId}`).update({
-                    status: 'paused'
-                });
-                player.pauseVideo();
+            if (playerType === 'cloudinary') {
+                // Cloudinary video player
+                if (player.paused) {
+                    // Update room status
+                    database.ref(`rooms/${roomId}`).update({
+                        status: 'playing',
+                        currentTime: player.currentTime
+                    });
+                    player.play();
+                } else {
+                    // Update room status
+                    database.ref(`rooms/${roomId}`).update({
+                        status: 'paused',
+                        currentTime: player.currentTime
+                    });
+                    player.pause();
+                }
             } else {
-                // Update room status
-                database.ref(`rooms/${roomId}`).update({
-                    status: 'playing'
-                });
-                player.playVideo();
+                // YouTube player
+                if (player.getPlayerState() === YT.PlayerState.PLAYING) {
+                    // Update room status
+                    database.ref(`rooms/${roomId}`).update({
+                        status: 'paused'
+                    });
+                    player.pauseVideo();
+                } else {
+                    // Update room status
+                    database.ref(`rooms/${roomId}`).update({
+                        status: 'playing'
+                    });
+                    player.playVideo();
+                }
             }
         } else {
             showNotification('Chỉ chủ phòng mới có thể điều khiển video!', 'error');
@@ -674,12 +911,20 @@ function onPlayerReady(event) {
     setInterval(updateTimeDisplay, 1000);
 }
 
+// Update Play/Pause Button
+function updatePlayPauseButton(isPlaying) {
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    if (playPauseBtn) {
+        playPauseBtn.innerHTML = isPlaying ? 
+            '<i class="fas fa-pause"></i>' : 
+            '<i class="fas fa-play"></i>';
+    }
+}
+
 // YouTube Player State Change Event
 function onPlayerStateChange(event) {
-    const playPauseBtn = document.getElementById('playPauseBtn');
-    
     if (event.data === YT.PlayerState.PLAYING) {
-        playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+        updatePlayPauseButton(true);
         
         // If not host and room status is paused, pause the video
         if (!isHost && roomData.status === 'paused') {
@@ -696,7 +941,7 @@ function onPlayerStateChange(event) {
             });
         }
     } else if (event.data === YT.PlayerState.PAUSED) {
-        playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+        updatePlayPauseButton(false);
         
         // If not host and room status is playing, resume the video
         if (!isHost && roomData.status === 'playing') {
@@ -716,28 +961,37 @@ function onPlayerStateChange(event) {
 }
 
 // Update Time Display
-function updateTimeDisplay() {
+function updateTimeDisplay(currentTimeParam, durationParam) {
     if (!player) return;
     
     const timeDisplay = document.querySelector('.time-display');
     if (!timeDisplay) return;
     
-    const currentTime = player.getCurrentTime();
-    const duration = player.getDuration();
+    let currentTime, duration;
     
-    timeDisplay.textContent = `${formatTime(currentTime)} / ${formatTime(duration)}`;
-    
-    // If host, update current time in database every 5 seconds
-    if (isHost && player.getPlayerState() === YT.PlayerState.PLAYING) {
-        const now = Math.floor(Date.now() / 1000);
-        // Update every 5 seconds to avoid excessive database writes
-        if (!window.lastTimeUpdate || now - window.lastTimeUpdate >= 5) {
-            database.ref(`rooms/${roomId}`).update({
-                currentTime: currentTime
-            });
-            window.lastTimeUpdate = now;
+    if (playerType === 'cloudinary') {
+        // Use parameters if provided (for Cloudinary player)
+        currentTime = currentTimeParam !== undefined ? currentTimeParam : player.currentTime;
+        duration = durationParam !== undefined ? durationParam : player.duration;
+    } else {
+        // YouTube player
+        currentTime = player.getCurrentTime();
+        duration = player.getDuration();
+        
+        // If host, update current time in database every 5 seconds
+        if (isHost && player.getPlayerState() === YT.PlayerState.PLAYING) {
+            const now = Math.floor(Date.now() / 1000);
+            // Update every 5 seconds to avoid excessive database writes
+            if (!window.lastTimeUpdate || now - window.lastTimeUpdate >= 5) {
+                database.ref(`rooms/${roomId}`).update({
+                    currentTime: currentTime
+                });
+                window.lastTimeUpdate = now;
+            }
         }
     }
+    
+    timeDisplay.textContent = `${formatTime(currentTime)} / ${formatTime(duration)}`;
 }
 
 // Format Time (seconds to MM:SS)

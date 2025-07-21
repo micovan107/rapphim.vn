@@ -123,6 +123,61 @@ function addTicketRequestModal() {
 function initCreateRoomForm() {
     const createRoomForm = document.getElementById('createRoomForm');
     
+    // Add upload video button
+    const videoUrlField = document.getElementById('videoUrl');
+    if (videoUrlField) {
+        const uploadButtonHTML = `
+            <button type="button" id="uploadVideoBtn" class="btn btn-secondary">
+                <i class="fas fa-cloud-upload-alt"></i> Tải Video Lên
+            </button>
+        `;
+        videoUrlField.insertAdjacentHTML('afterend', uploadButtonHTML);
+        
+        // Initialize Cloudinary upload widget
+        document.getElementById('uploadVideoBtn').addEventListener('click', function() {
+            const myWidget = cloudinary.createUploadWidget({
+                cloudName: cloudinaryConfig.cloudName,
+                uploadPreset: cloudinaryConfig.uploadPreset,
+                folder: cloudinaryConfig.folder,
+                sources: ['local', 'url', 'camera'],
+                resourceType: 'video',
+                multiple: false,
+                maxFileSize: 100000000, // 100MB
+                styles: {
+                    palette: {
+                        window: "#FFFFFF",
+                        windowBorder: "#90A0B3",
+                        tabIcon: "#0078FF",
+                        menuIcons: "#5A616A",
+                        textDark: "#000000",
+                        textLight: "#FFFFFF",
+                        link: "#0078FF",
+                        action: "#FF620C",
+                        inactiveTabIcon: "#0E2F5A",
+                        error: "#F44235",
+                        inProgress: "#0078FF",
+                        complete: "#20B832",
+                        sourceBg: "#E4EBF1"
+                    }
+                }
+            }, (error, result) => {
+                if (!error && result && result.event === "success") {
+                    console.log('Upload success:', result.info);
+                    // Set the video URL to the Cloudinary URL
+                    videoUrlField.value = result.info.secure_url;
+                    // Store the public_id for later deletion if needed
+                    videoUrlField.dataset.publicId = result.info.public_id;
+                    showNotification('Video đã được tải lên thành công!', 'success');
+                }
+                if (error) {
+                    console.error('Upload error:', error);
+                    showNotification('Lỗi khi tải video lên!', 'error');
+                }
+            });
+            myWidget.open();
+        });
+    }
+    
     if (createRoomForm) {
         createRoomForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -131,6 +186,7 @@ function initCreateRoomForm() {
             const name = document.getElementById('roomName').value;
             const description = document.getElementById('roomDescription').value;
             const videoUrl = document.getElementById('videoUrl').value;
+            const videoPublicId = document.getElementById('videoUrl').dataset.publicId || null;
             const isPrivate = document.getElementById('isPrivate').checked;
             const requiresTicket = document.getElementById('requiresTicket').checked;
             
@@ -169,6 +225,8 @@ function initCreateRoomForm() {
                     name: name,
                     description: description,
                     videoId: videoId,
+                    videoUrl: videoUrl,
+                    videoPublicId: videoPublicId, // Cloudinary public_id for later deletion
                     isPrivate: isPrivate,
                     requiresTicket: requiresTicket,
                     host: {
