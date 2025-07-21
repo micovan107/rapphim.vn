@@ -1,0 +1,207 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <!-- Background -->
+  <rect width="800" height="600" fill="#f5f7fa" opacity="0.1"/>
+  
+  <!-- Cinema Screen -->
+  <rect x="150" y="100" width="500" height="300" rx="20" ry="20" fill="#fff" stroke="#ff5e62" stroke-width="5"/>
+  
+  <!-- Screen Content -->
+  <rect x="180" y="130" width="440" height="240" rx="10" ry="10" fill="#2c3e50"/>
+  
+  <!-- Play Button -->
+  <circle cx="400" cy="250" r="40" fill="#ff5e62" opacity="0.9"/>
+  <polygon points="390,230 390,270 420,250" fill="white"/>
+  
+  <!-- Cinema Seats Row 1 -->
+  <g transform="translate(200, 450)">
+    <!-- Seat 1 -->
+    <rect x="0" y="0" width="40" height="50" rx="10" ry="10" fill="#ff9966"/>
+    <rect x="5" y="5" width="30" height="40" rx="5" ry="5" fill="#ff5e62"/>
+    
+    <!-- Seat 2 -->
+    <rect x="60" y="0" width="40" height="50" rx="10" ry="10" fill="#ff9966"/>
+    <rect x="65" y="5" width="30" height="40" rx="5" ry="5" fill="#ff5e62"/>
+    
+    <!-- Seat 3 -->
+    <rect x="120" y="0" width="40" height="50" rx="10" ry="10" fill="#ff9966"/>
+    <rect x="125" y="5" width="30" height="40" rx="5" ry="5" fill="#ff5e62"/>
+    
+    <!-- Seat 4 -->
+    <rect x="180" y="0" width="40" height="50" rx="10" ry="10" fill="#ff9966"/>
+    <rect x="185" y="5" width="30" height="40" rx="5" ry="5" fill="#ff5e62"/>
+    
+    <!-- Seat 5 -->
+    <rect x="240" y="0" width="40" height="50" rx="10" ry="10" fill="#ff9966"/>
+    <rect x="245" y="5" width="30" height="40" rx="5" ry="5" fill="#ff5e62"/>
+    
+    <!-- Seat 6 -->
+    <rect x="300" y="0" width="40" height="50" rx="10" ry="10" fill="#ff9966"/>
+    <rect x="305" y="5" width="30" height="40" rx="5" ry="5" fill="#ff5e62"/>
+  </g>
+  
+  <!-- Cinema Seats Row 2 -->
+  <g transform="translate(230, 520)">
+    <!-- Seat 1 -->
+    <rect x="0" y="0" width="40" height="50" rx="10" ry="10" fill="#ff9966"/>
+    <rect x="5" y="5" width="30" height="40" rx="5" ry="5" fill="#ff5e62"/>
+    
+    <!-- Seat 2 -->
+    <rect x="60" y="0" width="40" height="50" rx="10" ry="10" fill="#ff9966"/>
+    <rect x="65" y="5" width="30" height="40" rx="5" ry="5" fill="#ff5e62"/>
+    
+    <!-- Seat 3 -->
+    <rect x="120" y="0" width="40" height="50" rx="10" ry="10" fill="#ff9966"/>
+    <rect x="125" y="5" width="30" height="40" rx="5" ry="5" fill="#ff5e62"/>
+    
+    <!-- Seat 4 -->
+    <rect x="180" y="0" width="40" height="50" rx="10" ry="10" fill="#ff9966"/>
+    <rect x="185" y="5" width="30" height="40" rx="5" ry="5" fill="#ff5e62"/>
+    
+    <!-- Seat 5 -->
+    <rect x="240" y="0" width="40" height="50" rx="10" ry="10" fill="#ff9966"/>
+    <rect x="245" y="5" width="30" height="40" rx="5" ry="5" fill="#ff5e62"/>
+  </g>
+  
+  <!-- People Watching -->
+  <!-- Person 1 -->
+  <g transform="translate(220, 420)">
+    <circle cx="10" cy="10" r="10" fill="#2c3e50"/>
+    <rect x="5" y="20" width="10" height="15" rx="3" ry="3" fill="#2c3e50"/>
+  </g>
+  
+  <!-- Person 2 -->
+  <g transform="translate(280, 420)">
+    <circle cx="10" cy="10" r="10" fill="#2c3e50"/>
+    <rect x="5" y="20" width="10" height="15" rx="3" ry="3" fill="#2c3e50"/>
+  </g>
+  
+  <!-- Person 3 -->
+  <g transform="translate(340, 420)">
+    <circle cx="10" cy="10" r="10" fill="#2c3e50"/>
+    <rect x="5" y="20" width="10" height="15" rx="3" ry="3" fill="#2c3e50"/>
+  </g>
+  
+  <!-- Person 4 -->
+  <g transform="translate(400, 420)">
+    <circle cx="10" cy="10" r="10" fill="#2c3e50"/>
+    <rect x="5" y="20" width="10" height="15" rx="3" ry="3" fill="#2c3e50"/>
+  </g>
+  
+  <!-- Person 5 -->
+  <g transform="translate(460, 420)">
+    <circle cx="10" cy="10" r="10" fill="#2c3e50"/>
+    <rect x="5" y="20" width="10" height="15" rx="3" ry="3" fill="#2c3e50"/>
+  </g>
+  
+  <!-- Person 6 -->
+  <g transform="translate(520, 420)">
+    <circle cx="10" cy="10" r="10" fill="#2c3e50"/>
+    <rect x="5" y="20" width="10" height="15" rx="3" ry="3" fill="#2c3e50"/>
+  </g>
+  
+  <!-- Person 7 -->
+  <g transform="translate(250, 490)">
+    <circle cx="10" cy="10" r="10" fill="#2c3e50"/>
+    <rect x="5" y="20" width="10" height="15" rx="3" ry="3" fill="#2c3e50"/>
+  </g>
+  
+  <!-- Person 8 -->
+  <g transform="translate(310, 490)">
+    <circle cx="10" cy="10" r="10" fill="#2c3e50"/>
+    <rect x="5" y="20" width="10" height="15" rx="3" ry="3" fill="#2c3e50"/>
+  </g>
+  
+  <!-- Person 9 -->
+  <g transform="translate(370, 490)">
+    <circle cx="10" cy="10" r="10" fill="#2c3e50"/>
+    <rect x="5" y="20" width="10" height="15" rx="3" ry="3" fill="#2c3e50"/>
+  </g>
+  
+  <!-- Person 10 -->
+  <g transform="translate(430, 490)">
+    <circle cx="10" cy="10" r="10" fill="#2c3e50"/>
+    <rect x="5" y="20" width="10" height="15" rx="3" ry="3" fill="#2c3e50"/>
+  </g>
+  
+  <!-- Person 11 -->
+  <g transform="translate(490, 490)">
+    <circle cx="10" cy="10" r="10" fill="#2c3e50"/>
+    <rect x="5" y="20" width="10" height="15" rx="3" ry="3" fill="#2c3e50"/>
+  </g>
+  
+  <!-- Projector -->
+  <g transform="translate(400, 350)">
+    <rect x="-30" y="0" width="60" height="30" rx="5" ry="5" fill="#2c3e50"/>
+    <rect x="-20" y="30" width="40" height="10" rx="3" ry="3" fill="#2c3e50"/>
+    <line x1="0" y1="0" x2="0" y2="-100" stroke="#2c3e50" stroke-width="3" stroke-dasharray="5,5"/>
+  </g>
+  
+  <!-- Popcorn and Drinks -->
+  <g transform="translate(650, 480)">
+    <!-- Popcorn -->
+    <path d="M-20,0 L-30,30 L10,30 L0,0 Z" fill="#ff9966"/>
+    <path d="M-25,0 C-25,-10 -15,-10 -15,0 Z" fill="#fff"/>
+    <path d="M-15,0 C-15,-10 -5,-10 -5,0 Z" fill="#fff"/>
+    <path d="M-5,0 C-5,-10 5,-10 5,0 Z" fill="#fff"/>
+    
+    <!-- Drink -->
+    <rect x="20" y="10" width="20" height="30" rx="2" ry="2" fill="#ff5e62"/>
+    <path d="M25,10 L35,10 L40,0 L20,0 Z" fill="#2c3e50"/>
+    <rect x="28" y="0" width="4" height="-10" fill="#2c3e50"/>
+  </g>
+  
+  <!-- Decorative Elements -->
+  <g transform="translate(100, 150)">
+    <circle cx="0" cy="0" r="20" fill="none" stroke="#ff5e62" stroke-width="2"/>
+    <circle cx="0" cy="0" r="15" fill="none" stroke="#ff9966" stroke-width="2"/>
+    <circle cx="0" cy="0" r="10" fill="none" stroke="#ff5e62" stroke-width="2"/>
+    <circle cx="0" cy="0" r="5" fill="none" stroke="#ff9966" stroke-width="2"/>
+  </g>
+  
+  <g transform="translate(700, 150)">
+    <circle cx="0" cy="0" r="20" fill="none" stroke="#ff5e62" stroke-width="2"/>
+    <circle cx="0" cy="0" r="15" fill="none" stroke="#ff9966" stroke-width="2"/>
+    <circle cx="0" cy="0" r="10" fill="none" stroke="#ff5e62" stroke-width="2"/>
+    <circle cx="0" cy="0" r="5" fill="none" stroke="#ff9966" stroke-width="2"/>
+  </g>
+  
+  <!-- Film Reel -->
+  <g transform="translate(100, 300)">
+    <circle cx="0" cy="0" r="30" fill="#2c3e50"/>
+    <circle cx="0" cy="0" r="25" fill="#fff"/>
+    <circle cx="0" cy="0" r="20" fill="#2c3e50"/>
+    <circle cx="0" cy="0" r="10" fill="#fff"/>
+    <circle cx="0" cy="0" r="5" fill="#2c3e50"/>
+    
+    <!-- Sprocket Holes -->
+    <circle cx="0" cy="-22" r="3" fill="#2c3e50"/>
+    <circle cx="15.5" cy="-15.5" r="3" fill="#2c3e50"/>
+    <circle cx="22" cy="0" r="3" fill="#2c3e50"/>
+    <circle cx="15.5" cy="15.5" r="3" fill="#2c3e50"/>
+    <circle cx="0" cy="22" r="3" fill="#2c3e50"/>
+    <circle cx="-15.5" cy="15.5" r="3" fill="#2c3e50"/>
+    <circle cx="-22" cy="0" r="3" fill="#2c3e50"/>
+    <circle cx="-15.5" cy="-15.5" r="3" fill="#2c3e50"/>
+  </g>
+  
+  <g transform="translate(700, 300)">
+    <circle cx="0" cy="0" r="30" fill="#2c3e50"/>
+    <circle cx="0" cy="0" r="25" fill="#fff"/>
+    <circle cx="0" cy="0" r="20" fill="#2c3e50"/>
+    <circle cx="0" cy="0" r="10" fill="#fff"/>
+    <circle cx="0" cy="0" r="5" fill="#2c3e50"/>
+    
+    <!-- Sprocket Holes -->
+    <circle cx="0" cy="-22" r="3" fill="#2c3e50"/>
+    <circle cx="15.5" cy="-15.5" r="3" fill="#2c3e50"/>
+    <circle cx="22" cy="0" r="3" fill="#2c3e50"/>
+    <circle cx="15.5" cy="15.5" r="3" fill="#2c3e50"/>
+    <circle cx="0" cy="22" r="3" fill="#2c3e50"/>
+    <circle cx="-15.5" cy="15.5" r="3" fill="#2c3e50"/>
+    <circle cx="-22" cy="0" r="3" fill="#2c3e50"/>
+    <circle cx="-15.5" cy="-15.5" r="3" fill="#2c3e50"/>
+  </g>
+  
+  <!-- Film Strip -->
+  <path d="M100,270 L100,330 L700,330 L700,270 Z" fill="none" stroke="#2c3e50" stroke-width="2" stroke-dasharray="10,10"/>
+</svg>

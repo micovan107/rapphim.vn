@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phòng Chiếu Phim - CineSync</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <h1><i class="fas fa-film"></i> CineSync</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Trang Chủ</a></li>
+                    <li><a href="index.html#rooms">Phòng Chiếu</a></li>
+                    <li><a href="index.html#about">Giới Thiệu</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons">
+                <!-- Auth buttons will be added by auth.js -->
+            </div>
+        </header>
+        
+        <main>
+            <!-- Room content will be dynamically added by rooms.js -->
+            <div class="loading">Đang tải phòng...</div>
+        </main>
+        
+        <footer>
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h2><i class="fas fa-film"></i> CineSync</h2>
+                    <p>Xem phim cùng nhau, dù ở xa nhau.</p>
+                </div>
+                <div class="footer-links">
+                    <h3>Liên Kết</h3>
+                    <ul>
+                        <li><a href="index.html">Trang Chủ</a></li>
+                        <li><a href="index.html#rooms">Phòng Chiếu</a></li>
+                        <li><a href="index.html#about">Giới Thiệu</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h3>Liên Hệ</h3>
+                    <p><i class="fas fa-envelope"></i> micovan105@gmail.com</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 CineSync. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Change Video Modal -->
+    <div id="changeVideoModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Đổi Video</h2>
+            <form id="changeVideoForm">
+                <div class="form-group">
+                    <label for="newVideoUrl">URL Video YouTube Mới</label>
+                    <input type="url" id="newVideoUrl" placeholder="https://www.youtube.com/watch?v=..." required>
+                </div>
+                <button type="submit" class="btn btn-primary">Đổi Video</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Ticket Requests Modal -->
+    <div id="ticketRequestsModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Yêu Cầu Vé</h2>
+            <div id="ticketRequestsList">
+                <div class="loading">Đang tải yêu cầu vé...</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    
+    <!-- App Scripts -->
+    <script src="firebase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="room.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>

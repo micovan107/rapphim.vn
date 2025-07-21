@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineSync - Rạp Chiếu Phim Trực Tuyến</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="description" content="CineSync - Xem phim cùng bạn bè từ xa với tính năng đồng bộ hoàn hảo">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <h1><i class="fas fa-film"></i> CineSync</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#" class="active">Trang Chủ</a></li>
+                    <li><a href="#rooms">Phòng Chiếu</a></li>
+                    <li><a href="#about">Giới Thiệu</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons">
+                <button id="loginBtn" class="btn">Đăng Nhập</button>
+                <button id="signupBtn" class="btn btn-primary">Đăng Ký</button>
+            </div>
+        </header>
+
+        <main>
+            <section class="hero">
+                <div class="hero-content">
+                    <h2>Xem Phim Cùng Bạn Bè</h2>
+                    <p>Tạo phòng chiếu phim riêng và mời bạn bè cùng xem. Trải nghiệm xem phim đồng bộ với người thân yêu của bạn dù ở bất kỳ đâu.</p>
+                    <button id="createRoomBtn" class="btn btn-primary btn-large">Tạo Phòng Ngay</button>
+                </div>
+                <div class="hero-image">
+                    <img src="cinema.svg" alt="Cinema illustration">
+                </div>
+            </section>
+
+            <section id="rooms" class="rooms-section">
+                <h2>Phòng Chiếu Phim</h2>
+                <div class="room-filters">
+                    <button class="filter-btn active" data-filter="all">Tất Cả</button>
+                    <button class="filter-btn" data-filter="public">Công Khai</button>
+                    <button class="filter-btn" data-filter="private">Riêng Tư</button>
+                </div>
+                <div class="rooms-container">
+                    <!-- Phòng sẽ được thêm vào đây bằng JavaScript -->
+                </div>
+            </section>
+
+            <section id="about" class="about-section">
+                <h2>Về CineSync</h2>
+                <div class="features">
+                    <div class="feature-card">
+                        <i class="fas fa-users"></i>
+                        <h3>Xem Cùng Bạn Bè</h3>
+                        <p>Tạo phòng và mời bạn bè tham gia xem phim cùng bạn từ bất kỳ đâu.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-sync"></i>
+                        <h3>Đồng Bộ Hoàn Hảo</h3>
+                        <p>Video được đồng bộ hoá cho tất cả người xem trong phòng.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-comments"></i>
+                        <h3>Trò Chuyện Trực Tiếp</h3>
+                        <p>Trò chuyện với bạn bè trong khi xem phim.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h2><i class="fas fa-film"></i> CineSync</h2>
+                    <p>Xem phim cùng nhau, dù ở xa nhau.</p>
+                </div>
+                <div class="footer-links">
+                    <h3>Liên Kết</h3>
+                    <ul>
+                        <li><a href="#">Trang Chủ</a></li>
+                        <li><a href="#rooms">Phòng Chiếu</a></li>
+                        <li><a href="#about">Giới Thiệu</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h3>Liên Hệ</h3>
+                    <p><i class="fas fa-envelope"></i> micovan105@gmail.com</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 CineSync. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modals -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Đăng Nhập</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Mật Khẩu</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Đăng Nhập</button>
+            </form>
+            <div class="social-login">
+                <p>Hoặc đăng nhập với</p>
+                <button id="googleLoginBtn" class="btn btn-google">
+                    <i class="fab fa-google"></i> Google
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="signupModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Đăng Ký</h2>
+            <form id="signupForm">
+                <div class="form-group">
+                    <label for="signupName">Tên Hiển Thị</label>
+                    <input type="text" id="signupName" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupEmail">Email</label>
+                    <input type="email" id="signupEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Mật Khẩu</label>
+                    <input type="password" id="signupPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupConfirmPassword">Xác Nhận Mật Khẩu</label>
+                    <input type="password" id="signupConfirmPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Đăng Ký</button>
+            </form>
+        </div>
+    </div>
+
+
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    
+    <!-- Create Room Modal -->
+    <div id="createRoomModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Tạo Phòng Chiếu Phim</h2>
+            <form id="createRoomForm">
+                <div class="form-group">
+                    <label for="roomName">Tên Phòng</label>
+                    <input type="text" id="roomName" placeholder="Nhập tên phòng" required>
+                </div>
+                <div class="form-group">
+                    <label for="roomDescription">Mô Tả</label>
+                    <textarea id="roomDescription" placeholder="Mô tả ngắn về phòng chiếu" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="videoUrl">URL Video YouTube</label>
+                    <input type="url" id="videoUrl" placeholder="https://www.youtube.com/watch?v=..." required>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="isPrivate">
+                        Phòng Riêng Tư
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="requiresTicket">
+                        Yêu Cầu Vé Để Vào
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary">Tạo Phòng</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Ticket Request Modal -->
+    <div id="ticketRequestModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Yêu Cầu Vé Xem Phim</h2>
+            <p>Phòng này yêu cầu vé để vào xem. Bạn có muốn gửi yêu cầu vé không?</p>
+            <div class="modal-buttons">
+                <button id="requestTicketBtn" class="btn btn-primary">Yêu Cầu Vé</button>
+                <button id="cancelTicketRequestBtn" class="btn">Hủy</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- App Scripts -->
+    <script src="firebase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="rooms.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
