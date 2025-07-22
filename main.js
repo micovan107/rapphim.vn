@@ -573,7 +573,8 @@ function addThemeToggle() {
             
             .dark-theme .form-group input,
             .dark-theme .form-group textarea,
-            .dark-theme .chat-input input {
+            .dark-theme .chat-input input,
+            .dark-theme .search-container input {
                 background: #1a1a2e;
                 color: #f4f4f4;
                 border-color: #2c3e50;
@@ -610,6 +611,32 @@ function addThemeToggle() {
 
 // Add theme toggle on page load
 document.addEventListener('DOMContentLoaded', addThemeToggle);
+
+// Hide YouTube Watermark
+const hideWatermarkStyle = document.createElement('style');
+hideWatermarkStyle.textContent = `
+    .ytp-watermark, 
+    .ytp-youtube-button, 
+    .ytp-small-redirect {
+        display: none !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
+`;
+document.head.appendChild(hideWatermarkStyle);
+
+// Ensure watermark is hidden when YouTube iframe is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    // Apply again after a short delay to ensure it catches dynamically loaded elements
+    setTimeout(() => {
+        const watermarks = document.querySelectorAll('.ytp-watermark, .ytp-youtube-button, .ytp-small-redirect');
+        watermarks.forEach(watermark => {
+            watermark.style.display = 'none';
+            watermark.style.opacity = '0';
+            watermark.style.pointerEvents = 'none';
+        });
+    }, 1000);
+});
 
 // Add scroll to top button
 function addScrollToTopButton() {

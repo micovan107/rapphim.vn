@@ -24,6 +24,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Add filter functionality
     addFilterFunctionality();
+    
+    // Add search functionality
+    addSearchFunctionality();
 });
 
 // Add Create Room Modal to the document
@@ -435,34 +438,71 @@ function addFilterFunctionality() {
 function filterRooms(filter) {
     const roomCards = document.querySelectorAll('.room-card');
     const currentUser = auth.currentUser;
+    const searchInput = document.getElementById('roomSearchInput');
+    const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
     
     roomCards.forEach(card => {
         const roomId = card.getAttribute('data-room-id');
         const isPrivate = card.getAttribute('data-is-private') === 'true';
+        const roomName = card.querySelector('h3').textContent.toLowerCase();
+        const roomDescription = card.querySelector('p').textContent.toLowerCase();
+        const matchesSearch = searchTerm === '' || 
+                            roomName.includes(searchTerm) || 
+                            roomDescription.includes(searchTerm);
         
         // Get room host from database
         database.ref(`rooms/${roomId}/host`).once('value', (snapshot) => {
             const host = snapshot.val();
             const isUserHost = currentUser && host && host.uid === currentUser.uid;
             
+            let matchesFilter = false;
             switch (filter) {
                 case 'all':
-                    card.style.display = 'block';
+                    matchesFilter = true;
                     break;
                 case 'public':
-                    card.style.display = isPrivate ? 'none' : 'block';
+                    matchesFilter = !isPrivate;
                     break;
                 case 'private':
-                    card.style.display = isPrivate ? 'block' : 'none';
+                    matchesFilter = isPrivate;
                     break;
                 case 'my':
-                    card.style.display = isUserHost ? 'block' : 'none';
+                    matchesFilter = isUserHost;
                     break;
                 default:
-                    card.style.display = 'block';
+                    matchesFilter = true;
             }
+            
+            // Show card only if it matches both search and filter criteria
+            card.style.display = (matchesSearch && matchesFilter) ? 'block' : 'none';
         });
     });
+}
+
+// Add Search Functionality
+function addSearchFunctionality() {
+    const searchInput = document.getElementById('roomSearchInput');
+    const searchBtn = document.getElementById('roomSearchBtn');
+    
+    if (searchInput && searchBtn) {
+        // Search when button is clicked
+        searchBtn.addEventListener('click', () => {
+            const activeFilter = document.querySelector('.filter-btn.active');
+            if (activeFilter) {
+                filterRooms(activeFilter.getAttribute('data-filter'));
+            }
+        });
+        
+        // Search when Enter key is pressed
+        searchInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') {
+                const activeFilter = document.querySelector('.filter-btn.active');
+                if (activeFilter) {
+                    filterRooms(activeFilter.getAttribute('data-filter'));
+                }
+            }
+        });
+    }
 }
 
 // Helper function to extract YouTube video ID from URL

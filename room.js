@@ -30,6 +30,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Thêm xử lý sự kiện cảm ứng cho thiết bị di động
     setupTouchEvents();
+    
+    // Add resize event listener to reposition video overlay
+    window.addEventListener('resize', positionVideoOverlay);
+    
+    // Add keyboard shortcuts for video seeking (host only)
+    document.addEventListener('keydown', handleKeyboardShortcuts);
 });
 
 // Initialize Room
@@ -101,13 +107,27 @@ function setupRoom() {
         <div class="room-page">
             <div class="video-container">
                 <div id="player"></div>
+                <div class="video-overlay"></div>
                 <div class="participants-counter">
                     <i class="fas fa-users"></i> <span id="participantsCount">1</span>
                 </div>
                 <div class="video-controls">
                     <div class="control-buttons">
+                        ${isHost ? `
+                        <button class="control-btn" id="rewindBtn" title="Tua lùi 10 giây">
+                            <i class="fas fa-backward"></i>
+                        </button>
+                        ` : ''}
                         <button class="control-btn" id="playPauseBtn" title="Play/Pause">
                             <i class="fas fa-play"></i>
+                        </button>
+                        ${isHost ? `
+                        <button class="control-btn" id="forwardBtn" title="Tua tới 10 giây">
+                            <i class="fas fa-forward"></i>
+                        </button>
+                        ` : ''}
+                        <button class="control-btn" id="fullscreenBtn" title="Toàn màn hình">
+                            <i class="fas fa-expand"></i>
                         </button>
                         <div class="time-display">00:00 / 00:00</div>
                     </div>
@@ -121,6 +141,9 @@ function setupRoom() {
                                     <span class="ticket-badge" id="ticketBadge">0</span>
                                 </button>
                             ` : ''}
+                            <button class="btn" id="keyboardShortcutsBtn" title="Phím tắt">
+                                <i class="fas fa-keyboard"></i>
+                            </button>
                             <button class="btn delete-btn" id="deleteRoomBtn">Xóa Phòng</button>
                         ` : ''}
                     </div>
@@ -163,6 +186,7 @@ function setupRoom() {
     chatInput = document.querySelector('.chat-input');
     participantList = document.getElementById('participantList');
     videoControls = document.querySelector('.video-controls');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
     
     // Add event listeners
     const messageInput = document.getElementById('messageInput');
@@ -176,15 +200,26 @@ function setupRoom() {
     
     sendMessageBtn.addEventListener('click', sendMessage);
     
+    // Add fullscreen button event listener
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+    
+    // Add fullscreenchange event listener
+    document.addEventListener('fullscreenchange', updateFullscreenButtonState);
+    document.addEventListener('webkitfullscreenchange', updateFullscreenButtonState);
+    document.addEventListener('mozfullscreenchange', updateFullscreenButtonState);
+    document.addEventListener('MSFullscreenChange', updateFullscreenButtonState);
+    
     // Add host control event listeners
     if (isHost) {
         const startBtn = document.getElementById('startBtn');
         const changeVideoBtn = document.getElementById('changeVideoBtn');
         const deleteRoomBtn = document.getElementById('deleteRoomBtn');
+        const keyboardShortcutsBtn = document.getElementById('keyboardShortcutsBtn');
         
         startBtn.addEventListener('click', startVideo);
         changeVideoBtn.addEventListener('click', () => openModal(document.getElementById('changeVideoModal')));
         deleteRoomBtn.addEventListener('click', deleteRoom);
+        keyboardShortcutsBtn.addEventListener('click', showKeyboardShortcuts);
         
         // Add ticket requests button event listener
         if (roomData.requiresTicket) {
@@ -252,6 +287,10 @@ function listenForRoomUpdates() {
     const roomRef = database.ref(`rooms/${roomId}`);
     
     roomRef.on('value', (snapshot) => {
+        // Hide YouTube watermark when room updates
+        setTimeout(hideYouTubeWatermark, 1000);
+        // Reposition video overlay
+        setTimeout(positionVideoOverlay, 1000);
         roomData = snapshot.val();
         
         if (!roomData) {
@@ -656,6 +695,11 @@ async function startVideo() {
 async function changeVideo() {
     if (!isHost) return;
     
+    // Make sure to hide YouTube watermark when changing videos
+    setTimeout(hideYouTubeWatermark, 1500);
+    // Reposition video overlay
+    setTimeout(positionVideoOverlay, 1500);
+    
     // Ask user if they want to upload a video or use YouTube
     const choice = confirm('Bạn muốn tải lên video mới? Chọn OK để tải lên, hoặc Cancel để nhập URL YouTube');
     
@@ -864,8 +908,82 @@ function loadYouTubeAPI() {
 
 // YouTube Player Ready Event
 function onPlayerReady(event) {
+    // Hide YouTube watermark and logo
+    hideYouTubeWatermark();
+    
+    // Make sure video overlay is positioned correctly
+    positionVideoOverlay();
+    
     // Update play/pause button
     const playPauseBtn = document.getElementById('playPauseBtn');
+    
+    // Add event listeners for seek buttons if user is host
+    if (isHost) {
+        const rewindBtn = document.getElementById('rewindBtn');
+        const forwardBtn = document.getElementById('forwardBtn');
+        
+        if (rewindBtn) {
+            rewindBtn.addEventListener('click', () => {
+                if (playerType !== 'cloudinary') { // YouTube player
+                    const currentTime = player.getCurrentTime();
+                    const newTime = Math.max(0, currentTime - 10); // Tua lùi 10 giây, không nhỏ hơn 0
+                    player.seekTo(newTime, true);
+                    
+                    // Cập nhật thời gian hiện tại lên database
+                    database.ref(`rooms/${roomId}`).update({
+                        currentTime: newTime
+                    });
+                    
+                    // Hiển thị thông báo
+                    showNotification('Đã tua lùi 10 giây', 'info');
+                } else if (playerType === 'cloudinary') {
+                    const currentTime = player.currentTime;
+                    const newTime = Math.max(0, currentTime - 10);
+                    player.currentTime = newTime;
+                    
+                    // Cập nhật thời gian hiện tại lên database
+                    database.ref(`rooms/${roomId}`).update({
+                        currentTime: newTime
+                    });
+                    
+                    // Hiển thị thông báo
+                    showNotification('Đã tua lùi 10 giây', 'info');
+                }
+            });
+        }
+        
+        if (forwardBtn) {
+            forwardBtn.addEventListener('click', () => {
+                if (playerType !== 'cloudinary') { // YouTube player
+                    const currentTime = player.getCurrentTime();
+                    const duration = player.getDuration();
+                    const newTime = Math.min(duration, currentTime + 10); // Tua tới 10 giây, không vượt quá thời lượng
+                    player.seekTo(newTime, true);
+                    
+                    // Cập nhật thời gian hiện tại lên database
+                    database.ref(`rooms/${roomId}`).update({
+                        currentTime: newTime
+                    });
+                    
+                    // Hiển thị thông báo
+                    showNotification('Đã tua tới 10 giây', 'info');
+                } else if (playerType === 'cloudinary') {
+                    const currentTime = player.currentTime;
+                    const duration = player.duration;
+                    const newTime = Math.min(duration, currentTime + 10);
+                    player.currentTime = newTime;
+                    
+                    // Cập nhật thời gian hiện tại lên database
+                    database.ref(`rooms/${roomId}`).update({
+                        currentTime: newTime
+                    });
+                    
+                    // Hiển thị thông báo
+                    showNotification('Đã tua tới 10 giây', 'info');
+                }
+            });
+        }
+    }
     
     playPauseBtn.addEventListener('click', () => {
         if (isHost) {
@@ -923,6 +1041,9 @@ function updatePlayPauseButton(isPlaying) {
 
 // YouTube Player State Change Event
 function onPlayerStateChange(event) {
+    // Hide YouTube watermark again when state changes
+    hideYouTubeWatermark();
+    
     if (event.data === YT.PlayerState.PLAYING) {
         updatePlayPauseButton(true);
         
@@ -1064,6 +1185,81 @@ function setupTouchEvents() {
     }
 }
 
+// Xử lý phím tắt bàn phím
+function handleKeyboardShortcuts(event) {
+    // Chỉ xử lý phím tắt nếu là chủ phòng và trình phát đã được khởi tạo
+    if (!isHost || !player) return;
+    
+    // Phím mũi tên trái: Tua lùi 10 giây
+    if (event.key === 'ArrowLeft') {
+        if (playerType !== 'cloudinary') { // YouTube player
+            const currentTime = player.getCurrentTime();
+            const newTime = Math.max(0, currentTime - 10);
+            player.seekTo(newTime, true);
+            
+            // Cập nhật thời gian hiện tại lên database
+            database.ref(`rooms/${roomId}`).update({
+                currentTime: newTime
+            });
+            
+            // Hiển thị thông báo
+            showNotification('Đã tua lùi 10 giây', 'info');
+        } else { // Cloudinary player
+            const currentTime = player.currentTime;
+            const newTime = Math.max(0, currentTime - 10);
+            player.currentTime = newTime;
+            
+            // Cập nhật thời gian hiện tại lên database
+            database.ref(`rooms/${roomId}`).update({
+                currentTime: newTime
+            });
+            
+            // Hiển thị thông báo
+            showNotification('Đã tua lùi 10 giây', 'info');
+        }
+    }
+    
+    // Phím mũi tên phải: Tua tới 10 giây
+    if (event.key === 'ArrowRight') {
+        if (playerType !== 'cloudinary') { // YouTube player
+            const currentTime = player.getCurrentTime();
+            const duration = player.getDuration();
+            const newTime = Math.min(duration, currentTime + 10);
+            player.seekTo(newTime, true);
+            
+            // Cập nhật thời gian hiện tại lên database
+            database.ref(`rooms/${roomId}`).update({
+                currentTime: newTime
+            });
+            
+            // Hiển thị thông báo
+            showNotification('Đã tua tới 10 giây', 'info');
+        } else { // Cloudinary player
+            const currentTime = player.currentTime;
+            const duration = player.duration;
+            const newTime = Math.min(duration, currentTime + 10);
+            player.currentTime = newTime;
+            
+            // Cập nhật thời gian hiện tại lên database
+            database.ref(`rooms/${roomId}`).update({
+                currentTime: newTime
+            });
+            
+            // Hiển thị thông báo
+            showNotification('Đã tua tới 10 giây', 'info');
+        }
+    }
+    
+    // Phím Space: Play/Pause
+    if (event.code === 'Space' && document.activeElement.tagName !== 'INPUT') {
+        event.preventDefault(); // Ngăn không cho trang cuộn xuống
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        if (playPauseBtn) {
+            playPauseBtn.click();
+        }
+    }
+}
+
 // Tối ưu hóa giao diện cho thiết bị di động
 function optimizeForMobile() {
     // Tăng kích thước các nút điều khiển
@@ -1125,7 +1321,74 @@ function showError(message) {
     `;
 }
 
+// Hide YouTube Watermark
+function hideYouTubeWatermark() {
+    // Try to hide watermark using CSS
+    const style = document.createElement('style');
+    style.textContent = `
+        .ytp-watermark, 
+        .ytp-youtube-button, 
+        .ytp-small-redirect,
+        .ytp-chrome-top-buttons {
+            display: none !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            visibility: hidden !important;
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // Try to hide watermark using direct DOM manipulation
+    setTimeout(() => {
+        try {
+            // Try to access the iframe content if possible
+            const playerElement = document.getElementById('player');
+            if (playerElement) {
+                // Try to find and hide watermark elements
+                const watermarks = document.querySelectorAll('.ytp-watermark, .ytp-youtube-button, .ytp-small-redirect');
+                watermarks.forEach(watermark => {
+                    watermark.style.display = 'none';
+                    watermark.style.opacity = '0';
+                    watermark.style.visibility = 'hidden';
+                });
+                
+                // If player has an iframe, try to access its content
+                const iframe = playerElement.querySelector('iframe');
+                if (iframe && iframe.contentWindow) {
+                    try {
+                        // This might fail due to same-origin policy
+                        const iframeDoc = iframe.contentWindow.document;
+                        const iframeWatermarks = iframeDoc.querySelectorAll('.ytp-watermark, .ytp-youtube-button');
+                        iframeWatermarks.forEach(watermark => {
+                            watermark.style.display = 'none';
+                        });
+                    } catch (e) {
+                        // Silent fail - expected due to cross-origin restrictions
+                    }
+                }
+            }
+        } catch (e) {
+            console.log('Error hiding YouTube watermark:', e);
+        }
+    }, 1000);
+}
+
 // Note: Using showNotification function from auth.js
+
+// Position video overlay to cover the player but not controls
+function positionVideoOverlay() {
+    const overlay = document.querySelector('.video-overlay');
+    const player = document.getElementById('player');
+    
+    if (overlay && player) {
+        // Set the overlay to match the player dimensions
+        const playerRect = player.getBoundingClientRect();
+        overlay.style.width = playerRect.width + 'px';
+        overlay.style.height = playerRect.height + 'px';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+    }
+}
 
 // Helper function to open modal
 function openModal(modal) {
@@ -1136,4 +1399,60 @@ function openModal(modal) {
     
     // Open the requested modal
     modal.style.display = 'block';
+}
+
+// Function to show keyboard shortcuts modal
+function showKeyboardShortcuts() {
+    const modal = document.getElementById('keyboardShortcutsModal');
+    openModal(modal);
+}
+
+// Function to toggle fullscreen mode
+function toggleFullscreen() {
+    const videoContainer = document.querySelector('.video-container');
+    
+    if (!document.fullscreenElement && 
+        !document.webkitFullscreenElement && 
+        !document.mozFullScreenElement && 
+        !document.msFullscreenElement) {
+        // Enter fullscreen
+        if (videoContainer.requestFullscreen) {
+            videoContainer.requestFullscreen();
+        } else if (videoContainer.webkitRequestFullscreen) { /* Safari */
+            videoContainer.webkitRequestFullscreen();
+        } else if (videoContainer.mozRequestFullScreen) { /* Firefox */
+            videoContainer.mozRequestFullScreen();
+        } else if (videoContainer.msRequestFullscreen) { /* IE/Edge */
+            videoContainer.msRequestFullscreen();
+        }
+    } else {
+        // Exit fullscreen
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) { /* Safari */
+            document.webkitExitFullscreen();
+        } else if (document.mozCancelFullScreen) { /* Firefox */
+            document.mozCancelFullScreen();
+        } else if (document.msExitFullscreen) { /* IE/Edge */
+            document.msExitFullscreen();
+        }
+    }
+}
+
+// Function to update fullscreen button state
+function updateFullscreenButtonState() {
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    
+    if (document.fullscreenElement || 
+        document.webkitFullscreenElement || 
+        document.mozFullScreenElement || 
+        document.msFullscreenElement) {
+        // In fullscreen mode
+        fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
+        fullscreenBtn.title = 'Thoát toàn màn hình';
+    } else {
+        // Not in fullscreen mode
+        fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+        fullscreenBtn.title = 'Toàn màn hình';
+    }
 }

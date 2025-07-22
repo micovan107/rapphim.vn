@@ -251,6 +251,44 @@ body.mobile-device {
     background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
 }
 
+.search-and-filters {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    gap: 15px;
+}
+
+.search-container {
+    display: flex;
+    max-width: 400px;
+    width: 100%;
+}
+
+.search-container input {
+    flex: 1;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 20px 0 0 20px;
+    outline: none;
+    font-size: 14px;
+}
+
+.search-container button {
+    padding: 10px 15px;
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+    color: white;
+    border: none;
+    border-radius: 0 20px 20px 0;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.search-container button:hover {
+    opacity: 0.9;
+}
+
 .room-filters {
     display: flex;
     justify-content: center;
@@ -542,6 +580,16 @@ footer {
     margin-bottom: 15px;
 }
 
+.footer-contact p a {
+    color: #fff;
+    text-decoration: underline;
+    transition: var(--transition);
+}
+
+.footer-contact p a:hover {
+    color: var(--primary-color);
+}
+
 .social-icons {
     display: flex;
     gap: 15px;
@@ -562,6 +610,19 @@ footer {
 .social-icons a:hover {
     background: var(--primary-color);
     transform: translateY(-5px);
+}
+
+.social-icons .lazi-icon {
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.social-icons .lazi-icon img {
+    width: 20px;
+    height: 20px;
+    object-fit: cover;
 }
 
 .footer-bottom {
@@ -596,6 +657,41 @@ footer {
     max-width: 500px;
     position: relative;
     animation: modalOpen 0.4s;
+}
+
+/* Keyboard Shortcuts Modal Styles */
+.shortcuts-list {
+    margin: 20px 0;
+}
+
+.shortcut-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.shortcut-key {
+    background-color: #01010166;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px 10px;
+    margin-right: 15px;
+    font-weight: bold;
+    min-width: 80px;
+    text-align: center;
+}
+
+.shortcut-description {
+    flex: 1;
+}
+
+.shortcuts-note {
+    font-style: italic;
+    color: #666;
+    margin-top: 20px;
+    font-size: 0.9rem;
 }
 
 @keyframes modalOpen {
@@ -716,12 +812,13 @@ footer {
 
 .video-info {
     grid-area: info;
-    background: #222;
+    background: linear-gradient(145deg, #2a2a2a, #222);
     color: white;
     border-radius: 15px;
     padding: 20px;
     margin-bottom: 20px;
-    box-shadow: var(--box-shadow);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .room-sidebar {
@@ -754,6 +851,69 @@ footer {
     border-radius: 15px;
     overflow: hidden;
     position: relative;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.video-container:fullscreen,
+.video-container:-webkit-full-screen,
+.video-container:-moz-full-screen,
+.video-container:-ms-fullscreen {
+    border-radius: 0;
+    padding: 0;
+    width: 100%;
+    height: 100vh;
+    max-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.video-container:fullscreen #player,
+.video-container:-webkit-full-screen #player,
+.video-container:-moz-full-screen #player,
+.video-container:-ms-fullscreen #player {
+    width: 100%;
+    height: 100%;
+    min-height: 95vh;
+    max-height: 100vh;
+    object-fit: contain;
+}
+
+.video-container:fullscreen .video-controls,
+.video-container:-webkit-full-screen .video-controls,
+.video-container:-moz-full-screen .video-controls,
+.video-container:-ms-fullscreen .video-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(34, 34, 34, 0.8);
+    transition: opacity 0.3s ease;
+    opacity: 0;
+}
+
+.video-container:fullscreen:hover .video-controls,
+.video-container:-webkit-full-screen:hover .video-controls,
+.video-container:-moz-full-screen:hover .video-controls,
+.video-container:-ms-fullscreen:hover .video-controls {
+    opacity: 1;
+}
+
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    background-color: transparent;
+    pointer-events: all;
+    cursor: default;
 }
 
 .video-container iframe {
@@ -762,9 +922,23 @@ footer {
     border: none;
 }
 
+.video-container:fullscreen iframe,
+.video-container:-webkit-full-screen iframe,
+.video-container:-moz-full-screen iframe,
+.video-container:-ms-fullscreen iframe {
+    width: 100%;
+    height: 100%;
+    min-height: 95vh;
+    max-height: 100vh;
+    object-fit: contain;
+}
+
 .video-controls {
     display: flex;
     justify-content: space-between;
+    background: rgba(34, 34, 34, 0.85);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
     align-items: center;
     padding: 15px;
     background: #222;
@@ -774,21 +948,23 @@ footer {
 .start-btn {
     background-color: #27ae60;
     color: white;
-    margin-right: 10px;
 }
 
 .start-btn:hover {
     background-color: #219653;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(33, 150, 83, 0.3);
 }
 
 .delete-btn {
     background-color: #e74c3c;
     color: white;
-    margin-left: 10px;
 }
 
 .delete-btn:hover {
     background-color: #c0392b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(192, 57, 43, 0.3);
 }
 
 .participants-counter {
@@ -811,10 +987,10 @@ footer {
 }
 
 .participants {
-    margin-top: 20px;
     background: #f9f9f9;
     border-radius: 10px;
     padding: 15px;
+    margin-top: 0;
 }
 
 .participants h3 {
@@ -864,20 +1040,32 @@ footer {
 
 .control-buttons {
     display: flex;
+    align-items: center;
     gap: 15px;
 }
 
 .control-btn {
-    background: none;
-    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     color: white;
     font-size: 1.2rem;
     cursor: pointer;
-    transition: var(--transition);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    backdrop-filter: blur(4px);
 }
 
 .control-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
     color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* Cải thiện nút điều khiển trên thiết bị di động */
@@ -897,11 +1085,12 @@ footer {
 }
 
 .room-sidebar {
-    background: #222;
+    background: linear-gradient(145deg, #2a2a2a, #222);
     color: white;
     border-radius: 15px;
     overflow: hidden;
-    box-shadow: var(--box-shadow);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .video-info h2 {
@@ -930,11 +1119,14 @@ footer {
 }
 
 .chat-container {
-    height: 300px;
+    height: 400px;
     display: flex;
     flex-direction: column;
     background: #222;
     color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
 }
 
 .chat-messages {
@@ -1076,11 +1268,19 @@ footer {
 #player {
     width: 100%;
     height: 500px;
+    background-color: #000;
 }
 
 .time-display {
     font-size: 0.9rem;
     margin-left: 15px;
+    color: white;
+    font-weight: 500;
+    background-color: rgba(0, 0, 0, 0.4);
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(4px);
 }
 
 .system-message {
@@ -1200,11 +1400,11 @@ footer {
     }
     
     .video-container iframe {
-        height: 400px;
+        height: 450px;
     }
     
     #player {
-        height: 400px;
+        height: 450px;
     }
     
     /* Cải thiện kích thước nút trên màn hình cảm ứng */
@@ -1258,11 +1458,11 @@ footer {
     }
     
     .video-container iframe {
-        height: 300px;
+        height: 350px;
     }
     
     #player {
-        height: 300px;
+        height: 350px;
     }
 }
 
@@ -1290,11 +1490,11 @@ footer {
     }
     
     .video-container iframe {
-        height: 250px;
+        height: 300px;
     }
     
     #player {
-        height: 250px;
+        height: 300px;
     }
     
     .video-controls {
@@ -1309,14 +1509,38 @@ footer {
     
     .host-controls {
         width: 100%;
+        display: flex;
         justify-content: center;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
+        gap: 10px;
+        overflow-x: auto;
+        padding: 5px 0;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    }
+    
+    .host-controls::-webkit-scrollbar {
+        height: 4px;
+    }
+    
+    .host-controls::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    
+    .host-controls::-webkit-scrollbar-thumb {
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
     }
     
     .host-controls .btn {
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         padding: 8px 12px;
-        margin-bottom: 5px;
+        margin: 0 3px;
+        flex: 0 0 auto;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        white-space: nowrap;
     }
     
     .modal-content {
@@ -1375,8 +1599,9 @@ footer {
     }
     
     .host-controls .btn {
-        font-size: 0.8rem;
-        padding: 6px 10px;
+        font-size: 0.75rem;
+        padding: 6px 8px;
+        margin: 0 2px;
     }
     
     .video-container iframe {

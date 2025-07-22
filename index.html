@@ -45,10 +45,16 @@
 
             <section id="rooms" class="rooms-section">
                 <h2>Phòng Chiếu Phim</h2>
-                <div class="room-filters">
-                    <button class="filter-btn active" data-filter="all">Tất Cả</button>
-                    <button class="filter-btn" data-filter="public">Công Khai</button>
-                    <button class="filter-btn" data-filter="private">Riêng Tư</button>
+                <div class="search-and-filters">
+                    <div class="search-container">
+                        <input type="text" id="roomSearchInput" placeholder="Tìm kiếm phòng...">
+                        <button id="roomSearchBtn"><i class="fas fa-search"></i></button>
+                    </div>
+                    <div class="room-filters">
+                        <button class="filter-btn active" data-filter="all">Tất Cả</button>
+                        <button class="filter-btn" data-filter="public">Công Khai</button>
+                        <button class="filter-btn" data-filter="private">Riêng Tư</button>
+                    </div>
                 </div>
                 <div class="rooms-container">
                     <!-- Phòng sẽ được thêm vào đây bằng JavaScript -->
@@ -94,10 +100,12 @@
                 <div class="footer-contact">
                     <h3>Liên Hệ</h3>
                     <p><i class="fas fa-envelope"></i> micovan105@gmail.com</p>
+                    <p><i class="fas fa-user"></i> <a href="https://lazi.vn/user/tien-nam.nguyen25" target="_blank">Lazi: tien-nam.nguyen25</a></p>
                     <div class="social-icons">
                         <a href="#"><i class="fab fa-facebook"></i></a>
                         <a href="#"><i class="fab fa-twitter"></i></a>
                         <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="https://lazi.vn/user/tien-nam.nguyen25" target="_blank" class="lazi-icon"><img src="avatarlazi.png" alt="Lazi" width="20" height="20"></a>
                     </div>
                 </div>
             </div>
