@@ -88,6 +88,7 @@ function signInWithGoogle() {
                     displayName: user.displayName || 'Người dùng Google',
                     email: user.email,
                     photoURL: user.photoURL || 'https://via.placeholder.com/150',
+                    miniCoins: 100,
                     createdAt: firebase.database.ServerValue.TIMESTAMP
                 });
                 
@@ -138,6 +139,7 @@ if (signupForm) {
         await database.ref(`users/${user.uid}`).set({
             displayName: name,
             email: email,
+            miniCoins: 100,
             createdAt: firebase.database.ServerValue.TIMESTAMP
         });
         
@@ -164,6 +166,10 @@ auth.onAuthStateChanged(async (user) => {
     if (user) {
         // User is signed in
         const userData = await getCurrentUserData();
+        // Make sure miniCoins is available in userData
+        if (userData && !userData.miniCoins) {
+            userData.miniCoins = 0;
+        }
         updateUIForLoggedInUser(userData);
     } else {
         // User is signed out
@@ -182,6 +188,9 @@ function updateUIForLoggedInUser(userData) {
     userProfile.innerHTML = `
         <img src="${userData.photoURL}" alt="${userData.displayName}">
         <span>${userData.displayName}</span>
+        <div class="mini-coins">
+            <i class="fas fa-coins"></i> <span id="miniCoins">${userData.miniCoins || 0}</span>
+        </div>
         <div class="dropdown-content">
             <a href="#" id="myRoomsBtn">Phòng Của Tôi</a>
             <a href="#" id="profileBtn">Hồ Sơ</a>

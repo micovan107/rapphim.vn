@@ -203,6 +203,27 @@
                         Yêu Cầu Vé Để Vào
                     </label>
                 </div>
+                <div id="ticketOptionsContainer" style="display: none;">
+                    <div class="form-group">
+                        <label>Loại vé:</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="ticketType" id="manualTicket" value="manual" checked>
+                                Chủ phòng tự cấp vé
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="ticketType" id="autoTicket" value="auto">
+                                Tự động cấp vé với giá
+                            </label>
+                        </div>
+                    </div>
+                    <div id="ticketPriceContainer" style="display: none;">
+                        <div class="form-group">
+                            <label for="ticketPrice">Giá vé (Mini Coin):</label>
+                            <input type="number" id="ticketPrice" min="1" value="10">
+                        </div>
+                    </div>
+                </div>
                 <button type="submit" class="btn btn-primary">Tạo Phòng</button>
             </form>
         </div>

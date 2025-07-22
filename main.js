@@ -555,8 +555,13 @@ function addThemeToggle() {
             .dark-theme .feature-card,
             .dark-theme .about-section,
             .dark-theme .modal-content,
-            .dark-theme .room-sidebar {
+            .dark-theme .room-sidebar,
+            .dark-theme .video-info {
                 background: #16213e;
+                color: #f4f4f4;
+            }
+            
+            .dark-theme .video-info h2 {
                 color: #f4f4f4;
             }
             
@@ -567,7 +572,8 @@ function addThemeToggle() {
             
             .dark-theme .room-info p,
             .dark-theme .feature-card p,
-            .dark-theme .room-meta {
+            .dark-theme .room-meta,
+            .dark-theme .video-info p {
                 color: #aaa;
             }
             

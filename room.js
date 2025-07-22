@@ -25,6 +25,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
     
+    // Check for saved theme preference and apply it
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+    }
+    
     // Initialize room
     initRoom();
     
@@ -41,6 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
 // Initialize Room
 async function initRoom() {
     try {
+        // Kiểm tra và cập nhật nhiệm vụ hàng ngày
+        checkDailyTask();
+        
         // Get room data
         const roomSnapshot = await database.ref(`rooms/${roomId}`).once('value');
         roomData = roomSnapshot.val();
@@ -65,20 +74,73 @@ async function initRoom() {
                     const participantData = participantSnapshot.val();
                     
                     if (!participantData || !participantData.hasTicket) {
-                        // Check if user has a pending ticket request
-                        const ticketRequestSnapshot = await database.ref(`rooms/${roomId}/ticketRequests/${user.uid}`).once('value');
-                        const ticketRequestData = ticketRequestSnapshot.val();
-                        
-                        if (!ticketRequestData) {
-                            // Redirect to home page
-                            window.location.href = 'index.html';
-                            return;
-                        } else if (ticketRequestData.status === 'pending') {
-                            showError('Yêu cầu vé của bạn đang chờ xử lý. Vui lòng đợi chủ phòng phê duyệt.');
-                            return;
-                        } else if (ticketRequestData.status === 'rejected') {
-                            showError('Yêu cầu vé của bạn đã bị từ chối.');
-                            return;
+                        // Check if this is an auto ticket room
+                        if (roomData.ticketType === 'auto' && roomData.ticketPrice > 0) {
+                            // Get user data to check mini coins using the helper function
+                            const userData = await getCurrentUserData();
+                            
+                            if (!userData) {
+                                showError('Không tìm thấy thông tin người dùng.');
+                                window.location.href = 'index.html';
+                                return;
+                            }
+                            
+                            const miniCoins = userData.miniCoins;
+                            
+                            // Check if user has enough mini coins
+                            if (Number(miniCoins) < Number(roomData.ticketPrice)) {
+                                showError(`Bạn không đủ Mini Coin để mua vé. Bạn có ${miniCoins} Mini Coin, cần ${roomData.ticketPrice} Mini Coin.`);
+                                window.location.href = 'index.html';
+                                return;
+                            }
+                            
+                            // Ask for confirmation
+                            if (confirm(`Bạn có muốn mua vé tự động với giá ${roomData.ticketPrice} Mini Coin không? (Bạn hiện có ${miniCoins} Mini Coin)`)) {
+                                // Deduct mini coins from user
+                                const newMiniCoins = miniCoins - roomData.ticketPrice;
+                                await database.ref(`users/${user.uid}/miniCoins`).set(newMiniCoins);
+                                
+                                // Add user to room participants with ticket
+                                await database.ref(`rooms/${roomId}/participants/${user.uid}`).set({
+                                    uid: user.uid,
+                                    displayName: userData.displayName,
+                                    photoURL: userData.photoURL,
+                                    isHost: false,
+                                    hasTicket: true,
+                                    joinedAt: firebase.database.ServerValue.TIMESTAMP
+                                });
+                                
+                                // Add system message to room chat
+                                const roomChatRef = database.ref(`roomChats/${roomId}`);
+                                await roomChatRef.push({
+                                    type: 'system',
+                                    message: `${userData.displayName} đã mua vé và tham gia phòng.`,
+                                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                                });
+                                
+                                showNotification(`Đã mua vé thành công với giá ${roomData.ticketPrice} Mini Coin.`, 'success');
+                            } else {
+                                // User canceled
+                                window.location.href = 'index.html';
+                                return;
+                            }
+                        } else {
+                            // For manual tickets
+                            // Check if user has a pending ticket request
+                            const ticketRequestSnapshot = await database.ref(`rooms/${roomId}/ticketRequests/${user.uid}`).once('value');
+                            const ticketRequestData = ticketRequestSnapshot.val();
+                            
+                            if (!ticketRequestData) {
+                                // Redirect to home page
+                                window.location.href = 'index.html';
+                                return;
+                            } else if (ticketRequestData.status === 'pending') {
+                                showError('Yêu cầu vé của bạn đang chờ xử lý. Vui lòng đợi chủ phòng phê duyệt.');
+                                return;
+                            } else if (ticketRequestData.status === 'rejected') {
+                                showError('Yêu cầu vé của bạn đã bị từ chối.');
+                                return;
+                            }
                         }
                     }
                 }
@@ -160,7 +222,14 @@ function setupRoom() {
                         <span class="host-badge">Chủ phòng</span>
                     </div>
                 </div>
-                ${roomData.requiresTicket ? `<div class="ticket-info"><i class="fas fa-ticket-alt"></i> Phòng yêu cầu vé để vào</div>` : ''}
+                ${roomData.requiresTicket ? `
+                    <div class="ticket-info">
+                        <i class="fas fa-ticket-alt"></i> 
+                        ${roomData.ticketType === 'auto' && roomData.ticketPrice > 0 ? 
+                            `Vé tự động: <strong>${roomData.ticketPrice} Mini Coin</strong>` : 
+                            'Phòng yêu cầu vé thủ công'}
+                    </div>
+                ` : ''}
             </div>
             
             <div class="room-sidebar">
@@ -625,12 +694,23 @@ function updateParticipantsList(participants) {
     Object.values(participants).forEach(participant => {
         const participantElement = document.createElement('div');
         participantElement.className = 'participant';
+        
+        // Không hiển thị nút tặng minicoin cho chính mình
+        const isSelf = participant.uid === currentUser.uid;
+        
         participantElement.innerHTML = `
             <img src="${participant.photoURL}" alt="${participant.displayName}">
             <span class="name">${participant.displayName}</span>
             ${participant.isHost ? '<span class="host-badge">Chủ phòng</span>' : ''}
             ${participant.hasTicket && !participant.isHost ? '<span class="ticket-badge"><i class="fas fa-ticket-alt"></i></span>' : ''}
+            ${!isSelf ? '<button class="btn-small gift-coin-btn" title="Tặng MiniCoin"><i class="fas fa-coins"></i></button>' : ''}
         `;
+        
+        // Thêm sự kiện cho nút tặng minicoin
+        const giftCoinBtn = participantElement.querySelector('.gift-coin-btn');
+        if (giftCoinBtn) {
+            giftCoinBtn.addEventListener('click', () => giftMiniCoin(participant.uid, participant.displayName));
+        }
         
         participantList.appendChild(participantElement);
     });
@@ -661,6 +741,146 @@ async function sendMessage() {
     } catch (error) {
         console.error('Send message error:', error);
         showNotification(`Lỗi gửi tin nhắn: ${error.message}`, 'error');
+    }
+}
+
+// Kiểm tra và cập nhật nhiệm vụ hàng ngày
+async function checkDailyTask() {
+    try {
+        if (!currentUser) {
+            // Đợi cho đến khi người dùng đăng nhập
+            await new Promise(resolve => {
+                const unsubscribe = firebase.auth().onAuthStateChanged(user => {
+                    if (user) {
+                        currentUser = user;
+                        unsubscribe();
+                        resolve();
+                    }
+                });
+            });
+        }
+        
+        const db = firebase.firestore();
+        const userDoc = await db.collection('users').doc(currentUser.uid).get();
+        
+        if (!userDoc.exists) {
+            console.log('Không tìm thấy thông tin người dùng!');
+            return;
+        }
+        
+        const userData = userDoc.data();
+        const lastDailyTask = userData.lastDailyTask ? new Date(userData.lastDailyTask.toDate()) : null;
+        const today = new Date();
+        
+        // Kiểm tra xem người dùng đã nhận thưởng hôm nay chưa
+        if (!lastDailyTask || !isSameDay(lastDailyTask, today)) {
+            // Cập nhật MiniCoin và thời gian nhận thưởng
+            await db.collection('users').doc(currentUser.uid).update({
+                miniCoins: firebase.firestore.FieldValue.increment(50),
+                lastDailyTask: firebase.firestore.Timestamp.fromDate(today)
+            });
+            
+            showNotification('Chúc mừng! Bạn đã nhận 50 MiniCoin từ nhiệm vụ hàng ngày!', 'success');
+        }
+    } catch (error) {
+        console.error('Daily task error:', error);
+    }
+}
+
+// Kiểm tra xem hai ngày có phải là cùng một ngày không
+function isSameDay(date1, date2) {
+    return date1.getFullYear() === date2.getFullYear() &&
+           date1.getMonth() === date2.getMonth() &&
+           date1.getDate() === date2.getDate();
+}
+
+// Tặng MiniCoin cho người dùng khác
+async function giftMiniCoin(recipientUid, recipientName) {
+    console.log('=== BẮT ĐẦU QUÁ TRÌNH TẶNG MINICOIN ===');
+    console.log('Người nhận:', recipientUid, recipientName);
+    console.log('Người gửi:', currentUser.uid, currentUser.displayName);
+    try {
+        // Hiển thị hộp thoại để nhập số lượng coin muốn tặng
+        const coinAmount = prompt(`Nhập số lượng MiniCoin bạn muốn tặng cho ${recipientName}:`, "5");
+        
+        // Kiểm tra nếu người dùng hủy hoặc không nhập gì
+        if (coinAmount === null || coinAmount.trim() === "") {
+            return;
+        }
+        
+        // Chuyển đổi sang số và kiểm tra tính hợp lệ
+        const amount = parseInt(coinAmount);
+        if (isNaN(amount) || amount <= 0) {
+            showNotification('Vui lòng nhập số lượng MiniCoin hợp lệ!', 'error');
+            return;
+        }
+        
+        // Lấy thông tin người dùng hiện tại
+        const userData = await getCurrentUserData();
+        
+        if (!userData) {
+            showNotification('Không tìm thấy thông tin người dùng!', 'error');
+            return;
+        }
+        
+        const currentMiniCoins = userData.miniCoins || 0;
+        
+        // Kiểm tra xem người dùng có đủ MiniCoin không
+        if (currentMiniCoins < amount) {
+            showNotification(`Bạn không đủ MiniCoin để tặng! Bạn có ${currentMiniCoins} MiniCoin.`, 'error');
+            return;
+        }
+        
+        // Thay vì sử dụng transaction, sử dụng update trực tiếp với giá trị đã kiểm tra
+        console.log('Bắt đầu trừ MiniCoin từ người gửi:', currentUser.uid, 'Số dư hiện tại:', currentMiniCoins, 'Số lượng cần trừ:', amount);
+        
+        // Đã kiểm tra đủ coin ở trên, giờ trừ trực tiếp
+        try {
+            // Cập nhật số dư của người gửi
+            await database.ref(`users/${currentUser.uid}/miniCoins`).set(currentMiniCoins - amount);
+            console.log('Đã trừ thành công:', amount, 'MiniCoin từ người gửi. Số dư mới:', currentMiniCoins - amount);
+            
+            // Cập nhật số dư của người nhận
+            // Lấy số dư hiện tại của người nhận
+            const recipientSnapshot = await database.ref(`users/${recipientUid}/miniCoins`).get();
+            const recipientCoins = recipientSnapshot.val() || 0;
+            console.log('Số dư hiện tại của người nhận:', recipientCoins);
+            
+            // Cộng MiniCoin cho người nhận
+            await database.ref(`users/${recipientUid}/miniCoins`).set(recipientCoins + amount);
+            console.log('Đã cộng thành công:', amount, 'MiniCoin cho người nhận. Số dư mới:', recipientCoins + amount);
+        } catch (error) {
+            console.error('Lỗi khi cập nhật MiniCoin:', error);
+            showNotification(`Lỗi khi cập nhật MiniCoin: ${error.message}`, 'error');
+            return;
+        }
+        
+        // Phần cộng MiniCoin cho người nhận đã được xử lý ở trên
+        
+        // Thêm thông báo vào phòng chat
+        await database.ref(`rooms/${roomId}/messages`).push({
+            type: 'system',
+            content: `${currentUser.displayName} đã tặng ${amount} MiniCoin cho ${recipientName}!`,
+            timestamp: firebase.database.ServerValue.TIMESTAMP
+        });
+        
+        // Cập nhật số dư MiniCoin hiển thị trên giao diện
+        console.log('Đang cập nhật giao diện với dữ liệu mới...');
+        const newUserData = await getCurrentUserData();
+        console.log('Dữ liệu người dùng mới:', newUserData);
+        const miniCoinsElement = document.getElementById('miniCoins');
+        console.log('Element miniCoins:', miniCoinsElement);
+        if (miniCoinsElement && newUserData) {
+            console.log('Cập nhật số dư hiển thị từ', miniCoinsElement.textContent, 'thành', newUserData.miniCoins || 0);
+            miniCoinsElement.textContent = newUserData.miniCoins || 0;
+        } else {
+            console.log('Không thể cập nhật giao diện: miniCoinsElement hoặc newUserData không tồn tại');
+        }
+        
+        showNotification(`Đã tặng ${amount} MiniCoin cho ${recipientName}!`, 'success');
+    } catch (error) {
+        console.error('Gift MiniCoin error:', error);
+        showNotification(`Lỗi khi tặng MiniCoin: ${error.message}`, 'error');
     }
 }
 
@@ -1319,6 +1539,42 @@ function showError(message) {
             <a href="index.html" class="btn btn-primary">Quay Lại Trang Chủ</a>
         </div>
     `;
+}
+
+// Show notification
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+            <span>${message}</span>
+        </div>
+        <button class="close-btn"><i class="fas fa-times"></i></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Add close button event listener
+    const closeBtn = notification.querySelector('.close-btn');
+    closeBtn.addEventListener('click', () => {
+        notification.classList.add('hide');
+        setTimeout(() => {
+            notification.remove();
+        }, 300);
+    });
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        if (document.body.contains(notification)) {
+            notification.classList.add('hide');
+            setTimeout(() => {
+                if (document.body.contains(notification)) {
+                    notification.remove();
+                }
+            }, 300);
+        }
+    }, 5000);
 }
 
 // Hide YouTube Watermark

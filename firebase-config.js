@@ -57,21 +57,31 @@ async function getCurrentUserData() {
     if (!user) return null;
     
     try {
-        const snapshot = await database.ref(`users/${user.uid}`).once('value');
-        return {
+        console.log('Đang lấy dữ liệu người dùng mới nhất cho:', user.uid);
+        // Sử dụng .get() thay vì .once('value') để đảm bảo luôn lấy dữ liệu mới nhất từ server
+        const snapshot = await database.ref(`users/${user.uid}`).get();
+        const userData = snapshot.val() || {};
+        console.log('Dữ liệu người dùng từ database:', userData);
+        const result = {
             uid: user.uid,
             email: user.email,
-            displayName: user.displayName || snapshot.val().displayName,
-            photoURL: user.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.displayName || user.email)
+            displayName: user.displayName || userData.displayName,
+            photoURL: user.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.displayName || user.email),
+            miniCoins: userData.miniCoins !== undefined ? userData.miniCoins : 100
         };
+        console.log('Dữ liệu người dùng đã xử lý:', result);
+        return result;
     } catch (error) {
         console.error('Error getting user data:', error);
-        return {
+        const defaultData = {
             uid: user.uid,
             email: user.email,
             displayName: user.displayName || user.email.split('@')[0],
-            photoURL: user.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.displayName || user.email)
+            photoURL: user.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.displayName || user.email),
+            miniCoins: 100
         };
+        console.log('Trả về dữ liệu mặc định do lỗi:', defaultData);
+        return defaultData;
     }
 }
 

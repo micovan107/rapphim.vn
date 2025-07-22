@@ -61,6 +61,27 @@ function addCreateRoomModal() {
                             Yêu Cầu Vé Để Vào
                         </label>
                     </div>
+                    <div id="ticketOptionsContainer" style="display: none;">
+                        <div class="form-group">
+                            <label>Loại vé:</label>
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input type="radio" name="ticketType" id="manualTicket" value="manual" checked>
+                                    Chủ phòng tự cấp vé
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="ticketType" id="autoTicket" value="auto">
+                                    Tự động cấp vé với giá
+                                </label>
+                            </div>
+                        </div>
+                        <div id="ticketPriceContainer" style="display: none;">
+                            <div class="form-group">
+                                <label for="ticketPrice">Giá vé (Mini Coin):</label>
+                                <input type="number" id="ticketPrice" min="1" value="10">
+                            </div>
+                        </div>
+                    </div>
                     <button type="submit" class="btn btn-primary">Tạo Phòng</button>
                 </form>
             </div>
@@ -125,6 +146,29 @@ function addTicketRequestModal() {
 // Initialize Create Room Form
 function initCreateRoomForm() {
     const createRoomForm = document.getElementById('createRoomForm');
+    
+    // Add event listener for requires ticket checkbox
+    const requiresTicketCheckbox = document.getElementById('requiresTicket');
+    const ticketOptionsContainer = document.getElementById('ticketOptionsContainer');
+    const manualTicketRadio = document.getElementById('manualTicket');
+    const autoTicketRadio = document.getElementById('autoTicket');
+    const ticketPriceContainer = document.getElementById('ticketPriceContainer');
+    
+    if (requiresTicketCheckbox && ticketOptionsContainer) {
+        requiresTicketCheckbox.addEventListener('change', function() {
+            ticketOptionsContainer.style.display = this.checked ? 'block' : 'none';
+        });
+    }
+    
+    if (manualTicketRadio && autoTicketRadio && ticketPriceContainer) {
+        manualTicketRadio.addEventListener('change', function() {
+            ticketPriceContainer.style.display = 'none';
+        });
+        
+        autoTicketRadio.addEventListener('change', function() {
+            ticketPriceContainer.style.display = 'block';
+        });
+    }
     
     // Add upload video button
     const videoUrlField = document.getElementById('videoUrl');
@@ -193,6 +237,19 @@ function initCreateRoomForm() {
             const isPrivate = document.getElementById('isPrivate').checked;
             const requiresTicket = document.getElementById('requiresTicket').checked;
             
+            // Get ticket options if requires ticket is checked
+            let ticketType = 'manual';
+            let ticketPrice = 0;
+            
+            if (requiresTicket) {
+                const autoTicket = document.getElementById('autoTicket');
+                if (autoTicket && autoTicket.checked) {
+                    ticketType = 'auto';
+                    const ticketPriceInput = document.getElementById('ticketPrice');
+                    ticketPrice = ticketPriceInput ? parseInt(ticketPriceInput.value) || 10 : 10;
+                }
+            }
+            
             // Get current user
             const user = auth.currentUser;
             if (!user) {
@@ -232,6 +289,8 @@ function initCreateRoomForm() {
                     videoPublicId: videoPublicId, // Cloudinary public_id for later deletion
                     isPrivate: isPrivate,
                     requiresTicket: requiresTicket,
+                    ticketType: requiresTicket ? ticketType : null,
+                    ticketPrice: requiresTicket && ticketType === 'auto' ? ticketPrice : 0,
                     host: {
                         uid: user.uid,
                         displayName: userData.displayName,
@@ -332,6 +391,12 @@ function renderRoomCard(room) {
     const hasTicket = currentUser && room.participants && room.participants[currentUser.uid] && 
                      room.participants[currentUser.uid].hasTicket;
     
+    // Prepare ticket badge text
+    let ticketBadgeText = 'Vé Thủ Công';
+    if (room.requiresTicket && room.ticketType === 'auto' && room.ticketPrice > 0) {
+        ticketBadgeText = `Vé: ${room.ticketPrice} Mini Coin`;
+    }
+    
     // Set room card HTML
     roomCard.innerHTML = `
         <div class="room-thumbnail">
@@ -339,7 +404,7 @@ function renderRoomCard(room) {
             <div class="room-badge ${room.isPrivate ? 'badge-private' : 'badge-public'}">
                 ${room.isPrivate ? 'Riêng Tư' : 'Công Khai'}
             </div>
-            ${room.requiresTicket ? '<div class="room-badge badge-ticket"><i class="fas fa-ticket-alt"></i> Yêu Cầu Vé</div>' : ''}
+            ${room.requiresTicket ? `<div class="room-badge badge-ticket"><i class="fas fa-ticket-alt"></i> ${ticketBadgeText}</div>` : ''}
         </div>
         <div class="room-info">
             <h3>${room.name}</h3>
@@ -373,7 +438,51 @@ function renderRoomCard(room) {
 }
 
 // Open Ticket Request Modal
-function openTicketRequestModal(roomId) {
+async function openTicketRequestModal(roomId) {
+    const user = auth.currentUser;
+    if (!user) {
+        showNotification('Vui lòng đăng nhập để yêu cầu vé!', 'error');
+        return;
+    }
+    
+    // Get room data to check ticket type
+    const roomSnapshot = await database.ref(`rooms/${roomId}`).once('value');
+    const roomData = roomSnapshot.val();
+    
+    if (!roomData) {
+        showNotification('Không tìm thấy thông tin phòng.', 'error');
+        return;
+    }
+    
+    // Check if auto ticket with price
+    if (roomData.ticketType === 'auto' && roomData.ticketPrice > 0) {
+        // Get user data to check mini coins using the helper function
+        const userData = await getCurrentUserData();
+        
+        if (!userData) {
+            showNotification('Không tìm thấy thông tin người dùng.', 'error');
+            return;
+        }
+        
+        const miniCoins = userData.miniCoins;
+        
+        // Check if user has enough mini coins
+        if (Number(miniCoins) < Number(roomData.ticketPrice)) {
+            showNotification(`Bạn không đủ Mini Coin để mua vé. Bạn có ${miniCoins} Mini Coin, cần ${roomData.ticketPrice} Mini Coin.`, 'error');
+            return;
+        }
+        
+        // Ask for confirmation
+        if (confirm(`Bạn có muốn mua vé tự động với giá ${roomData.ticketPrice} Mini Coin không? (Bạn hiện có ${miniCoins} Mini Coin)`)) {
+            // Process auto ticket purchase
+            await purchaseAutoTicket(roomId, roomData.ticketPrice);
+            return;
+        } else {
+            return; // User canceled
+        }
+    }
+    
+    // For manual tickets, show the request modal
     const modal = document.getElementById('ticketRequestModal');
     const requestBtn = document.getElementById('requestTicketBtn');
     
@@ -412,6 +521,87 @@ async function requestTicket(roomId) {
     } catch (error) {
         console.error('Request ticket error:', error);
         showNotification(`Lỗi yêu cầu vé: ${error.message}`, 'error');
+    }
+}
+
+// Purchase auto ticket
+async function purchaseAutoTicket(roomId, ticketPrice) {
+    const user = auth.currentUser;
+    if (!user) {
+        showNotification('Vui lòng đăng nhập để mua vé!', 'error');
+        return;
+    }
+    
+    try {
+        // Get user data using the helper function
+        const userData = await getCurrentUserData();
+        
+        if (!userData) {
+            showNotification('Không tìm thấy thông tin người dùng.', 'error');
+            return;
+        }
+        
+        const miniCoins = userData.miniCoins;
+        
+        // Check if user has enough mini coins
+        if (Number(miniCoins) < Number(ticketPrice)) {
+            showNotification(`Bạn không đủ Mini Coin để mua vé. Bạn có ${miniCoins} Mini Coin, cần ${ticketPrice} Mini Coin.`, 'error');
+            return;
+        }
+        
+        // Deduct mini coins from user using transaction to ensure data integrity
+        const userRef = database.ref(`users/${user.uid}/miniCoins`);
+        await userRef.transaction((currentMiniCoins) => {
+            // If currentMiniCoins is null, treat as 0
+            const current = currentMiniCoins || 0;
+            return current - Number(ticketPrice);
+        });
+        
+        // Log transaction for debugging
+        console.log(`Deducted ${ticketPrice} mini coins from user ${user.uid}`);
+        
+        // Get room data to find host ID
+        const roomSnapshot = await database.ref(`rooms/${roomId}`).once('value');
+        const roomData = roomSnapshot.val();
+        
+        if (roomData && roomData.host && roomData.host.uid) {
+            // Add mini coins to host using transaction to ensure data integrity
+            const hostRef = database.ref(`users/${roomData.host.uid}/miniCoins`);
+            await hostRef.transaction((currentMiniCoins) => {
+                // If currentMiniCoins is null, treat as 0
+                return (currentMiniCoins || 0) + Number(ticketPrice);
+            });
+            
+            // Log transaction for debugging
+            console.log(`Added ${ticketPrice} mini coins to host ${roomData.host.uid}`);
+            
+        }
+        
+        // Add user to room participants with ticket
+        await database.ref(`rooms/${roomId}/participants/${user.uid}`).set({
+            uid: user.uid,
+            displayName: userData.displayName,
+            photoURL: userData.photoURL,
+            isHost: false,
+            hasTicket: true,
+            joinedAt: firebase.database.ServerValue.TIMESTAMP
+        });
+        
+        // Add system message to room chat
+        const roomChatRef = database.ref(`roomChats/${roomId}`);
+        await roomChatRef.push({
+            type: 'system',
+            message: `${userData.displayName} đã mua vé và tham gia phòng.`,
+            timestamp: firebase.database.ServerValue.TIMESTAMP
+        });
+        
+        showNotification(`Đã mua vé thành công với giá ${ticketPrice} Mini Coin. Tiền vé đã được chuyển cho chủ phòng.`, 'success');
+        
+        // Redirect to room
+        window.location.href = `room.html?id=${roomId}`;
+    } catch (error) {
+        console.error('Error purchasing ticket:', error);
+        showNotification(`Lỗi khi mua vé: ${error.message}`, 'error');
     }
 }
 
