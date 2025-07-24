@@ -194,21 +194,22 @@ function setupRoom() {
                         <div class="time-display">00:00 / 00:00</div>
                     </div>
                     <div class="host-controls">
-                        ${isHost ? `
-                            <button class="btn start-btn" id="startBtn">Bắt Đầu</button>
-                            <button class="btn" id="changeVideoBtn">Đổi Video</button>
-                            ${roomData.requiresTicket ? `
-                                <button class="btn" id="ticketRequestsBtn">
-                                    <i class="fas fa-ticket-alt"></i> Yêu Cầu Vé
-                                    <span class="ticket-badge" id="ticketBadge">0</span>
-                                </button>
-                            ` : ''}
-                            <button class="btn" id="keyboardShortcutsBtn" title="Phím tắt">
-                                <i class="fas fa-keyboard"></i>
+                    ${isHost ? `
+                        <button class="btn start-btn" id="startBtn">Bắt Đầu</button>
+                        <button class="btn stop-btn" id="stopBtn" style="display:none;">Dừng Video</button>
+                        <button class="btn" id="changeVideoBtn">Đổi Video</button>
+                        ${roomData.requiresTicket ? `
+                            <button class="btn" id="ticketRequestsBtn">
+                                <i class="fas fa-ticket-alt"></i> Yêu Cầu Vé
+                                <span class="ticket-badge" id="ticketBadge">0</span>
                             </button>
-                            <button class="btn delete-btn" id="deleteRoomBtn">Xóa Phòng</button>
                         ` : ''}
-                    </div>
+                        <button class="btn" id="keyboardShortcutsBtn" title="Phím tắt">
+                            <i class="fas fa-keyboard"></i>
+                        </button>
+                        <button class="btn delete-btn" id="deleteRoomBtn">Xóa Phòng</button>
+                    ` : ''}
+                </div>
                 </div>
             </div>
             
@@ -281,14 +282,25 @@ function setupRoom() {
     // Add host control event listeners
     if (isHost) {
         const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
         const changeVideoBtn = document.getElementById('changeVideoBtn');
         const deleteRoomBtn = document.getElementById('deleteRoomBtn');
         const keyboardShortcutsBtn = document.getElementById('keyboardShortcutsBtn');
         
         startBtn.addEventListener('click', startVideo);
+        stopBtn.addEventListener('click', stopVideo);
         changeVideoBtn.addEventListener('click', () => openModal(document.getElementById('changeVideoModal')));
         deleteRoomBtn.addEventListener('click', deleteRoom);
         keyboardShortcutsBtn.addEventListener('click', showKeyboardShortcuts);
+        
+        // Hiển thị nút Start/Stop dựa vào trạng thái phòng hiện tại
+        if (roomData.status === 'playing') {
+            startBtn.style.display = 'none';
+            stopBtn.style.display = 'inline-block';
+        } else {
+            startBtn.style.display = 'inline-block';
+            stopBtn.style.display = 'none';
+        }
         
         // Add ticket requests button event listener
         if (roomData.requiresTicket) {
@@ -373,6 +385,39 @@ function listenForRoomUpdates() {
             return;
         }
         
+        // Kiểm tra xem chủ phòng có còn trong phòng không
+        let hostPresent = false;
+        if (roomData.participants) {
+            Object.values(roomData.participants).forEach(participant => {
+                if (participant.isHost) {
+                    hostPresent = true;
+                }
+            });
+        }
+        
+        // Nếu chủ phòng không còn trong phòng và video đang ở trạng thái paused, tự động chuyển sang playing
+        if (!hostPresent && roomData.status === 'paused' && player) {
+            // Cập nhật trạng thái phòng thành playing
+            database.ref(`rooms/${roomId}`).update({
+                status: 'playing'
+            });
+            
+            // Thêm thông báo hệ thống
+            database.ref(`rooms/${roomId}/messages`).push({
+                type: 'system',
+                content: 'Video tự động tiếp tục phát khi chủ phòng không có mặt.',
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+        }
+        
+        // Đảm bảo video luôn ở trạng thái playing sau khi đã bắt đầu, trừ khi chủ phòng chủ động dừng nó
+        if (roomData.videoStarted && roomData.status === 'paused' && !roomData.manuallyPaused && player) {
+            // Cập nhật trạng thái phòng thành playing
+            database.ref(`rooms/${roomId}`).update({
+                status: 'playing'
+            });
+        }
+        
         // Update room status
         if (roomData.status === 'playing' && player) {
             if (playerType === 'cloudinary') {
@@ -433,6 +478,12 @@ function listenForRoomUpdates() {
                             status: 'playing',
                             currentTime: player.currentTime
                         });
+                    } else {
+                        // Nếu không phải host và video đang ở trạng thái paused, không cho phép play
+                        if (roomData.status === 'paused') {
+                            player.pause();
+                            showNotification('Chỉ chủ phòng mới có thể điều khiển video.', 'warning');
+                        }
                     }
                     updatePlayPauseButton(true);
                 });
@@ -443,6 +494,12 @@ function listenForRoomUpdates() {
                             status: 'paused',
                             currentTime: player.currentTime
                         });
+                    } else {
+                        // Nếu không phải host và video đang ở trạng thái playing, không cho phép pause
+                        if (roomData.status === 'playing') {
+                            player.play();
+                            showNotification('Chỉ chủ phòng mới có thể dừng video.', 'warning');
+                        }
                     }
                     updatePlayPauseButton(false);
                 });
@@ -1025,7 +1082,9 @@ async function startVideo() {
     try {
         // Update room status
         await database.ref(`rooms/${roomId}`).update({
-            status: 'playing'
+            status: 'playing',
+            videoStarted: true,
+            manuallyPaused: false
         });
         
         // Add system message
@@ -1035,13 +1094,44 @@ async function startVideo() {
             timestamp: firebase.database.ServerValue.TIMESTAMP
         });
         
-        // Update button
+        // Update buttons
         const startBtn = document.getElementById('startBtn');
-        startBtn.textContent = 'Đang Phát';
-        startBtn.disabled = true;
+        const stopBtn = document.getElementById('stopBtn');
+        startBtn.style.display = 'none';
+        stopBtn.style.display = 'inline-block';
     } catch (error) {
         console.error('Start video error:', error);
         showNotification(`Lỗi bắt đầu video: ${error.message}`, 'error');
+    }
+}
+
+// Stop Video
+async function stopVideo() {
+    if (!isHost) return;
+    
+    try {
+        // Update room status
+        await database.ref(`rooms/${roomId}`).update({
+            status: 'paused',
+            currentTime: playerType === 'cloudinary' ? player.currentTime : player.getCurrentTime(),
+            manuallyPaused: true // Đánh dấu rằng video đã được dừng thủ công bởi chủ phòng
+        });
+        
+        // Add system message
+        await database.ref(`rooms/${roomId}/messages`).push({
+            type: 'system',
+            content: 'Phim đã tạm dừng.',
+            timestamp: firebase.database.ServerValue.TIMESTAMP
+        });
+        
+        // Update buttons
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        startBtn.style.display = 'inline-block';
+        stopBtn.style.display = 'none';
+    } catch (error) {
+        console.error('Stop video error:', error);
+        showNotification(`Lỗi dừng video: ${error.message}`, 'error');
     }
 }
 
@@ -1172,10 +1262,11 @@ async function updateVideoInDatabase(videoId = null, videoUrl = null, videoPubli
         // Reset form
         document.getElementById('changeVideoForm').reset();
         
-        // Update button
+        // Update buttons
         const startBtn = document.getElementById('startBtn');
-        startBtn.textContent = 'Bắt Đầu';
-        startBtn.disabled = false;
+        const stopBtn = document.getElementById('stopBtn');
+        startBtn.style.display = 'inline-block';
+        stopBtn.style.display = 'none';
         
         showNotification('Video đã được thay đổi!', 'success');
     } catch (error) {
@@ -1306,6 +1397,11 @@ function onPlayerReady(event) {
                     status: 'playing',
                     currentTime: player.currentTime
                 });
+            } else if (roomData.status === 'paused') {
+                // Nếu không phải chủ phòng và trạng thái phòng là đã dừng, không cho phép phát
+                player.pause();
+                showNotification('Chỉ chủ phòng mới có thể điều khiển video!', 'error');
+                return;
             }
             updatePlayPauseButton(true);
         });
@@ -1316,6 +1412,11 @@ function onPlayerReady(event) {
                     status: 'paused',
                     currentTime: player.currentTime
                 });
+            } else if (roomData.status === 'playing') {
+                // Nếu không phải chủ phòng và video đang phát, không cho phép dừng
+                player.play();
+                showNotification('Video đang phát, chỉ chủ phòng mới có thể dừng video!', 'error');
+                return;
             }
             updatePlayPauseButton(false);
         });
@@ -1422,6 +1523,12 @@ function onPlayerReady(event) {
                         currentTime: player.currentTime
                     });
                     player.play();
+                    
+                    // Cập nhật nút Start/Stop
+                    const startBtn = document.getElementById('startBtn');
+                    const stopBtn = document.getElementById('stopBtn');
+                    startBtn.style.display = 'none';
+                    stopBtn.style.display = 'inline-block';
                 } else {
                     // Update room status
                     database.ref(`rooms/${roomId}`).update({
@@ -1429,6 +1536,12 @@ function onPlayerReady(event) {
                         currentTime: player.currentTime
                     });
                     player.pause();
+                    
+                    // Cập nhật nút Start/Stop
+                    const startBtn = document.getElementById('startBtn');
+                    const stopBtn = document.getElementById('stopBtn');
+                    startBtn.style.display = 'inline-block';
+                    stopBtn.style.display = 'none';
                 }
             } else {
                 // YouTube player
@@ -1438,16 +1551,39 @@ function onPlayerReady(event) {
                         status: 'paused'
                     });
                     player.pauseVideo();
+                    
+                    // Cập nhật nút Start/Stop
+                    const startBtn = document.getElementById('startBtn');
+                    const stopBtn = document.getElementById('stopBtn');
+                    startBtn.style.display = 'inline-block';
+                    stopBtn.style.display = 'none';
                 } else {
                     // Update room status
                     database.ref(`rooms/${roomId}`).update({
                         status: 'playing'
                     });
                     player.playVideo();
+                    
+                    // Cập nhật nút Start/Stop
+                    const startBtn = document.getElementById('startBtn');
+                    const stopBtn = document.getElementById('stopBtn');
+                    startBtn.style.display = 'none';
+                    stopBtn.style.display = 'inline-block';
                 }
             }
         } else {
-            showNotification('Chỉ chủ phòng mới có thể điều khiển video!', 'error');
+            // Nếu không phải chủ phòng và video đang phát, không cho phép dừng
+            if (roomData.status === 'playing') {
+                showNotification('Video đang phát, chỉ chủ phòng mới có thể dừng video!', 'warning');
+                // Đảm bảo video tiếp tục phát
+                if (playerType === 'cloudinary') {
+                    if (player.paused) player.play();
+                } else {
+                    if (player.getPlayerState() !== YT.PlayerState.PLAYING) player.playVideo();
+                }
+            } else {
+                showNotification('Chỉ chủ phòng mới có thể điều khiển video!', 'warning');
+            }
         }
     });
     
@@ -1476,7 +1612,7 @@ function onPlayerStateChange(event) {
         // If not host and room status is paused, pause the video
         if (!isHost && roomData.status === 'paused') {
             player.pauseVideo();
-            showNotification('Chỉ chủ phòng mới có thể điều khiển video!', 'error');
+            showNotification('Chỉ chủ phòng mới có thể điều khiển video!', 'warning');
             return;
         }
         
@@ -1486,14 +1622,21 @@ function onPlayerStateChange(event) {
                 status: 'playing',
                 currentTime: player.getCurrentTime()
             });
+            
+            // Cập nhật nút Start/Stop
+            const startBtn = document.getElementById('startBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            startBtn.style.display = 'none';
+            stopBtn.style.display = 'inline-block';
         }
     } else if (event.data === YT.PlayerState.PAUSED) {
         updatePlayPauseButton(false);
         
         // If not host and room status is playing, resume the video
+        // Chỉ khi chủ phòng đã ấn nút dừng (status = paused) thì mới ngăn người xem dừng video
         if (!isHost && roomData.status === 'playing') {
             player.playVideo();
-            showNotification('Chỉ chủ phòng mới có thể điều khiển video!', 'error');
+            showNotification('Video đang phát, chỉ chủ phòng mới có thể dừng video!', 'warning');
             return;
         }
         
@@ -1503,6 +1646,12 @@ function onPlayerStateChange(event) {
                 status: 'paused',
                 currentTime: player.getCurrentTime()
             });
+            
+            // Cập nhật nút Start/Stop
+            const startBtn = document.getElementById('startBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            startBtn.style.display = 'inline-block';
+            stopBtn.style.display = 'none';
         }
     }
 }

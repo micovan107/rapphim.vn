@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#ff5e62">
+    <title>Trang Quản Trị - CineSync</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="shortcut icon" href="favicon.svg">
+    <link rel="apple-touch-icon" href="favicon.svg">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .admin-container {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .admin-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-title {
+            font-size: 16px;
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .admin-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+        
+        .admin-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-color);
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .admin-tab.active {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+        }
+        
+        .admin-tab:hover:not(.active) {
+            color: var(--primary-color-light);
+            border-bottom: 3px solid var(--primary-color-light);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .data-table th, .data-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .data-table th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+        
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .data-table tr:hover {
+            background-color: rgba(0, 0, 0, 0.03);
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 5px;
+        }
+        
+        .edit-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+        }
+        
+        .delete-btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+        }
+        
+        .action-btn:hover {
+            opacity: 0.8;
+        }
+        
+        .search-bar {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .search-bar input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px 0 0 5px;
+            font-size: 16px;
+        }
+        
+        .search-bar button {
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .search-bar button:hover {
+            background-color: var(--primary-color-dark);
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .pagination button {
+            padding: 8px 15px;
+            margin: 0 5px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .pagination button.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .pagination button:hover:not(.active) {
+            background-color: var(--border-color);
+        }
+        
+        .modal-form .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .modal-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .modal-form input, .modal-form textarea, .modal-form select {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .modal-form textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .modal-form button {
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .modal-form button:hover {
+            background-color: var(--primary-color-dark);
+        }
+        
+        .access-denied {
+            text-align: center;
+            padding: 50px 20px;
+        }
+        
+        .access-denied i {
+            font-size: 60px;
+            color: #e74c3c;
+            margin-bottom: 20px;
+        }
+        
+        .access-denied h2 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+        
+        .access-denied p {
+            font-size: 16px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+        
+        .access-denied .btn {
+            display: inline-block;
+        }
+        
+        /* Dark mode adjustments */
+        .dark-theme .stat-card {
+            background-color: var(--dark-card-bg);
+        }
+        
+        .dark-theme .data-table {
+            background-color: var(--dark-card-bg);
+        }
+        
+        .dark-theme .data-table th {
+            background-color: var(--primary-color-dark);
+        }
+        
+        .dark-theme .data-table tr:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        .dark-theme .pagination button {
+            background-color: var(--dark-card-bg);
+        }
+        
+        .dark-theme .pagination button:hover:not(.active) {
+            background-color: var(--dark-border-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <h1><i class="fas fa-film"></i> CineSync</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Trang Chủ</a></li>
+                    <li><a href="index.html#rooms">Phòng Chiếu</a></li>
+                    <li><a href="index.html#about">Giới Thiệu</a></li>
+                    <li><a href="admin.html" class="active">Quản Trị</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons">
+                <!-- Auth buttons will be added by auth.js -->
+            </div>
+        </header>
+        
+        <main>
+            <div id="adminContent">
+                <!-- Admin content will be loaded here -->
+                <div class="loading">Đang tải...</div>
+            </div>
+        </main>
+        
+        <footer>
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h2><i class="fas fa-film"></i> CineSync</h2>
+                    <p>Xem phim cùng nhau, dù ở xa nhau.</p>
+                </div>
+                <div class="footer-links">
+                    <h3>Liên Kết</h3>
+                    <ul>
+                        <li><a href="index.html">Trang Chủ</a></li>
+                        <li><a href="index.html#rooms">Phòng Chiếu</a></li>
+                        <li><a href="index.html#about">Giới Thiệu</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h3>Liên Hệ</h3>
+                    <p><i class="fas fa-envelope"></i> micovan105@gmail.com</p>
+                    <p><i class="fas fa-user"></i> <a href="https://lazi.vn/user/tien-nam.nguyen25" target="_blank">Lazi: tien-nam.nguyen25</a></p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="https://lazi.vn/user/tien-nam.nguyen25" target="_blank" class="lazi-icon"><img src="avatarlazi.png" alt="Lazi" width="20" height="20"></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 CineSync. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Edit User Modal -->
+    <div id="editUserModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Chỉnh Sửa Người Dùng</h2>
+            <form id="editUserForm" class="modal-form">
+                <input type="hidden" id="editUserId">
+                <div class="form-group">
+                    <label for="editDisplayName">Tên Hiển Thị</label>
+                    <input type="text" id="editDisplayName" required>
+                </div>
+                <div class="form-group">
+                    <label for="editEmail">Email</label>
+                    <input type="email" id="editEmail" required disabled>
+                </div>
+                <div class="form-group">
+                    <label for="editMiniCoins">Mini Coins</label>
+                    <input type="number" id="editMiniCoins" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="editRole">Vai Trò</label>
+                    <select id="editRole">
+                        <option value="user">Người Dùng</option>
+                        <option value="admin">Quản Trị Viên</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Lưu Thay Đổi</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Edit Room Modal -->
+    <div id="editRoomModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Chỉnh Sửa Phòng</h2>
+            <form id="editRoomForm" class="modal-form">
+                <input type="hidden" id="editRoomId">
+                <div class="form-group">
+                    <label for="editRoomName">Tên Phòng</label>
+                    <input type="text" id="editRoomName" required>
+                </div>
+                <div class="form-group">
+                    <label for="editRoomDescription">Mô Tả</label>
+                    <textarea id="editRoomDescription" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="editVideoUrl">URL Video</label>
+                    <input type="url" id="editVideoUrl">
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="editIsPrivate">
+                        Phòng Riêng Tư
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="editRequiresTicket">
+                        Yêu Cầu Vé Để Vào
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary">Lưu Thay Đổi</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    
+    <!-- App Scripts -->
+    <script src="firebase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

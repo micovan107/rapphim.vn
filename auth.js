@@ -182,6 +182,16 @@ function updateUIForLoggedInUser(userData) {
     // Clear auth buttons
     authButtons.innerHTML = '';
     
+    // Show admin link in navigation if user is admin
+    const adminNavLink = document.getElementById('adminNavLink');
+    if (adminNavLink) {
+        if (userData.email === 'micovan108@gmail.com') {
+            adminNavLink.style.display = 'block';
+        } else {
+            adminNavLink.style.display = 'none';
+        }
+    }
+    
     // Create user profile element
     const userProfile = document.createElement('div');
     userProfile.className = 'user-profile';
@@ -194,6 +204,7 @@ function updateUIForLoggedInUser(userData) {
         <div class="dropdown-content">
             <a href="#" id="myRoomsBtn">Phòng Của Tôi</a>
             <a href="#" id="profileBtn">Hồ Sơ</a>
+            ${userData.email === 'micovan108@gmail.com' ? '<a href="admin.html" id="adminBtn">Quản Trị</a>' : ''}
             <a href="#" id="logoutBtn">Đăng Xuất</a>
         </div>
     `;
