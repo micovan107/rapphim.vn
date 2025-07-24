@@ -204,11 +204,7 @@ function updateUIForLoggedInUser(userData) {
     // Add event listener for logout
     document.getElementById('logoutBtn').addEventListener('click', logout);
     
-    // Add event listener for create room button
-    const createRoomBtn = document.getElementById('createRoomBtn');
-    if (createRoomBtn) {
-        createRoomBtn.addEventListener('click', () => openModal(document.getElementById('createRoomModal')));
-    }
+    // Không thêm sự kiện cho nút tạo phòng ở đây vì đã được xử lý trong rooms.js
     
     // Add event listener for my rooms button
     const myRoomsBtn = document.getElementById('myRoomsBtn');
@@ -258,14 +254,7 @@ function updateUIForLoggedOutUser() {
     authButtons.appendChild(loginButton);
     authButtons.appendChild(signupButton);
     
-    // Add event listener for create room button to prompt login
-    const createRoomBtn = document.getElementById('createRoomBtn');
-    if (createRoomBtn) {
-        createRoomBtn.addEventListener('click', () => {
-            showNotification('Vui lòng đăng nhập để tạo phòng!', 'info');
-            openModal(loginModal);
-        });
-    }
+    // Không thêm sự kiện cho nút tạo phòng ở đây vì đã được xử lý trong rooms.js
 }
 
 // Logout function

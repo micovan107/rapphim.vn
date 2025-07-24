@@ -4,6 +4,17 @@ const createRoomModal = document.getElementById('createRoomModal');
 const createRoomForm = document.getElementById('createRoomForm');
 const roomsContainer = document.querySelector('.rooms-container');
 
+// Helper function to open modal (copied from auth.js for consistency)
+function openModal(modal) {
+    // Close all modals first
+    document.querySelectorAll('.modal').forEach(m => {
+        m.style.display = 'none';
+    });
+    
+    // Open the requested modal
+    modal.style.display = 'block';
+}
+
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
     // Add modal HTML if not already in the document
@@ -170,6 +181,20 @@ function initCreateRoomForm() {
         });
     }
     
+    // Thêm sự kiện click cho nút tạo phòng ở trang chủ
+    const createRoomBtnHome = document.getElementById('createRoomBtn');
+    if (createRoomBtnHome) {
+        createRoomBtnHome.addEventListener('click', () => {
+            // Kiểm tra đăng nhập trước khi mở modal
+            if (auth.currentUser) {
+                openModal(document.getElementById('createRoomModal'));
+            } else {
+                showNotification('Vui lòng đăng nhập để tạo phòng!', 'info');
+                openModal(document.getElementById('loginModal'));
+            }
+        });
+    }
+    
     // Add upload video button
     const videoUrlField = document.getElementById('videoUrl');
     if (videoUrlField) {
@@ -233,6 +258,15 @@ function initCreateRoomForm() {
         createRoomForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            // Kiểm tra đăng nhập trước khi xử lý form
+            const user = auth.currentUser;
+            if (!user) {
+                showNotification('Vui lòng đăng nhập để tạo phòng!', 'error');
+                // Mở modal đăng nhập
+                openModal(document.getElementById('loginModal'));
+                return;
+            }
+            
             // Get form values
             const name = document.getElementById('roomName').value;
             const description = document.getElementById('roomDescription').value;
@@ -253,13 +287,6 @@ function initCreateRoomForm() {
                     const ticketPriceInput = document.getElementById('ticketPrice');
                     ticketPrice = ticketPriceInput ? parseInt(ticketPriceInput.value) || 10 : 10;
                 }
-            }
-            
-            // Get current user
-            const user = auth.currentUser;
-            if (!user) {
-                showNotification('Vui lòng đăng nhập để tạo phòng!', 'error');
-                return;
             }
             
             try {
@@ -283,6 +310,12 @@ function initCreateRoomForm() {
                 
                 // Get user data
                 const userData = await getCurrentUserData();
+                
+                // Kiểm tra lại userData
+                if (!userData) {
+                    showNotification('Không thể lấy thông tin người dùng. Vui lòng đăng nhập lại!', 'error');
+                    return;
+                }
                 
                 // Create room in database
                 await database.ref(`rooms/${roomId}`).set({

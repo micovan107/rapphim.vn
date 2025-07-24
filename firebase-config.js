@@ -55,7 +55,10 @@ function formatTimestamp(timestamp) {
 // Helper function to get current user data
 async function getCurrentUserData() {
     const user = auth.currentUser;
-    if (!user) return null;
+    if (!user) {
+        console.log('Không có người dùng đăng nhập');
+        return null;
+    }
     
     try {
         console.log('Đang lấy dữ liệu người dùng mới nhất cho:', user.uid);
@@ -66,8 +69,8 @@ async function getCurrentUserData() {
         const result = {
             uid: user.uid,
             email: user.email,
-            displayName: user.displayName || userData.displayName,
-            photoURL: user.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.displayName || user.email),
+            displayName: user.displayName || userData.displayName || user.email.split('@')[0],
+            photoURL: user.photoURL || userData.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.displayName || user.email),
             miniCoins: userData.miniCoins !== undefined ? userData.miniCoins : 100
         };
         console.log('Dữ liệu người dùng đã xử lý:', result);
