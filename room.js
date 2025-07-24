@@ -320,6 +320,9 @@ function setupRoom() {
     if (isHost && roomData.requiresTicket) {
         listenForTicketRequests();
     }
+    
+    // Lắng nghe thông báo cho người dùng hiện tại
+    listenForUserNotifications();
 }
 
 // Join Room
@@ -345,6 +348,9 @@ async function joinRoom() {
             content: `${userData.displayName} đã tham gia phòng.`,
             timestamp: firebase.database.ServerValue.TIMESTAMP
         });
+        
+        // Cập nhật hiển thị MiniCoin
+        updateMiniCoinsDisplay();
     } catch (error) {
         console.error('Join room error:', error);
         showNotification(`Lỗi tham gia phòng: ${error.message}`, 'error');
@@ -414,6 +420,7 @@ function listenForRoomUpdates() {
                         <source src="${roomData.videoUrl}" type="video/mp4">
                         Your browser does not support the video tag.
                     </video>
+                    <div class="video-badge">Video Tải Lên</div>
                 `;
                 
                 player = document.getElementById('cloudinaryPlayer');
@@ -457,20 +464,44 @@ function listenForRoomUpdates() {
                 });
             }
         } else if (roomData.videoId) {
-            // Handle YouTube video
-            if (player && (!playerType || playerType !== 'youtube')) {
-                // Remove Cloudinary player if exists
-                if (playerType === 'cloudinary') {
+            // Kiểm tra nếu là video Cloudinary (videoId bắt đầu bằng 'cloudinary_')
+            if (roomData.videoId.startsWith('cloudinary_') && roomData.videoUrl) {
+                // Xử lý tương tự như trường hợp videoUrl
+                if (player && (!playerType || playerType !== 'cloudinary')) {
+                    // Remove YouTube player
+                    if (player) {
+                        player.destroy();
+                    }
+                    
+                    // Create Cloudinary video player
                     const playerContainer = document.getElementById('player');
-                    playerContainer.innerHTML = '';
-                    loadYouTubeAPI(); // Reload YouTube player
-                    return; // Exit function as loadYouTubeAPI will handle the rest
+                    playerContainer.innerHTML = `
+                        <video id="cloudinaryPlayer" controls style="width:100%;height:100%;">
+                            <source src="${roomData.videoUrl}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <div class="video-badge">Video Tải Lên</div>
+                    `;
+                    
+                    player = document.getElementById('cloudinaryPlayer');
+                    playerType = 'cloudinary';
                 }
-            }
-            
-            if (player && player.getVideoData && player.getVideoData().video_id !== roomData.videoId) {
-                player.loadVideoById(roomData.videoId);
-                playerType = 'youtube';
+            } else {
+                // Handle YouTube video
+                if (player && (!playerType || playerType !== 'youtube')) {
+                    // Remove Cloudinary player if exists
+                    if (playerType === 'cloudinary') {
+                        const playerContainer = document.getElementById('player');
+                        playerContainer.innerHTML = '';
+                        loadYouTubeAPI(); // Reload YouTube player
+                        return; // Exit function as loadYouTubeAPI will handle the rest
+                    }
+                }
+                
+                if (player && player.getVideoData && player.getVideoData().video_id !== roomData.videoId) {
+                    player.loadVideoById(roomData.videoId);
+                    playerType = 'youtube';
+                }
             }
         }
         
@@ -513,6 +544,52 @@ function listenForParticipants() {
         const participants = snapshot.val() || {};
         updateParticipantsList(participants);
     });
+}
+
+// Listen for User Notifications
+function listenForUserNotifications() {
+    if (!currentUser) return;
+    
+    const notificationsRef = database.ref(`users/${currentUser.uid}/notifications`);
+    
+    // Lắng nghe thông báo mới
+    notificationsRef.on('child_added', (snapshot) => {
+        const notification = snapshot.val();
+        const notificationId = snapshot.key;
+        
+        // Chỉ xử lý thông báo chưa đọc
+        if (!notification.read) {
+            // Xử lý thông báo tặng MiniCoin
+            if (notification.type === 'gift') {
+                // Hiển thị thông báo
+                showNotification(`${notification.senderName} đã tặng bạn ${notification.amount} MiniCoin!`, 'success');
+                
+                // Cập nhật MiniCoin hiển thị trên giao diện
+                updateMiniCoinsDisplay();
+                
+                // Đánh dấu là đã đọc
+                database.ref(`users/${currentUser.uid}/notifications/${notificationId}`).update({
+                    read: true
+                });
+            }
+        }
+    });
+}
+
+// Cập nhật hiển thị MiniCoin
+async function updateMiniCoinsDisplay() {
+    try {
+        // Lấy dữ liệu người dùng mới nhất
+        const userData = await getCurrentUserData();
+        
+        // Cập nhật hiển thị MiniCoin
+        const miniCoinsElement = document.getElementById('miniCoins');
+        if (miniCoinsElement && userData) {
+            miniCoinsElement.textContent = userData.miniCoins || 0;
+        }
+    } catch (error) {
+        console.error('Lỗi khi cập nhật hiển thị MiniCoin:', error);
+    }
 }
 
 // Listen for Ticket Requests
@@ -694,6 +771,8 @@ function updateParticipantsList(participants) {
     Object.values(participants).forEach(participant => {
         const participantElement = document.createElement('div');
         participantElement.className = 'participant';
+        // Thêm thuộc tính data-uid để dễ dàng xác định người dùng
+        participantElement.setAttribute('data-uid', participant.uid);
         
         // Không hiển thị nút tặng minicoin cho chính mình
         const isSelf = participant.uid === currentUser.uid;
@@ -760,24 +839,25 @@ async function checkDailyTask() {
             });
         }
         
-        const db = firebase.firestore();
-        const userDoc = await db.collection('users').doc(currentUser.uid).get();
+        // Sử dụng Realtime Database thay vì Firestore
+        const userRef = firebase.database().ref(`users/${currentUser.uid}`);
+        const userSnapshot = await userRef.once('value');
+        const userData = userSnapshot.val() || {};
         
-        if (!userDoc.exists) {
+        if (!userData) {
             console.log('Không tìm thấy thông tin người dùng!');
             return;
         }
         
-        const userData = userDoc.data();
-        const lastDailyTask = userData.lastDailyTask ? new Date(userData.lastDailyTask.toDate()) : null;
+        const lastDailyTask = userData.lastDailyTask ? new Date(userData.lastDailyTask) : null;
         const today = new Date();
         
         // Kiểm tra xem người dùng đã nhận thưởng hôm nay chưa
         if (!lastDailyTask || !isSameDay(lastDailyTask, today)) {
             // Cập nhật MiniCoin và thời gian nhận thưởng
-            await db.collection('users').doc(currentUser.uid).update({
-                miniCoins: firebase.firestore.FieldValue.increment(50),
-                lastDailyTask: firebase.firestore.Timestamp.fromDate(today)
+            await userRef.update({
+                miniCoins: (userData.miniCoins || 0) + 50,
+                lastDailyTask: today.getTime()
             });
             
             showNotification('Chúc mừng! Bạn đã nhận 50 MiniCoin từ nhiệm vụ hàng ngày!', 'success');
@@ -862,6 +942,60 @@ async function giftMiniCoin(recipientUid, recipientName) {
             type: 'system',
             content: `${currentUser.displayName} đã tặng ${amount} MiniCoin cho ${recipientName}!`,
             timestamp: firebase.database.ServerValue.TIMESTAMP
+        });
+        
+        // Gửi thông báo riêng cho người nhận
+        const notificationRef = database.ref(`users/${recipientUid}/notifications`).push();
+        await notificationRef.set({
+            type: 'gift',
+            senderName: currentUser.displayName,
+            senderUid: currentUser.uid,
+            amount: amount,
+            timestamp: firebase.database.ServerValue.TIMESTAMP,
+            read: false
+        });
+        
+        // Thêm lắng nghe sự kiện cập nhật MiniCoin cho người nhận
+        database.ref(`users/${recipientUid}`).child('miniCoins').on('value', (snapshot) => {
+            // Cập nhật giao diện người nhận nếu họ đang online trong cùng phòng
+            const recipientElement = document.querySelector(`.participant[data-uid="${recipientUid}"]`);
+            if (recipientElement) {
+                // Hiển thị thông báo nhỏ bên cạnh tên người nhận
+                const notificationBadge = document.createElement('span');
+                notificationBadge.className = 'notification-badge';
+                notificationBadge.textContent = '+' + amount;
+                notificationBadge.style.color = '#2ecc71';
+                notificationBadge.style.fontWeight = 'bold';
+                notificationBadge.style.marginLeft = '5px';
+                notificationBadge.style.animation = 'fadeInOut 2s forwards';
+                
+                // Thêm style animation nếu chưa có
+                if (!document.getElementById('notification-badge-style')) {
+                    const style = document.createElement('style');
+                    style.id = 'notification-badge-style';
+                    style.textContent = `
+                        @keyframes fadeInOut {
+                            0% { opacity: 0; transform: translateY(10px); }
+                            10% { opacity: 1; transform: translateY(0); }
+                            90% { opacity: 1; transform: translateY(0); }
+                            100% { opacity: 0; transform: translateY(-10px); }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+                
+                // Thêm badge vào tên người nhận
+                const nameElement = recipientElement.querySelector('.name');
+                if (nameElement) {
+                    nameElement.appendChild(notificationBadge);
+                    // Xóa badge sau 2 giây
+                    setTimeout(() => {
+                        if (notificationBadge.parentNode === nameElement) {
+                            nameElement.removeChild(notificationBadge);
+                        }
+                    }, 2000);
+                }
+            }
         });
         
         // Cập nhật số dư MiniCoin hiển thị trên giao diện
@@ -1003,11 +1137,19 @@ async function updateVideoInDatabase(videoId = null, videoUrl = null, videoPubli
         
         // Add appropriate video data
         if (videoId) {
+            // Nếu là video YouTube thông thường
             updateData.videoId = videoId;
+            updateData.isCloudinaryVideo = false;
         }
         
         if (videoUrl) {
             updateData.videoUrl = videoUrl;
+            
+            // Nếu là video Cloudinary, tạo videoId đặc biệt
+            if (videoPublicId) {
+                updateData.videoId = 'cloudinary_' + videoPublicId;
+                updateData.isCloudinaryVideo = true;
+            }
         }
         
         if (videoPublicId) {
@@ -1105,6 +1247,30 @@ function loadYouTubeAPI() {
     
     // Set up YouTube player when API is ready
     window.onYouTubeIframeAPIReady = () => {
+        // Kiểm tra nếu videoId là Cloudinary ID (bắt đầu bằng 'cloudinary_')
+        // Trong trường hợp này, không khởi tạo trình phát YouTube mà chuyển sang xử lý video Cloudinary
+        if (roomData.videoId && roomData.videoId.startsWith('cloudinary_') && roomData.videoUrl) {
+            // Tạo trình phát Cloudinary thay vì YouTube
+            const playerContainer = document.getElementById('player');
+            playerContainer.innerHTML = `
+                <video id="cloudinaryPlayer" controls style="width:100%;height:100%;">
+                    <source src="${roomData.videoUrl}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <div class="video-badge">Video Tải Lên</div>
+            `;
+            
+            player = document.getElementById('cloudinaryPlayer');
+            playerType = 'cloudinary';
+            
+            // Gọi hàm onPlayerReady để thiết lập các sự kiện cần thiết
+            setTimeout(() => {
+                if (player) onPlayerReady({ target: player });
+            }, 500);
+            return;
+        }
+        
+        // Khởi tạo trình phát YouTube cho video YouTube thông thường
         player = new YT.Player('player', {
             height: '100%',
             width: '100%',
@@ -1126,10 +1292,50 @@ function loadYouTubeAPI() {
     };
 }
 
-// YouTube Player Ready Event
+// Player Ready Event (for both YouTube and Cloudinary)
 function onPlayerReady(event) {
-    // Hide YouTube watermark and logo
-    hideYouTubeWatermark();
+    // Kiểm tra loại trình phát
+    if (playerType !== 'cloudinary') {
+        // Chỉ ẩn watermark cho YouTube
+        hideYouTubeWatermark();
+    } else {
+        // Thiết lập sự kiện cho trình phát Cloudinary
+        player.addEventListener('play', function() {
+            if (isHost) {
+                database.ref(`rooms/${roomId}`).update({
+                    status: 'playing',
+                    currentTime: player.currentTime
+                });
+            }
+            updatePlayPauseButton(true);
+        });
+        
+        player.addEventListener('pause', function() {
+            if (isHost) {
+                database.ref(`rooms/${roomId}`).update({
+                    status: 'paused',
+                    currentTime: player.currentTime
+                });
+            }
+            updatePlayPauseButton(false);
+        });
+        
+        player.addEventListener('timeupdate', function() {
+            if (isHost) {
+                // Update time every 5 seconds to avoid too many database writes
+                const currentTime = Math.floor(player.currentTime);
+                if (currentTime % 5 === 0 && currentTime !== lastTimeUpdate) {
+                    lastTimeUpdate = currentTime;
+                    database.ref(`rooms/${roomId}`).update({
+                        currentTime: player.currentTime
+                    });
+                }
+            }
+            
+            // Update time display
+            updateTimeDisplay(player.currentTime, player.duration);
+        });
+    }
     
     // Make sure video overlay is positioned correctly
     positionVideoOverlay();
@@ -1524,6 +1730,16 @@ function formatTimeAgo(timestamp) {
 
 // Helper function to extract YouTube video ID from URL
 function extractVideoId(url) {
+    // Kiểm tra nếu là URL Cloudinary đặc biệt
+    if (url.includes('cloudinary_')) {
+        // Trích xuất public_id từ URL giả YouTube
+        const cloudinaryMatch = url.match(/cloudinary_([^&?]*)/); 
+        if (cloudinaryMatch && cloudinaryMatch[1]) {
+            return 'cloudinary_' + cloudinaryMatch[1];
+        }
+    }
+    
+    // Xử lý URL YouTube thông thường
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
     const match = url.match(regExp);
     return (match && match[2].length === 11) ? match[2] : null;

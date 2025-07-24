@@ -22,9 +22,10 @@ const storage = firebase.storage();
 
 // Cloudinary configuration
 const cloudinaryConfig = {
-    cloudName: 'cinesync', // Thay thế bằng cloud name của bạn
-    uploadPreset: 'cinesync_videos', // Thay thế bằng upload preset của bạn
-    folder: 'cinesync_videos'
+    cloudName: 'dw8rpacnn', // Thay thế bằng cloud name của bạn
+    uploadPreset: 'nguyentiennam', // Thay thế bằng upload preset của bạn
+    folder: '',
+    apiKey: '338841869745923' // Thêm API key của bạn
 };
 
 // Export Firebase services and Cloudinary config for use in other files

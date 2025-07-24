@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Background -->
+  <rect width="32" height="32" rx="16" fill="#ff5e62"/>
+  
+  <!-- Cinema Screen -->
+  <rect x="8" y="8" width="16" height="10" rx="2" ry="2" fill="white"/>
+  
+  <!-- Screen Content -->
+  <rect x="9" y="9" width="14" height="8" rx="1" ry="1" fill="#2c3e50"/>
+  
+  <!-- Play Button -->
+  <circle cx="16" cy="13" r="2.5" fill="#ff9966"/>
+  <polygon points="15,11.5 15,14.5 17.5,13" fill="white"/>
+  
+  <!-- Cinema Seats -->
+  <rect x="10" y="20" width="3" height="4" rx="1" ry="1" fill="#ff9966"/>
+  <rect x="14.5" y="20" width="3" height="4" rx="1" ry="1" fill="#ff9966"/>
+  <rect x="19" y="20" width="3" height="4" rx="1" ry="1" fill="#ff9966"/>
+</svg>

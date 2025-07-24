@@ -210,8 +210,12 @@ function initCreateRoomForm() {
             }, (error, result) => {
                 if (!error && result && result.event === "success") {
                     console.log('Upload success:', result.info);
-                    // Set the video URL to the Cloudinary URL
-                    videoUrlField.value = result.info.secure_url;
+                    // Tạo URL YouTube giả để hệ thống chấp nhận
+                    // Thêm thông tin Cloudinary vào URL để có thể xử lý sau này
+                    const fakeYoutubeUrl = `https://www.youtube.com/watch?v=cloudinary_${result.info.public_id}`;
+                    videoUrlField.value = fakeYoutubeUrl;
+                    // Lưu URL thực của Cloudinary vào dataset
+                    videoUrlField.dataset.cloudinaryUrl = result.info.secure_url;
                     // Store the public_id for later deletion if needed
                     videoUrlField.dataset.publicId = result.info.public_id;
                     showNotification('Video đã được tải lên thành công!', 'success');
@@ -234,6 +238,7 @@ function initCreateRoomForm() {
             const description = document.getElementById('roomDescription').value;
             const videoUrl = document.getElementById('videoUrl').value;
             const videoPublicId = document.getElementById('videoUrl').dataset.publicId || null;
+            const cloudinaryUrl = document.getElementById('videoUrl').dataset.cloudinaryUrl || null;
             const isPrivate = document.getElementById('isPrivate').checked;
             const requiresTicket = document.getElementById('requiresTicket').checked;
             
@@ -285,8 +290,9 @@ function initCreateRoomForm() {
                     name: name,
                     description: description,
                     videoId: videoId,
-                    videoUrl: videoUrl,
+                    videoUrl: videoId && videoId.startsWith('cloudinary_') ? cloudinaryUrl : videoUrl,
                     videoPublicId: videoPublicId, // Cloudinary public_id for later deletion
+                    isCloudinaryVideo: videoId && videoId.startsWith('cloudinary_'),
                     isPrivate: isPrivate,
                     requiresTicket: requiresTicket,
                     ticketType: requiresTicket ? ticketType : null,
@@ -398,12 +404,19 @@ function renderRoomCard(room) {
     }
     
     // Set room card HTML
+    // Kiểm tra nếu là video Cloudinary
+    const isCloudinaryVideo = room.videoId && room.videoId.startsWith('cloudinary_');
+    const thumbnailUrl = isCloudinaryVideo 
+        ? (room.videoUrl + '.jpg') // Sử dụng thumbnail từ Cloudinary
+        : `https://img.youtube.com/vi/${room.videoId}/mqdefault.jpg`; // Thumbnail YouTube
+    
     roomCard.innerHTML = `
         <div class="room-thumbnail">
-            <img src="https://img.youtube.com/vi/${room.videoId}/mqdefault.jpg" alt="${room.name}">
+            <img src="${thumbnailUrl}" alt="${room.name}" onerror="this.src='cinema.svg'">
             <div class="room-badge ${room.isPrivate ? 'badge-private' : 'badge-public'}">
                 ${room.isPrivate ? 'Riêng Tư' : 'Công Khai'}
             </div>
+            ${isCloudinaryVideo ? `<div class="room-badge badge-cloudinary"><i class="fas fa-cloud-upload-alt"></i> Video Tải Lên</div>` : ''}
             ${room.requiresTicket ? `<div class="room-badge badge-ticket"><i class="fas fa-ticket-alt"></i> ${ticketBadgeText}</div>` : ''}
         </div>
         <div class="room-info">
@@ -697,6 +710,16 @@ function addSearchFunctionality() {
 
 // Helper function to extract YouTube video ID from URL
 function extractVideoId(url) {
+    // Kiểm tra nếu là URL Cloudinary đặc biệt
+    if (url.includes('watch?v=cloudinary_')) {
+        // Trích xuất public_id từ URL giả
+        const cloudinaryMatch = url.match(/watch\?v=cloudinary_([^#\&\?]*)/); 
+        if (cloudinaryMatch && cloudinaryMatch[1]) {
+            return 'cloudinary_' + cloudinaryMatch[1];
+        }
+    }
+    
+    // Xử lý URL YouTube thông thường
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
     const match = url.match(regExp);
     return (match && match[2].length === 11) ? match[2] : null;
