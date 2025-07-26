@@ -216,7 +216,7 @@ function updateUIForLoggedInUser(userData) {
     const darkModeToggle = document.createElement('button');
     darkModeToggle.id = 'darkModeToggle';
     darkModeToggle.className = 'btn btn-icon';
-    darkModeToggle.innerHTML = document.body.classList.contains('dark-mode') ? 
+    darkModeToggle.innerHTML = document.body.classList.contains('dark-theme') ? 
         '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
     darkModeToggle.addEventListener('click', toggleDarkMode);
     authButtons.appendChild(darkModeToggle);
@@ -253,6 +253,19 @@ function updateUIForLoggedInUser(userData) {
     }
 }
 
+// Toggle dark mode function
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-theme');
+    
+    if (document.body.classList.contains('dark-theme')) {
+        localStorage.setItem('theme', 'dark');
+        document.getElementById('darkModeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+    } else {
+        localStorage.setItem('theme', 'light');
+        document.getElementById('darkModeToggle').innerHTML = '<i class="fas fa-moon"></i>';
+    }
+}
+
 // Update UI for logged out user
 function updateUIForLoggedOutUser() {
     // Clear auth buttons
@@ -275,7 +288,7 @@ function updateUIForLoggedOutUser() {
     const darkModeToggle = document.createElement('button');
     darkModeToggle.id = 'darkModeToggle';
     darkModeToggle.className = 'btn btn-icon';
-    darkModeToggle.innerHTML = document.body.classList.contains('dark-mode') ? 
+    darkModeToggle.innerHTML = document.body.classList.contains('dark-theme') ? 
         '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
     darkModeToggle.addEventListener('click', toggleDarkMode);
     
