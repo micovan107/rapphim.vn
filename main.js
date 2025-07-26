@@ -181,6 +181,9 @@ function checkMobileDevice() {
         // Tối ưu các phần tử cho thiết bị di động
         optimizeForMobile();
     }
+    
+    // Cập nhật menu điều hướng để thêm liên kết đến trang diễn đàn
+    updateNavigation();
 }
 
 // Tạo nút toggle menu cho thiết bị di động
@@ -231,6 +234,63 @@ function optimizeForMobile() {
     // Đảm bảo các phần tử có thể cuộn mượt mà
     document.querySelectorAll('.rooms-grid, .features-grid').forEach(element => {
         element.style.webkitOverflowScrolling = 'touch';
+    });
+    
+    // Tối ưu header cho thiết bị di động
+    optimizeHeaderForMobile();
+}
+
+// Tối ưu header cho thiết bị di động
+function optimizeHeaderForMobile() {
+    // Lấy kích thước màn hình
+    const screenWidth = window.innerWidth;
+    const header = document.querySelector('header');
+    
+    // Hàm cập nhật class dựa trên kích thước màn hình
+    function updateHeaderClass() {
+        // Xóa tất cả các class kích thước
+        header.classList.remove('header-xs', 'header-sm', 'header-md');
+        
+        // Thêm class tương ứng với kích thước màn hình
+        if (screenWidth <= 375) {
+            header.classList.add('header-xs');
+        } else if (screenWidth <= 480) {
+            header.classList.add('header-sm');
+        } else if (screenWidth <= 768) {
+            header.classList.add('header-md');
+        }
+        
+        // Thêm class cho chế độ landscape nếu cần
+        if (window.matchMedia("(orientation: landscape)").matches && screenWidth <= 768) {
+            header.classList.add('header-landscape');
+        } else {
+            header.classList.remove('header-landscape');
+        }
+    }
+    
+    // Cập nhật class ban đầu
+    updateHeaderClass();
+    
+    // Lắng nghe sự kiện thay đổi kích thước màn hình
+    window.addEventListener('resize', updateHeaderClass);
+    
+    // Lắng nghe sự kiện thay đổi hướng màn hình
+    window.addEventListener('orientationchange', updateHeaderClass);
+    
+    // Xử lý khi scroll để thu nhỏ header
+    let lastScrollTop = 0;
+    window.addEventListener('scroll', () => {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        
+        if (scrollTop > lastScrollTop && scrollTop > 30) {
+            // Scroll xuống và đã scroll quá 30px
+            header.classList.add('header-compact');
+        } else if (scrollTop < lastScrollTop || scrollTop <= 30) {
+            // Scroll lên hoặc ở gần đầu trang
+            header.classList.remove('header-compact');
+        }
+        
+        lastScrollTop = scrollTop;
     });
 }
 
@@ -710,3 +770,70 @@ function addScrollToTopButton() {
 
 // Add scroll to top button on page load
 document.addEventListener('DOMContentLoaded', addScrollToTopButton);
+
+// Cập nhật menu điều hướng để thêm liên kết đến trang diễn đàn
+function updateNavigation() {
+    const navMenu = document.querySelector('nav ul');
+    if (!navMenu) return;
+    
+    // Kiểm tra xem liên kết đến trang diễn đàn đã tồn tại chưa
+    const forumLink = Array.from(navMenu.querySelectorAll('a')).find(link => 
+        link.getAttribute('href') === 'forum.html' || 
+        link.textContent.trim() === 'Diễn đàn'
+    );
+    
+    // Nếu chưa có liên kết đến trang diễn đàn, thêm vào
+    if (!forumLink) {
+        const forumLi = document.createElement('li');
+        forumLi.innerHTML = '<a href="forum.html">Diễn đàn</a>';
+        
+        // Thêm vào sau liên kết "Phòng"
+        const roomsLink = Array.from(navMenu.querySelectorAll('a')).find(link => 
+            link.getAttribute('href') === 'index.html#rooms' || 
+            link.textContent.trim() === 'Phòng'
+        );
+        
+        if (roomsLink && roomsLink.parentElement) {
+            navMenu.insertBefore(forumLi, roomsLink.parentElement.nextSibling);
+        } else {
+            // Nếu không tìm thấy liên kết "Phòng", thêm vào cuối
+            navMenu.appendChild(forumLi);
+        }
+    }
+}
+
+// Show notification
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+            <span>${message}</span>
+        </div>
+        <button class="close-btn"><i class="fas fa-times"></i></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Add close button event listener
+    const closeBtn = notification.querySelector('.close-btn');
+    closeBtn.addEventListener('click', () => {
+        notification.classList.add('hide');
+        setTimeout(() => {
+            notification.remove();
+        }, 300);
+    });
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        if (document.body.contains(notification)) {
+            notification.classList.add('hide');
+            setTimeout(() => {
+                if (document.body.contains(notification)) {
+                    notification.remove();
+                }
+            }, 300);
+        }
+    }, 5000);
+}

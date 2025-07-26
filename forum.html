@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#ff5e62">
+    <title>Diễn Đàn - CineSync</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="shortcut icon" href="favicon.svg">
+    <link rel="apple-touch-icon" href="favicon.svg">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <h1><i class="fas fa-film"></i> CineSync</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Trang Chủ</a></li>
+                    <li><a href="index.html#rooms">Phòng Chiếu</a></li>
+                    <li><a href="forum.html" class="active">Diễn Đàn</a></li>
+                    <li><a href="index.html#about">Giới Thiệu</a></li>
+                    <li id="adminNavLink" style="display: none;"><a href="admin.html">Quản Trị</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons">
+                <!-- Auth buttons will be added by auth.js -->
+            </div>
+        </header>
+        
+        <main>
+            <section class="forum-header">
+                <h2>Diễn Đàn CineSync</h2>
+                <p>Chia sẻ, thảo luận và kết nối với cộng đồng yêu phim</p>
+                <button id="createPostBtn" class="btn btn-primary"><i class="fas fa-plus"></i> Tạo Bài Viết Mới</button>
+            </section>
+
+            <section class="forum-categories">
+                <div class="category-tabs">
+                    <button class="category-tab active" data-category="all">Tất Cả</button>
+                    <button class="category-tab" data-category="review">Đánh Giá Phim</button>
+                    <button class="category-tab" data-category="discussion">Thảo Luận</button>
+                    <button class="category-tab" data-category="recommendation">Gợi Ý Phim</button>
+                    <button class="category-tab" data-category="news">Tin Tức</button>
+                </div>
+            </section>
+
+            <section class="forum-search">
+                <div class="search-container">
+                    <input type="text" id="forumSearchInput" placeholder="Tìm kiếm bài viết...">
+                    <button id="forumSearchBtn"><i class="fas fa-search"></i></button>
+                </div>
+                <div class="sort-options">
+                    <label for="sortPosts">Sắp xếp theo:</label>
+                    <select id="sortPosts">
+                        <option value="newest">Mới nhất</option>
+                        <option value="oldest">Cũ nhất</option>
+                        <option value="popular">Phổ biến nhất</option>
+                    </select>
+                </div>
+            </section>
+
+            <section class="forum-content">
+                <div class="forum-layout">
+                    <!-- Cột bên trái - Quảng cáo Lazi.vn -->
+                    <div class="forum-sidebar forum-sidebar-left">
+                        <div class="sidebar-section">
+                            <h3 class="sidebar-title">Lazi.vn</h3>
+                            <div class="lazi-ads">
+                                <div class="lazi-ad-item">
+                                    <a href="https://lazi.vn" target="_blank">
+                                        <img src="lazi.png" alt="Lazi.vn">
+                                        <div class="lazi-ad-content">
+                                            <h4>Học tập cùng Lazi.vn</h4>
+                                            <p>Nền tảng học trực tuyến hàng đầu Việt Nam</p>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="lazi-ad-item">
+                                    <a href="https://lazi.vn/friend" target="_blank">
+                                        <img src="lazi.png" alt="Lazi.vn">
+                                        <div class="lazi-ad-content">
+                                            <h4>Cộng đồng học tập</h4>
+                                            <p>Kết nối với hàng triệu người học</p>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="lazi-ad-item">
+                                    <a href="https://lazi.vn/user/tien-nam.nguyen25" target="_blank">
+                                        <img src="avatarlazi.png" alt="Lazi.vn">
+                                        <div class="lazi-ad-content">
+                                            <h4>Tham gia cùng tôi</h4>
+                                            <p>Học tập và giao lưu nào :)</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Cột giữa - Bài viết -->
+                    <div class="forum-main">
+                        <div id="postsList" class="posts-list">
+                            <!-- Bài viết sẽ được thêm vào đây bằng JavaScript -->
+                            <div class="loading">Đang tải bài viết...</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Cột bên phải - Xếp hạng người dùng -->
+                    <div class="forum-sidebar forum-sidebar-right">
+                        <div class="sidebar-section">
+                            <h3 class="sidebar-title">Xếp Hạng Người Dùng</h3>
+                            <div class="user-ranking">
+                                <div class="user-rank-item">
+                                    <div class="rank-number">1</div>
+                                    <img src="https://ui-avatars.com/api/?name=User+1&background=random" alt="User 1">
+                                    <div class="user-rank-info">
+                                        <h4>Nguyễn Tiến Nam</h4>
+                                        <p><span class="coin-amount">5000</span> coins</p>
+                                    </div>
+                                </div>
+                                <div class="user-rank-item">
+                                    <div class="rank-number">2</div>
+                                    <img src="https://ui-avatars.com/api/?name=User+2&background=random" alt="User 2">
+                                    <div class="user-rank-info">
+                                        <h4>Trần Văn B</h4>
+                                        <p><span class="coin-amount">4500</span> coins</p>
+                                    </div>
+                                </div>
+                                <div class="user-rank-item">
+                                    <div class="rank-number">3</div>
+                                    <img src="https://ui-avatars.com/api/?name=User+3&background=random" alt="User 3">
+                                    <div class="user-rank-info">
+                                        <h4>Lê Thị C</h4>
+                                        <p><span class="coin-amount">4200</span> coins</p>
+                                    </div>
+                                </div>
+                                <div class="user-rank-item">
+                                    <div class="rank-number">4</div>
+                                    <img src="https://ui-avatars.com/api/?name=User+4&background=random" alt="User 4">
+                                    <div class="user-rank-info">
+                                        <h4>Phạm Văn D</h4>
+                                        <p><span class="coin-amount">3800</span> coins</p>
+                                    </div>
+                                </div>
+                                <div class="user-rank-item">
+                                    <div class="rank-number">5</div>
+                                    <img src="https://ui-avatars.com/api/?name=User+5&background=random" alt="User 5">
+                                    <div class="user-rank-info">
+                                        <h4>Hoàng Văn E</h4>
+                                        <p><span class="coin-amount">3500</span> coins</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer>
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h2><i class="fas fa-film"></i> CineSync</h2>
+                    <p>Xem phim cùng nhau, dù ở xa nhau.</p>
+                </div>
+                <div class="footer-links">
+                    <h3>Liên Kết</h3>
+                    <ul>
+                        <li><a href="index.html">Trang Chủ</a></li>
+                        <li><a href="index.html#rooms">Phòng Chiếu</a></li>
+                        <li><a href="forum.html">Diễn Đàn</a></li>
+                        <li><a href="index.html#about">Giới Thiệu</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h3>Liên Hệ</h3>
+                    <p><i class="fas fa-envelope"></i> micovan105@gmail.com</p>
+                    <p><i class="fas fa-user"></i> <a href="https://lazi.vn/user/tien-nam.nguyen25" target="_blank">Lazi: tien-nam.nguyen25</a></p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="https://lazi.vn/user/tien-nam.nguyen25" target="_blank" class="lazi-icon"><img src="avatarlazi.png" alt="Lazi" width="20" height="20"></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 CineSync. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Create Post Modal -->
+    <div id="createPostModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Tạo Bài Viết Mới</h2>
+            <form id="createPostForm">
+                <div class="form-group">
+                    <label for="postTitle">Tiêu Đề</label>
+                    <input type="text" id="postTitle" placeholder="Nhập tiêu đề bài viết" required>
+                </div>
+                <div class="form-group">
+                    <label for="postCategory">Danh Mục</label>
+                    <select id="postCategory" required>
+                        <option value="">-- Chọn danh mục --</option>
+                        <option value="review">Đánh Giá Phim</option>
+                        <option value="discussion">Thảo Luận</option>
+                        <option value="recommendation">Gợi Ý Phim</option>
+                        <option value="news">Tin Tức</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="postContent">Nội Dung</label>
+                    <textarea id="postContent" placeholder="Nhập nội dung bài viết" rows="6" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="postImage">Hình Ảnh (Tùy Chọn)</label>
+                    <div class="image-upload-container">
+                        <button type="button" id="uploadImageBtn" class="btn"><i class="fas fa-upload"></i> Tải Lên Hình Ảnh</button>
+                        <div id="imagePreviewContainer" class="image-preview-container" style="display: none;">
+                            <img id="imagePreview" src="" alt="Xem trước hình ảnh">
+                            <button type="button" id="removeImageBtn" class="btn btn-danger"><i class="fas fa-times"></i></button>
+                        </div>
+                        <input type="hidden" id="postImageUrl">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Đăng Bài</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Post Modal -->
+    <div id="viewPostModal" class="modal">
+        <div class="modal-content post-modal-content">
+            <span class="close">&times;</span>
+            <div id="postDetailContent">
+                <!-- Chi tiết bài viết sẽ được thêm vào đây bằng JavaScript -->
+                <div class="loading">Đang tải bài viết...</div>
+            </div>
+            <div class="post-comments">
+                <h3>Bình Luận</h3>
+                <div id="commentsList">
+                    <!-- Bình luận sẽ được thêm vào đây bằng JavaScript -->
+                </div>
+                <div class="comment-form">
+                    <form id="addCommentForm">
+                        <div class="form-group">
+                            <textarea id="commentContent" placeholder="Viết bình luận của bạn..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Gửi Bình Luận</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Post Modal -->
+    <div id="editPostModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Chỉnh Sửa Bài Viết</h2>
+            <form id="editPostForm">
+                <div class="form-group">
+                    <label for="editPostTitle">Tiêu Đề</label>
+                    <input type="text" id="editPostTitle" placeholder="Nhập tiêu đề bài viết" required>
+                </div>
+                <div class="form-group">
+                    <label for="editPostCategory">Danh Mục</label>
+                    <select id="editPostCategory" required>
+                        <option value="">-- Chọn danh mục --</option>
+                        <option value="review">Đánh Giá Phim</option>
+                        <option value="discussion">Thảo Luận</option>
+                        <option value="recommendation">Gợi Ý Phim</option>
+                        <option value="news">Tin Tức</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editPostContent">Nội Dung</label>
+                    <textarea id="editPostContent" placeholder="Nhập nội dung bài viết" rows="6" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="editPostImage">Hình Ảnh (Tùy Chọn)</label>
+                    <div class="image-upload-container">
+                        <button type="button" id="editUploadImageBtn" class="btn"><i class="fas fa-upload"></i> Tải Lên Hình Ảnh</button>
+                        <div id="editImagePreviewContainer" class="image-preview-container" style="display: none;">
+                            <img id="editImagePreview" src="" alt="Xem trước hình ảnh">
+                            <button type="button" id="editRemoveImageBtn" class="btn btn-danger"><i class="fas fa-times"></i></button>
+                        </div>
+                        <input type="hidden" id="editPostImageUrl">
+                    </div>
+                </div>
+                <input type="hidden" id="editPostId">
+                <button type="submit" class="btn btn-primary">Cập Nhật Bài Viết</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Report Modal -->
+    <div id="reportModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Báo Cáo Vi Phạm</h2>
+            <form id="reportForm">
+                <div class="form-group">
+                    <label for="reportReason">Lý Do Báo Cáo</label>
+                    <select id="reportReason" required>
+                        <option value="">-- Chọn lý do --</option>
+                        <option value="inappropriate">Nội dung không phù hợp</option>
+                        <option value="spam">Spam</option>
+                        <option value="harassment">Quấy rối</option>
+                        <option value="false_info">Thông tin sai lệch</option>
+                        <option value="other">Khác</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="reportDescription">Mô Tả Chi Tiết</label>
+                    <textarea id="reportDescription" placeholder="Mô tả chi tiết về vấn đề" rows="4" required></textarea>
+                </div>
+                <input type="hidden" id="reportContentId">
+                <input type="hidden" id="reportContentType">
+                <button type="submit" class="btn btn-primary">Gửi Báo Cáo</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Cloudinary SDK -->
+    <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
+    
+    <!-- App Scripts -->
+    <script src="firebase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="forum.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>

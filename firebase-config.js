@@ -19,6 +19,25 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const database = firebase.database();
 const storage = firebase.storage();
+const firestore = firebase.firestore();
+
+// Bật xác thực ẩn danh
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+  .then(() => {
+    console.log('Đã thiết lập persistence thành công');
+  })
+  .catch((error) => {
+    console.error('Lỗi khi thiết lập persistence:', error);
+  });
+
+// Bật xác thực ẩn danh nếu cần
+auth.onAuthStateChanged((user) => {
+  if (!user) {
+    console.log('Không có người dùng đăng nhập, chuẩn bị đăng nhập ẩn danh nếu cần');
+  } else {
+    console.log('Người dùng đã đăng nhập:', user.uid);
+  }
+});
 
 // Cloudinary configuration
 const cloudinaryConfig = {
@@ -32,6 +51,7 @@ const cloudinaryConfig = {
 window.auth = auth;
 window.database = database;
 window.storage = storage;
+window.firestore = firestore;
 window.cloudinaryConfig = cloudinaryConfig;
 
 // Helper function to generate a unique ID

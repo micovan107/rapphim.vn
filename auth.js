@@ -212,6 +212,15 @@ function updateUIForLoggedInUser(userData) {
     // Add user profile to auth buttons
     authButtons.appendChild(userProfile);
     
+    // Add dark mode toggle button
+    const darkModeToggle = document.createElement('button');
+    darkModeToggle.id = 'darkModeToggle';
+    darkModeToggle.className = 'btn btn-icon';
+    darkModeToggle.innerHTML = document.body.classList.contains('dark-mode') ? 
+        '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+    darkModeToggle.addEventListener('click', toggleDarkMode);
+    authButtons.appendChild(darkModeToggle);
+    
     // Add event listener for logout
     document.getElementById('logoutBtn').addEventListener('click', logout);
     
@@ -262,8 +271,17 @@ function updateUIForLoggedOutUser() {
     signupButton.textContent = 'Đăng Ký';
     signupButton.addEventListener('click', () => openModal(signupModal));
     
+    // Add dark mode toggle button
+    const darkModeToggle = document.createElement('button');
+    darkModeToggle.id = 'darkModeToggle';
+    darkModeToggle.className = 'btn btn-icon';
+    darkModeToggle.innerHTML = document.body.classList.contains('dark-mode') ? 
+        '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+    darkModeToggle.addEventListener('click', toggleDarkMode);
+    
     authButtons.appendChild(loginButton);
     authButtons.appendChild(signupButton);
+    authButtons.appendChild(darkModeToggle);
     
     // Không thêm sự kiện cho nút tạo phòng ở đây vì đã được xử lý trong rooms.js
 }
@@ -420,6 +438,7 @@ if (!document.getElementById('user-profile-styles')) {
             gap: 10px;
             position: relative;
             cursor: pointer;
+            transition: transform 0.3s ease, scale 0.3s ease;
         }
         
         .user-profile img {
@@ -427,6 +446,7 @@ if (!document.getElementById('user-profile-styles')) {
             height: 35px;
             border-radius: 50%;
             object-fit: cover;
+            transition: width 0.3s ease, height 0.3s ease;
         }
         
         .user-profile span {
