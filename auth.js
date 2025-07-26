@@ -46,7 +46,7 @@ if (loginForm) {
         submitBtn.disabled = true;
         
         // Sign in with Firebase
-        await auth.signInWithEmailAndPassword(email, password);
+        await firebase.auth().signInWithEmailAndPassword(email, password);
         
         // Close modal and reset form
         loginModal.style.display = 'none';
@@ -127,7 +127,7 @@ if (signupForm) {
         submitBtn.disabled = true;
         
         // Create user with Firebase
-        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
         const user = userCredential.user;
         
         // Update profile
@@ -162,7 +162,7 @@ if (signupForm) {
 }
 
 // Auth state change listener
-auth.onAuthStateChanged(async (user) => {
+firebase.auth().onAuthStateChanged(async (user) => {
     if (user) {
         // User is signed in
         const userData = await getCurrentUserData();
@@ -179,8 +179,10 @@ auth.onAuthStateChanged(async (user) => {
 
 // Update UI for logged in user
 function updateUIForLoggedInUser(userData) {
-    // Clear auth buttons
-    authButtons.innerHTML = '';
+    // Clear auth buttons if element exists
+    if (authButtons) {
+        authButtons.innerHTML = '';
+    }
     
     // Show admin link in navigation if user is admin
     const adminNavLink = document.getElementById('adminNavLink');
@@ -209,17 +211,10 @@ function updateUIForLoggedInUser(userData) {
         </div>
     `;
     
-    // Add user profile to auth buttons
-    authButtons.appendChild(userProfile);
-    
-    // Add dark mode toggle button
-    const darkModeToggle = document.createElement('button');
-    darkModeToggle.id = 'darkModeToggle';
-    darkModeToggle.className = 'btn btn-icon';
-    darkModeToggle.innerHTML = document.body.classList.contains('dark-theme') ? 
-        '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-    darkModeToggle.addEventListener('click', toggleDarkMode);
-    authButtons.appendChild(darkModeToggle);
+    // Add user profile to auth buttons if element exists
+    if (authButtons) {
+        authButtons.appendChild(userProfile);
+    }
     
     // Add event listener for logout
     document.getElementById('logoutBtn').addEventListener('click', logout);
@@ -257,17 +252,31 @@ function updateUIForLoggedInUser(userData) {
 function toggleDarkMode() {
     document.body.classList.toggle('dark-theme');
     
+    // Cập nhật localStorage
     if (document.body.classList.contains('dark-theme')) {
         localStorage.setItem('theme', 'dark');
-        document.getElementById('darkModeToggle').innerHTML = '<i class="fas fa-sun"></i>';
     } else {
         localStorage.setItem('theme', 'light');
-        document.getElementById('darkModeToggle').innerHTML = '<i class="fas fa-moon"></i>';
+    }
+    
+    // Cập nhật icon của nút theme-toggle trong main.js
+    const themeToggle = document.querySelector('.theme-toggle');
+    if (themeToggle) {
+        if (document.body.classList.contains('dark-theme')) {
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            themeToggle.setAttribute('data-tooltip', 'Chế độ sáng');
+        } else {
+            themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            themeToggle.setAttribute('data-tooltip', 'Chế độ tối');
+        }
     }
 }
 
 // Update UI for logged out user
 function updateUIForLoggedOutUser() {
+    // Check if auth buttons element exists
+    if (!authButtons) return;
+    
     // Clear auth buttons
     authButtons.innerHTML = '';
     
@@ -284,17 +293,8 @@ function updateUIForLoggedOutUser() {
     signupButton.textContent = 'Đăng Ký';
     signupButton.addEventListener('click', () => openModal(signupModal));
     
-    // Add dark mode toggle button
-    const darkModeToggle = document.createElement('button');
-    darkModeToggle.id = 'darkModeToggle';
-    darkModeToggle.className = 'btn btn-icon';
-    darkModeToggle.innerHTML = document.body.classList.contains('dark-theme') ? 
-        '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-    darkModeToggle.addEventListener('click', toggleDarkMode);
-    
     authButtons.appendChild(loginButton);
     authButtons.appendChild(signupButton);
-    authButtons.appendChild(darkModeToggle);
     
     // Không thêm sự kiện cho nút tạo phòng ở đây vì đã được xử lý trong rooms.js
 }
@@ -302,7 +302,7 @@ function updateUIForLoggedOutUser() {
 // Logout function
 async function logout() {
     try {
-        await auth.signOut();
+        await firebase.auth().signOut();
         showNotification('Đăng xuất thành công!', 'success');
     } catch (error) {
         console.error('Logout error:', error);

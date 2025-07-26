@@ -471,18 +471,14 @@ document.addEventListener('DOMContentLoaded', addLoadingAnimation);
 
 // Add responsive menu for mobile
 function addResponsiveMenu() {
-    // Create menu toggle button
-    const menuToggle = document.createElement('button');
-    menuToggle.className = 'menu-toggle';
-    menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+    // Get existing menu toggle button
+    const menuToggle = document.querySelector('.menu-toggle');
     
     // Add menu toggle to header
     const header = document.querySelector('header');
     const nav = document.querySelector('nav');
     
-    if (header && nav) {
-        header.insertBefore(menuToggle, nav);
-        
+    if (header && nav && menuToggle) {
         // Add event listener to toggle menu
         menuToggle.addEventListener('click', () => {
             nav.classList.toggle('active');
@@ -567,16 +563,28 @@ function addThemeToggle() {
         
         // Add event listener to toggle theme
         themeToggle.addEventListener('click', () => {
-            document.body.classList.toggle('dark-theme');
-            
-            if (document.body.classList.contains('dark-theme')) {
-                localStorage.setItem('theme', 'dark');
-                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-                themeToggle.setAttribute('data-tooltip', 'Chế độ sáng');
+            // Sử dụng hàm toggleDarkMode từ auth.js nếu có, nếu không thì sử dụng logic tại chỗ
+            if (typeof toggleDarkMode === 'function') {
+                toggleDarkMode();
+                // Cập nhật tooltip sau khi chuyển đổi
+                if (document.body.classList.contains('dark-theme')) {
+                    themeToggle.setAttribute('data-tooltip', 'Chế độ sáng');
+                } else {
+                    themeToggle.setAttribute('data-tooltip', 'Chế độ tối');
+                }
             } else {
-                localStorage.setItem('theme', 'light');
-                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-                themeToggle.setAttribute('data-tooltip', 'Chế độ tối');
+                // Logic cũ nếu không có hàm toggleDarkMode
+                document.body.classList.toggle('dark-theme');
+                
+                if (document.body.classList.contains('dark-theme')) {
+                    localStorage.setItem('theme', 'dark');
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                    themeToggle.setAttribute('data-tooltip', 'Chế độ sáng');
+                } else {
+                    localStorage.setItem('theme', 'light');
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                    themeToggle.setAttribute('data-tooltip', 'Chế độ tối');
+                }
             }
         });
         
@@ -616,12 +624,18 @@ function addThemeToggle() {
             .dark-theme .about-section,
             .dark-theme .modal-content,
             .dark-theme .room-sidebar,
-            .dark-theme .video-info {
+            .dark-theme .video-info,
+            .dark-theme .post-card,
+            .dark-theme .post-detail,
+            .dark-theme .sidebar-section {
                 background: #16213e;
                 color: #f4f4f4;
             }
             
-            .dark-theme .video-info h2 {
+            .dark-theme .video-info h2,
+            .dark-theme .post-title,
+            .dark-theme .post-detail-title,
+            .dark-theme .sidebar-title {
                 color: #f4f4f4;
             }
             
@@ -633,14 +647,17 @@ function addThemeToggle() {
             .dark-theme .room-info p,
             .dark-theme .feature-card p,
             .dark-theme .room-meta,
-            .dark-theme .video-info p {
+            .dark-theme .video-info p,
+            .dark-theme .post-excerpt,
+            .dark-theme .post-content p {
                 color: #aaa;
             }
             
             .dark-theme .form-group input,
             .dark-theme .form-group textarea,
             .dark-theme .chat-input input,
-            .dark-theme .search-container input {
+            .dark-theme .search-container input,
+            .dark-theme .comment-form textarea {
                 background: #1a1a2e;
                 color: #f4f4f4;
                 border-color: #2c3e50;
@@ -668,6 +685,33 @@ function addThemeToggle() {
             }
             
             .dark-theme .dropdown-content a:hover {
+                background-color: #2c3e50;
+            }
+            
+            .dark-theme .post-meta {
+                border-top-color: #2c3e50;
+            }
+            
+            .dark-theme .post-author,
+            .dark-theme .post-detail-author,
+            .dark-theme .post-detail-meta {
+                color: #f4f4f4;
+            }
+            
+            .dark-theme .post-stats,
+            .dark-theme .post-stat,
+            .dark-theme .post-detail-stats,
+            .dark-theme .post-detail-stat {
+                color: #aaa;
+            }
+            
+            .dark-theme .category-tab {
+                background-color: #1a1a2e;
+                border-color: #2c3e50;
+                color: #f4f4f4;
+            }
+            
+            .dark-theme .category-tab:hover {
                 background-color: #1a1a2e;
             }
         `;

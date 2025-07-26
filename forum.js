@@ -1394,7 +1394,7 @@ window.addEventListener('load', checkUrlForPostId);
 // Chuyển đổi chế độ sáng/tối
 function toggleDarkMode() {
     const body = document.body;
-    const isDarkMode = body.classList.toggle('dark-mode');
+    const isDarkMode = body.classList.toggle('dark-theme');
     
     // Cập nhật icon của nút
     const darkModeToggle = document.getElementById('darkModeToggle');
