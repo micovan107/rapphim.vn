@@ -3789,5 +3789,26 @@ footer {
 .dark-mode #darkModeToggle {
     color: #f0f0f0;
 }
+/* Fix chat trong phòng chiếu (room.html) */
+.chat-container .message {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.chat-container .message-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    justify-content: flex-start;
+}
+
+.chat-container .message-content {
+    display: block;
+    margin-top: 4px;
+    line-height: 1.4;
+}
+
+
 
 

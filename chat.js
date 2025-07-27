@@ -343,7 +343,8 @@ function loadCommunityMessages() {
     // Listen for messages
     const messagesRef = firebase.database().ref('community_chat/messages');
     
-    messagesRef.on('value', snapshot => {
+    messagesRef.orderByChild('timestamp').on('value', snapshot => {
+
         const messages = snapshot.val();
         
         // Clear messages container
@@ -402,7 +403,8 @@ function loadMessages(userId) {
     // Listen for messages
     const messagesRef = firebase.database().ref('chats/' + chatId + '/messages');
     
-    messagesRef.on('value', snapshot => {
+    messagesRef.orderByChild('timestamp').on('value', snapshot => {
+
         const messages = snapshot.val();
         
         // Clear messages container
@@ -503,7 +505,8 @@ function sendMessage() {
     
     if (messageText && selectedChatUser) {
         const selectedUser = chatUsers.find(user => user.id === selectedChatUser);
-        const timestamp = Date.now();
+        const timestamp = firebase.database.ServerValue.TIMESTAMP;
+
         
         // Create message object
         const message = {
@@ -618,19 +621,14 @@ function setupChatListeners() {
 
 // Format timestamp to readable time
 function formatTimestamp(timestamp) {
+    if (!timestamp) return '';
     const date = new Date(timestamp);
     const now = new Date();
-    
-    // If today, show time only
+    const timeOpts = { hour: '2-digit', minute: '2-digit' };
+
     if (date.toDateString() === now.toDateString()) {
-        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        return date.toLocaleTimeString([], timeOpts);
     }
-    
-    // If this year, show date without year
-    if (date.getFullYear() === now.getFullYear()) {
-        return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
-    }
-    
-    // Otherwise show full date
-    return date.toLocaleDateString();
+    return date.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' +
+           date.toLocaleTimeString([], timeOpts);
 }
