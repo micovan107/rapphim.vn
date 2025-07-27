@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#ff5e62">
+    <title>CineSync - Hồ Sơ Người Dùng</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="shortcut icon" href="favicon.svg">
+    <link rel="apple-touch-icon" href="favicon.svg">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <div class="logo">
+                <a href="index.html">CineSync</a>
+            </div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html">Trang chủ</a></li>
+                    <li><a href="forum.html">Diễn đàn</a></li>
+                    <li><a href="chat.html">Chat</a></li>
+                    <li><a href="admin.html" class="admin-link">Admin</a></li>
+                </ul>
+            </nav>
+            <div class="header-buttons">
+                <button id="darkModeToggle" class="icon-button">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button id="loginBtn" class="btn" style="display: none;">Đăng nhập</button>
+                <button id="signupBtn" class="btn btn-primary" style="display: none;">Đăng ký</button>
+                <div class="user-profile" style="display: flex;">
+                    <img src="https://ui-avatars.com/api/?name=User" alt="User Profile" id="userProfileImg">
+                    <div class="dropdown-content">
+                        <a href="profile.html" id="profileLink">Hồ sơ</a>
+                        <a href="#" id="logoutBtn">Đăng xuất</a>
+                    </div>
+                </div>
+            </div>
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="page-header">
+            <h1>Hồ Sơ Người Dùng</h1>
+            <p>Quản lý thông tin cá nhân và cài đặt tài khoản</p>
+        </div>
+
+        <div class="profile-container">
+            <div class="profile-sidebar">
+                <div class="profile-avatar-container">
+                    <div class="profile-avatar">
+                        <img src="https://ui-avatars.com/api/?name=User" alt="User Profile" id="profileAvatar">
+                        <div class="avatar-overlay">
+                            <i class="fas fa-camera"></i>
+                            <span>Thay đổi</span>
+                        </div>
+                        <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
+                    </div>
+                    <h3 id="profileName">Tên người dùng</h3>
+                    <div class="user-status">
+                        <span class="status-dot online"></span>
+                        <span>Trực tuyến</span>
+                    </div>
+                </div>
+                
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <i class="fas fa-film"></i>
+                        <div class="stat-info">
+                            <span class="stat-value" id="watchedMovies">0</span>
+                            <span class="stat-label">Phim đã xem</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-comments"></i>
+                        <div class="stat-info">
+                            <span class="stat-value" id="totalMessages">0</span>
+                            <span class="stat-label">Tin nhắn</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-coins"></i>
+                        <div class="stat-info">
+                            <span class="stat-value" id="userCoins">0</span>
+                            <span class="stat-label">Coins</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="profile-menu">
+                    <button class="profile-menu-item active" data-tab="info">
+                        <i class="fas fa-user"></i> Thông tin cá nhân
+                    </button>
+                    <button class="profile-menu-item" data-tab="security">
+                        <i class="fas fa-lock"></i> Bảo mật
+                    </button>
+                    <button class="profile-menu-item" data-tab="preferences">
+                        <i class="fas fa-cog"></i> Tùy chọn
+                    </button>
+                    <button class="profile-menu-item" data-tab="activity">
+                        <i class="fas fa-history"></i> Hoạt động gần đây
+                    </button>
+                </div>
+            </div>
+            
+            <div class="profile-content">
+                <!-- Thông tin cá nhân -->
+                <div class="profile-tab active" id="info-tab">
+                    <div class="profile-section">
+                        <h3>Thông tin cá nhân</h3>
+                        <form id="profileInfoForm">
+                            <div class="form-group">
+                                <label for="displayName">Tên hiển thị</label>
+                                <input type="text" id="displayName" placeholder="Tên hiển thị">
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" placeholder="Email" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label for="bio">Giới thiệu</label>
+                                <textarea id="bio" placeholder="Giới thiệu về bạn" rows="4"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="location">Địa điểm</label>
+                                <input type="text" id="location" placeholder="Địa điểm">
+                            </div>
+                            <div class="form-group">
+                                <label for="favoriteGenres">Thể loại phim yêu thích</label>
+                                <select id="favoriteGenres" multiple>
+                                    <option value="action">Hành động</option>
+                                    <option value="comedy">Hài</option>
+                                    <option value="drama">Chính kịch</option>
+                                    <option value="horror">Kinh dị</option>
+                                    <option value="scifi">Khoa học viễn tưởng</option>
+                                    <option value="romance">Lãng mạn</option>
+                                    <option value="animation">Hoạt hình</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Bảo mật -->
+                <div class="profile-tab" id="security-tab">
+                    <div class="profile-section">
+                        <h3>Thay đổi mật khẩu</h3>
+                        <form id="changePasswordForm">
+                            <div class="form-group">
+                                <label for="currentPassword">Mật khẩu hiện tại</label>
+                                <input type="password" id="currentPassword" placeholder="Mật khẩu hiện tại">
+                            </div>
+                            <div class="form-group">
+                                <label for="newPassword">Mật khẩu mới</label>
+                                <input type="password" id="newPassword" placeholder="Mật khẩu mới">
+                            </div>
+                            <div class="form-group">
+                                <label for="confirmPassword">Xác nhận mật khẩu</label>
+                                <input type="password" id="confirmPassword" placeholder="Xác nhận mật khẩu">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Cập nhật mật khẩu</button>
+                        </form>
+                    </div>
+                    
+                    <div class="profile-section">
+                        <h3>Bảo mật tài khoản</h3>
+                        <div class="toggle-option">
+                            <span>Xác thực hai yếu tố</span>
+                            <label class="switch">
+                                <input type="checkbox" id="twoFactorAuth">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-option">
+                            <span>Thông báo đăng nhập mới</span>
+                            <label class="switch">
+                                <input type="checkbox" id="loginNotifications" checked>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tùy chọn -->
+                <div class="profile-tab" id="preferences-tab">
+                    <div class="profile-section">
+                        <h3>Tùy chọn hiển thị</h3>
+                        <div class="toggle-option">
+                            <span>Chế độ tối</span>
+                            <label class="switch">
+                                <input type="checkbox" id="darkModePreference">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label for="language">Ngôn ngữ</label>
+                            <select id="language">
+                                <option value="vi">Tiếng Việt</option>
+                                <option value="en">English</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-section">
+                        <h3>Tùy chọn thông báo</h3>
+                        <div class="toggle-option">
+                            <span>Thông báo tin nhắn mới</span>
+                            <label class="switch">
+                                <input type="checkbox" id="messageNotifications" checked>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-option">
+                            <span>Thông báo phòng chiếu mới</span>
+                            <label class="switch">
+                                <input type="checkbox" id="roomNotifications" checked>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-option">
+                            <span>Thông báo bài viết mới</span>
+                            <label class="switch">
+                                <input type="checkbox" id="forumNotifications">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Hoạt động gần đây -->
+                <div class="profile-tab" id="activity-tab">
+                    <div class="profile-section">
+                        <h3>Hoạt động gần đây</h3>
+                        <div class="activity-list" id="activityList">
+                            <!-- Hoạt động sẽ được thêm vào đây bằng JavaScript -->
+                            <div class="empty-state">
+                                <i class="fas fa-history"></i>
+                                <p>Chưa có hoạt động nào gần đây</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Về CineSync</h3>
+                    <p>Nền tảng xem phim trực tuyến cùng bạn bè với các tính năng đồng bộ hoàn hảo.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Liên kết</h3>
+                    <ul>
+                        <li><a href="index.html">Trang chủ</a></li>
+                        <li><a href="forum.html">Diễn đàn</a></li>
+                        <li><a href="chat.html">Chat</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Liên hệ</h3>
+                    <p>Email: micovan105@gmail.com</p>
+                    <p>Điện thoại: 0916512162</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Đăng nhập</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Mật khẩu</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Đăng nhập</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signupModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Đăng ký</h2>
+            <form id="signupForm">
+                <div class="form-group">
+                    <label for="signupName">Họ tên</label>
+                    <input type="text" id="signupName" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupEmail">Email</label>
+                    <input type="email" id="signupEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Mật khẩu</label>
+                    <input type="password" id="signupPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Đăng ký</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Cloudinary Widget -->
+    <script src="https://widget.cloudinary.com/v2.0/global/all.js" type="text/javascript"></script>
+    
+    <!-- App Scripts -->
+    <script src="firebase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="main.js"></script>
+    <script src="profile.js"></script>
+</body>
+</html>

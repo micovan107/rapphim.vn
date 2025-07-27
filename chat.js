@@ -302,6 +302,12 @@ function selectChatUser(userId) {
         messageInputElement.disabled = false;
         sendMessageBtnElement.disabled = false;
         
+        // Enable image upload button
+        const imageUploadBtn = document.getElementById('imageUploadBtn');
+        if (imageUploadBtn) {
+            imageUploadBtn.disabled = false;
+        }
+        
         // Check if community chat
         if (selectedUser.isCommunity) {
             loadCommunityMessages();
@@ -465,15 +471,35 @@ function renderMessage(message) {
         messageElement.classList.add('message-first');
     }
     
+    // Chuẩn bị nội dung tin nhắn (văn bản và/hoặc hình ảnh)
+    let messageContent = '';
+    
+    // Nếu có hình ảnh, hiển thị hình ảnh
+    if (message.imageURL) {
+        messageContent += `
+            <div class="message-image-container">
+                <img src="${message.imageURL}" alt="Hình ảnh" class="message-image" onclick="openImagePreview('${message.imageURL}')">
+            </div>
+        `;
+    }
+    
+    // Nếu có văn bản, hiển thị văn bản
+    if (message.text && message.text.trim() !== '') {
+        messageContent += `<div class="message-text">${message.text}</div>`;
+    }
+    
     // Chỉ hiển thị avatar cho tin nhắn đầu tiên hoặc khi có sự ngắt quãng
     if (!isPreviousMessageFromSameSender) {
+        const avatarImg = `${sender?.photoURL || sender?.profileImage || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(sender?.displayName || 'User')}`;
+        const senderName = isOutgoing ? 'Bạn' : sender?.displayName || 'Người dùng';
+        
         messageElement.innerHTML = `
             <div class="message-avatar">
-                <img src="${sender?.photoURL || sender?.profileImage || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(sender?.displayName || 'User')}" alt="${sender?.displayName || 'User'}">
+                <img src="${avatarImg}" alt="${senderName}" class="user-avatar-clickable" data-user-id="${message.senderId}">
             </div>
             <div class="message-bubble">
-                <div class="message-sender-name">${isOutgoing ? 'Bạn' : sender?.displayName || 'Người dùng'}</div>
-                <div class="message-content">${message.text}</div>
+                <div class="message-sender-name user-name-clickable" data-user-id="${message.senderId}">${senderName}</div>
+                <div class="message-content">${messageContent}</div>
                 <div class="message-time">${formatTimestamp(message.timestamp)}</div>
             </div>
         `;
@@ -481,13 +507,74 @@ function renderMessage(message) {
         messageElement.innerHTML = `
             <div class="message-avatar empty-avatar"></div>
             <div class="message-bubble">
-                <div class="message-content">${message.text}</div>
+                <div class="message-content">${messageContent}</div>
                 <div class="message-time">${formatTimestamp(message.timestamp)}</div>
             </div>
         `;
     }
     
+    // Thêm sự kiện click cho avatar và tên người dùng
+    const avatarElement = messageElement.querySelector('.user-avatar-clickable');
+    const nameElement = messageElement.querySelector('.user-name-clickable');
+    
+    if (avatarElement && !isOutgoing) {
+        avatarElement.addEventListener('click', () => {
+            navigateToUserProfile(message.senderId);
+        });
+        avatarElement.style.cursor = 'pointer';
+    }
+    
+    if (nameElement && !isOutgoing) {
+        nameElement.addEventListener('click', () => {
+            navigateToUserProfile(message.senderId);
+        });
+        nameElement.style.cursor = 'pointer';
+    }
+    
     chatMessagesElement.appendChild(messageElement);
+}
+
+// Mở hình ảnh xem trước khi nhấp vào
+function openImagePreview(imageUrl) {
+    // Tạo modal xem trước hình ảnh
+    const imagePreviewModal = document.createElement('div');
+    imagePreviewModal.className = 'image-preview-modal';
+    imagePreviewModal.innerHTML = `
+        <div class="image-preview-container">
+            <span class="close-preview">&times;</span>
+            <img src="${imageUrl}" class="preview-image">
+            <a href="${imageUrl}" download class="download-image-btn" title="Tải xuống">
+                <i class="fas fa-download"></i>
+            </a>
+        </div>
+    `;
+    
+    // Thêm modal vào body
+    document.body.appendChild(imagePreviewModal);
+    
+    // Hiển thị modal
+    setTimeout(() => {
+        imagePreviewModal.style.opacity = '1';
+    }, 10);
+    
+    // Xử lý sự kiện đóng modal
+    const closeBtn = imagePreviewModal.querySelector('.close-preview');
+    closeBtn.addEventListener('click', () => {
+        imagePreviewModal.style.opacity = '0';
+        setTimeout(() => {
+            imagePreviewModal.remove();
+        }, 300);
+    });
+    
+    // Đóng modal khi nhấp vào bên ngoài hình ảnh
+    imagePreviewModal.addEventListener('click', (event) => {
+        if (event.target === imagePreviewModal) {
+            imagePreviewModal.style.opacity = '0';
+            setTimeout(() => {
+                imagePreviewModal.remove();
+            }, 300);
+        }
+    });
 }
 
 // Mark messages as read
@@ -502,13 +589,14 @@ function markMessagesAsRead(userId) {
 // Send a message
 function sendMessage() {
     const messageText = messageInputElement.value.trim();
+    const imageInput = document.getElementById('imageInput');
+    const hasImage = imageInput && imageInput.files && imageInput.files.length > 0;
     
-    if (messageText && selectedChatUser) {
+    if ((messageText || hasImage) && selectedChatUser) {
         const selectedUser = chatUsers.find(user => user.id === selectedChatUser);
         const timestamp = firebase.database.ServerValue.TIMESTAMP;
-
         
-        // Create message object
+        // Create base message object
         const message = {
             text: messageText,
             senderId: currentUser.uid,
@@ -516,33 +604,100 @@ function sendMessage() {
             senderName: currentUser.displayName || 'User'
         };
         
-        if (selectedUser && selectedUser.isCommunity) {
-            // Add message to community chat
-            const newMessageRef = firebase.database().ref('community_chat/messages').push();
-            newMessageRef.set(message);
+        // Handle image upload if present
+        if (hasImage) {
+            const file = imageInput.files[0];
+            // Show loading indicator
+            const loadingElement = document.createElement('div');
+            loadingElement.className = 'message outgoing message-first loading-message';
+            loadingElement.innerHTML = `
+                <div class="message-avatar">
+                    <img src="${currentUser.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(currentUser.displayName || 'User')}" alt="${currentUser.displayName || 'User'}">
+                </div>
+                <div class="message-bubble">
+                    <div class="message-sender-name">Bạn</div>
+                    <div class="message-content">
+                        <div class="image-upload-loading">
+                            <i class="fas fa-spinner fa-spin"></i> Đang tải ảnh...
+                        </div>
+                    </div>
+                </div>
+            `;
+            chatMessagesElement.appendChild(loadingElement);
+            chatMessagesElement.scrollTop = chatMessagesElement.scrollHeight;
             
-            // Update last message for community
-            firebase.database().ref('community_chat/lastMessage').set(message);
-        } else {
-            const chatId = chats[selectedChatUser].chatId;
+            // Upload image to Cloudinary
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', cloudinaryConfig.uploadPreset);
+            formData.append('folder', 'chat_images');
             
-            // Add message to database
-            const newMessageRef = firebase.database().ref('chats/' + chatId + '/messages').push();
-            newMessageRef.set(message);
-            
-            // Update last message
-            firebase.database().ref('chats/' + chatId + '/lastMessage').set(message);
-            
-            // Increment unread count for recipient
-            firebase.database().ref('chats/' + chatId + '/unreadCount/' + selectedChatUser).transaction(count => {
-                return (count || 0) + 1;
+            fetch(`https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/image/upload`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Remove loading message
+                if (loadingElement) {
+                    loadingElement.remove();
+                }
+                
+                // Add image URL to message
+                message.imageURL = data.secure_url;
+                message.text = messageText || ''; // Ensure text is not undefined
+                
+                // Send message with image
+                sendMessageToDatabase(message, selectedUser);
+            })
+            .catch(error => {
+                console.error('Error uploading image to Cloudinary:', error);
+                // Remove loading message
+                if (loadingElement) {
+                    loadingElement.remove();
+                }
+                // Show error notification
+                alert('Lỗi khi tải ảnh lên. Vui lòng thử lại.');
             });
+            
+            // Clear file input
+            imageInput.value = '';
+        } else {
+            // Send text-only message
+            sendMessageToDatabase(message, selectedUser);
         }
         
         // Clear input
         messageInputElement.value = '';
     }
 }
+
+// Send message to database
+function sendMessageToDatabase(message, selectedUser) {
+    if (selectedUser && selectedUser.isCommunity) {
+        // Add message to community chat
+        const newMessageRef = firebase.database().ref('community_chat/messages').push();
+        newMessageRef.set(message);
+        
+        // Update last message for community
+        firebase.database().ref('community_chat/lastMessage').set(message);
+    } else {
+        const chatId = chats[selectedChatUser].chatId;
+        
+        // Add message to database
+        const newMessageRef = firebase.database().ref('chats/' + chatId + '/messages').push();
+        newMessageRef.set(message);
+        
+        // Update last message
+        firebase.database().ref('chats/' + chatId + '/lastMessage').set(message);
+        
+        // Increment unread count for recipient
+        firebase.database().ref('chats/' + chatId + '/unreadCount/' + selectedChatUser).transaction(count => {
+            return (count || 0) + 1;
+        });
+    }
+}
+
 
 // Setup search functionality
 function setupSearchFunctionality() {
@@ -617,6 +772,47 @@ function setupChatListeners() {
             sendMessage();
         }
     });
+    
+    // Image upload button
+    const imageUploadBtn = document.getElementById('imageUploadBtn');
+    const imageInput = document.getElementById('imageInput');
+    
+    if (imageUploadBtn && imageInput) {
+        // Click on image button triggers file input
+        imageUploadBtn.addEventListener('click', () => {
+            imageInput.click();
+        });
+        
+        // Show selected image name
+        imageInput.addEventListener('change', (event) => {
+            if (event.target.files.length > 0) {
+                const file = event.target.files[0];
+                
+                // Validate file type
+                const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                if (!validTypes.includes(file.type)) {
+                    alert('Vui lòng chọn file hình ảnh (JPEG, PNG, GIF, WEBP)');
+                    imageInput.value = '';
+                    return;
+                }
+                
+                // Validate file size (max 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Kích thước file không được vượt quá 5MB');
+                    imageInput.value = '';
+                    return;
+                }
+                
+                // Show file name in message input as placeholder
+                messageInputElement.placeholder = `Đã chọn: ${file.name}`;
+                // Add a visual indicator that an image is selected
+                imageUploadBtn.classList.add('has-image');
+            } else {
+                messageInputElement.placeholder = 'Nhập tin nhắn...';
+                imageUploadBtn.classList.remove('has-image');
+            }
+        });
+    }
 }
 
 // Format timestamp to readable time
@@ -631,4 +827,12 @@ function formatTimestamp(timestamp) {
     }
     return date.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' +
            date.toLocaleTimeString([], timeOpts);
+}
+
+// Chuyển hướng đến trang hồ sơ người dùng
+function navigateToUserProfile(userId) {
+    if (!userId) return;
+    
+    // Chuyển hướng đến trang user-profile.html với ID người dùng
+    window.location.href = `user-profile.html?id=${userId}`;
 }

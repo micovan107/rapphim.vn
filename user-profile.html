@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#ff5e62">
+    <title>Trang Cá Nhân - CineSync</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="shortcut icon" href="favicon.svg">
+    <link rel="apple-touch-icon" href="favicon.svg">
+    <link rel="stylesheet" href="user-profile.css">
+    <link rel="stylesheet" href="user-profile-enhanced.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <div class="logo">
+                <a href="index.html">CineSync</a>
+            </div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html">Trang chủ</a></li>
+                    <li><a href="forum.html">Diễn đàn</a></li>
+                    <li><a href="chat.html">Chat</a></li>
+                    
+                </ul>
+            </nav>
+            <div class="header-buttons">
+                <button id="darkModeToggle" class="icon-button">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button id="loginBtn" class="btn" style="display: none;">Đăng nhập</button>
+                <button id="signupBtn" class="btn btn-primary" style="display: none;">Đăng ký</button>
+                <div class="user-profile" style="display: flex;">
+                    <img src="https://ui-avatars.com/api/?name=User" alt="User Profile" id="userProfileImg">
+                    <div class="dropdown-content">
+                        <a href="profile.html" id="profileLink">Hồ sơ của tôi</a>
+                        <a href="#" id="logoutBtn">Đăng xuất</a>
+                    </div>
+                </div>
+            </div>
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="user-profile-container">
+            <!-- Phần header của trang cá nhân -->
+            <div class="user-profile-header">
+                <div class="user-profile-cover">
+                    <div class="user-profile-avatar">
+                        <img src="https://ui-avatars.com/api/?name=User" alt="User Profile" id="viewProfileAvatar">
+                    </div>
+                </div>
+                <div class="user-profile-info">
+                    <h1 id="viewProfileName">Tên người dùng</h1>
+                    <p class="user-bio" id="viewProfileBio">Chưa có thông tin giới thiệu</p>
+                    <div class="user-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-film"></i>
+                            <span id="viewWatchedMovies">0</span> phim đã xem
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-comments"></i>
+                            <span id="viewTotalMessages">0</span> tin nhắn
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-coins"></i>
+                            <span id="viewUserCoins">0</span> coins
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-users"></i>
+                            <span id="viewFollowers">0</span> người theo dõi
+                        </div>
+                    </div>
+                    <div class="user-actions">
+                        <button id="followBtn" class="btn btn-primary"><i class="fas fa-user-plus"></i> Theo dõi</button>
+                        <button id="messageBtn" class="btn"><i class="fas fa-comment"></i> Nhắn tin</button>
+                        <button id="viewMyProfileBtn" class="btn"><i class="fas fa-user"></i> Xem trang cá nhân của tôi</button>
+                        <div class="user-rating">
+                            <span>Đánh giá: </span>
+                            <div class="star-rating" id="userRating">
+                                <i class="far fa-star" data-rating="1"></i>
+                                <i class="far fa-star" data-rating="2"></i>
+                                <i class="far fa-star" data-rating="3"></i>
+                                <i class="far fa-star" data-rating="4"></i>
+                                <i class="far fa-star" data-rating="5"></i>
+                            </div>
+                            <span id="ratingCount">(0 đánh giá)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs điều hướng -->
+            <div class="user-profile-tabs">
+                <button class="tab-btn active" data-tab="posts">Bài viết</button>
+                <button class="tab-btn" data-tab="movies">Phim đã xem</button>
+                <button class="tab-btn" data-tab="reviews">Đánh giá</button>
+                <button class="tab-btn" data-tab="about">Giới thiệu</button>
+            </div>
+
+            <!-- Nội dung tab -->
+            <div class="user-profile-content">
+                <!-- Tab bài viết -->
+                <div class="tab-content active" id="posts-tab">
+                    <div class="create-post-section">
+                        <div class="create-post-header">
+                            <img src="https://ui-avatars.com/api/?name=User" alt="User Profile" id="currentUserAvatar">
+                            <button id="createWallPostBtn" class="btn">Viết gì đó cho người này...</button>
+                        </div>
+                    </div>
+                    <div class="user-posts" id="userPosts">
+                        <!-- Bài viết sẽ được thêm vào đây bằng JavaScript -->
+                        <div class="loading">Đang tải bài viết...</div>
+                    </div>
+                </div>
+
+                <!-- Tab phim đã xem -->
+                <div class="tab-content" id="movies-tab">
+                    <div class="user-movies" id="userMovies">
+                        <!-- Phim đã xem sẽ được thêm vào đây bằng JavaScript -->
+                        <div class="loading">Đang tải danh sách phim...</div>
+                    </div>
+                </div>
+
+                <!-- Tab đánh giá -->
+                <div class="tab-content" id="reviews-tab">
+                    <div class="user-reviews" id="userReviews">
+                        <!-- Đánh giá sẽ được thêm vào đây bằng JavaScript -->
+                        <div class="loading">Đang tải đánh giá...</div>
+                    </div>
+                </div>
+
+                <!-- Tab giới thiệu -->
+                <div class="tab-content" id="about-tab">
+                    <div class="user-about">
+                        <div class="about-section">
+                            <h3>Thông tin cá nhân</h3>
+                            <div class="about-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span id="viewLocation">Chưa cập nhật địa điểm</span>
+                            </div>
+                            <div class="about-item">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span id="viewJoinDate">Tham gia từ: Chưa có thông tin</span>
+                            </div>
+                        </div>
+                        <div class="about-section">
+                            <h3>Thể loại phim yêu thích</h3>
+                            <div class="favorite-genres" id="viewFavoriteGenres">
+                                <!-- Thể loại phim yêu thích sẽ được thêm vào đây bằng JavaScript -->
+                                <span class="empty-state">Chưa có thông tin</span>
+                            </div>
+                        </div>
+                        <div class="about-section">
+                            <h3>Hoạt động gần đây</h3>
+                            <div class="recent-activity" id="viewRecentActivity">
+                                <!-- Hoạt động gần đây sẽ được thêm vào đây bằng JavaScript -->
+                                <div class="empty-state">
+                                    <i class="fas fa-history"></i>
+                                    <p>Chưa có hoạt động nào gần đây</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal tạo bài viết trên tường -->
+    <div id="createWallPostModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Tạo bài viết</h2>
+            <form id="createWallPostForm">
+                <div class="form-group">
+                    <textarea id="wallPostContent" placeholder="Viết gì đó..." rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <button type="button" id="wallUploadImageBtn" class="btn btn-secondary">
+                        <i class="fas fa-image"></i> Thêm ảnh
+                    </button>
+                    <input type="hidden" id="wallPostImageUrl">
+                </div>
+                <div class="image-preview-container" id="wallImagePreviewContainer" style="display: none;">
+                    <img id="wallImagePreview" src="" alt="Preview">
+                    <button type="button" id="wallRemoveImageBtn" class="btn btn-icon">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <button type="submit" class="btn btn-primary">Đăng bài</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal nhắn tin -->
+    <div id="messageModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Gửi tin nhắn</h2>
+            <form id="sendMessageForm">
+                <div class="form-group">
+                    <textarea id="messageContent" placeholder="Nhập tin nhắn..." rows="4" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Gửi</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Về CineSync</h3>
+                    <p>Nền tảng xem phim trực tuyến cùng bạn bè với các tính năng đồng bộ hoàn hảo.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Liên kết</h3>
+                    <ul>
+                        <li><a href="index.html">Trang chủ</a></li>
+                        <li><a href="forum.html">Diễn đàn</a></li>
+                        <li><a href="chat.html">Chat</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Liên hệ</h3>
+                    <p>Email: micovan105@gmail.com</p>
+                    <p>Điện thoại: 0916512162</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Đăng nhập</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Mật khẩu</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Đăng nhập</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signupModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Đăng ký</h2>
+            <form id="signupForm">
+                <div class="form-group">
+                    <label for="signupName">Họ tên</label>
+                    <input type="text" id="signupName" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupEmail">Email</label>
+                    <input type="email" id="signupEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Mật khẩu</label>
+                    <input type="password" id="signupPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Đăng ký</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Cloudinary Widget -->
+    <script src="https://widget.cloudinary.com/v2.0/global/all.js" type="text/javascript"></script>
+    
+    <!-- App Scripts -->
+    <script src="firebase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="main.js"></script>
+    <script src="user-profile.js"></script>
+</body>
+</html>

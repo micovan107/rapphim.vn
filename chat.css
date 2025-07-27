@@ -1,0 +1,20 @@
+/* CSS cho các phần tử có thể nhấp vào trong chat */
+.user-avatar-clickable {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+.user-avatar-clickable:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 8px rgba(255, 94, 98, 0.6);
+}
+
+.user-name-clickable {
+    transition: color 0.2s ease;
+    cursor: pointer;
+}
+
+.user-name-clickable:hover {
+    color: #ff5e62;
+    text-decoration: underline;
+}
