@@ -1574,16 +1574,22 @@ function displayChatMessages(userId) {
     let lastDate = null;
     let lastSenderId = null;
     
+    // Chỉ hiển thị ngày tháng một lần duy nhất ở đầu cuộc trò chuyện
+    if (chats[userId].length > 0) {
+        const firstMessage = chats[userId][0];
+        const messageDate = new Date(firstMessage.timestamp);
+        const formattedDate = `${messageDate.getDate()}/${messageDate.getMonth() + 1}/${messageDate.getFullYear()}`;
+        html += `<div class="date-separator">${formattedDate}</div>`;
+        lastDate = formattedDate;
+    }
+    
     chats[userId].forEach((message, index) => {
         const isCurrentUser = message.senderId === currentUser.uid;
         const messageDate = new Date(message.timestamp);
         const formattedDate = `${messageDate.getDate()}/${messageDate.getMonth() + 1}/${messageDate.getFullYear()}`;
         
-        // Add date separator if needed
-        if (lastDate !== formattedDate) {
-            html += `<div class="date-separator">${formattedDate}</div>`;
-            lastDate = formattedDate;
-            // Reset lastSenderId when date changes to ensure avatar shows on first message of new day
+        // Đặt lại lastSenderId nếu đây là tin nhắn đầu tiên
+        if (index === 0) {
             lastSenderId = null;
         }
         
@@ -1692,14 +1698,19 @@ function sendMiniChatMessage(userId, messageText, chatWindow) {
         chatRef = firebase.database().ref(`chats/private/${chatId}`);
     }
     
+// Import statements must be at the top level
+// Moving serverTimestamp import to top of file
+
     // Create message object
     const newMessage = {
         senderId: currentUser.uid,
         senderName: currentUser.displayName,
         content: message,
-        timestamp: Date.now(),
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+
         read: false
     };
+
     
     // Add image URL if available
     if (chatWindow.dataset.imageUrl) {
@@ -2251,7 +2262,9 @@ function syncWithMainChat() {
         // Check if this chat involves the current user
         if (chatId.includes(currentUser.uid)) {
             // Extract the other user's ID
-            const otherUserId = chatId.replace(currentUser.uid, '').replace('_', '');
+            // Split the chat ID by underscore and find the ID that's not the current user's
+            const userIds = chatId.split('_');
+            const otherUserId = userIds.find(id => id !== currentUser.uid);
             
             // Check if we have this user in our chat list
             const userExists = chatUsers.some(user => user.id === otherUserId);
@@ -2278,16 +2291,76 @@ function syncWithMainChat() {
             if (chatWindow) {
                 loadChatMessages(otherUserId, chatWindow.querySelector('.chat-mini-window-messages'));
             }
+            
+            // Check for new messages and update unread count
+            const messagesRef = firebase.database().ref(`chats/${chatId}/messages`);
+            messagesRef.orderByChild('timestamp').limitToLast(1).on('child_added', messageSnapshot => {
+                const message = messageSnapshot.val();
+                
+                // Skip if message is from current user
+                if (message.senderId === currentUser.uid) return;
+                
+                // Update unread count and notification badge
+                if (!chatWindow || chatWindow.style.display === 'none') {
+                    // Increment unread count
+                    if (!chats[otherUserId]) chats[otherUserId] = [];
+                    const existingMsg = chats[otherUserId].find(msg => msg.timestamp === message.timestamp);
+                    if (!existingMsg) {
+                        // Add message to chats array with proper structure
+                        chats[otherUserId].push({
+                            senderId: message.senderId,
+                            senderName: message.senderName,
+                            content: message.text, // Convert from 'text' to 'content'
+                            timestamp: message.timestamp,
+                            imageUrl: message.imageURL, // Convert from 'imageURL' to 'imageUrl'
+                            read: false
+                        });
+                        
+                        // Update unread count and badges
+                        unreadMessageCount++;
+                        updateChatNotificationBadge();
+                        updateUnreadBadge(otherUserId);
+                    }
+                }
+            });
         }
     });
     
     // Also sync community chat
-    const communityChatRef = firebase.database().ref('communityChat');
-    communityChatRef.on('child_added', () => {
-        // Update community chat if window is open
+    const communityChatRef = firebase.database().ref('community_chat/messages');
+    communityChatRef.on('child_added', messageSnapshot => {
+        const message = messageSnapshot.val();
         const communityWindow = document.querySelector('.chat-mini-window[data-user-id="community"]');
+        
+        // Update community chat if window is open
         if (communityWindow) {
             loadChatMessages('community', communityWindow.querySelector('.chat-mini-window-messages'));
+        }
+        
+        // Skip if message is from current user
+        if (message.senderId === currentUser.uid) return;
+        
+        // Update unread count and notification badge
+        if (!communityWindow || communityWindow.style.display === 'none') {
+            // Increment unread count
+            if (!chats['community']) chats['community'] = [];
+            const existingMsg = chats['community'].find(msg => msg.timestamp === message.timestamp);
+            if (!existingMsg) {
+                // Add message to chats array with proper structure
+                chats['community'].push({
+                    senderId: message.senderId,
+                    senderName: message.senderName,
+                    content: message.text, // Convert from 'text' to 'content'
+                    timestamp: message.timestamp,
+                    imageUrl: message.imageURL, // Convert from 'imageURL' to 'imageUrl'
+                    read: false
+                });
+                
+                // Update unread count and badges
+                unreadMessageCount++;
+                updateChatNotificationBadge();
+                updateUnreadBadge('community');
+            }
         }
     });
 }
@@ -2499,6 +2572,9 @@ function initChatFeatures() {
         chatMiniButton.style.display = 'flex';
     }
     
+    // Sync with main chat system
+    syncWithMainChat();
+    
     // Set up presence system to track online users
     const userStatusRef = firebase.database().ref(`status/${currentUser.uid}`);
     
@@ -2640,4 +2716,7 @@ if (chatSettingsModal) {
     
     // Load chat rooms
     loadChatRooms();
+    
+    // Sync with main chat system
+    syncWithMainChat();
 }
