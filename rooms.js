@@ -424,11 +424,13 @@ function renderRoomCard(room) {
     
     // Check if current user is the host
     const currentUser = auth.currentUser;
-    const isHost = currentUser && room.host.uid === currentUser.uid;
+    const isHost = currentUser && room.host?.uid === currentUser.uid;
+
     
     // Check if current user has a ticket (if required)
-    const hasTicket = currentUser && room.participants && room.participants[currentUser.uid] && 
-                     room.participants[currentUser.uid].hasTicket;
+    const hasTicket = currentUser &&
+                  room.participants?.[currentUser.uid]?.hasTicket;
+
     
     // Prepare ticket badge text
     let ticketBadgeText = 'Vé Thủ Công';

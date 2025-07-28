@@ -91,7 +91,8 @@ async function getCurrentUserData() {
             email: user.email,
             displayName: user.displayName || userData.displayName || user.email.split('@')[0],
             photoURL: user.photoURL || userData.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.displayName || user.email),
-            miniCoins: userData.miniCoins !== undefined ? userData.miniCoins : 100
+            miniCoins: userData.miniCoins !== undefined ? userData.miniCoins : 100,
+            learningPoints: userData.learningPoints || 0
         };
         console.log('Dữ liệu người dùng đã xử lý:', result);
         return result;
@@ -102,7 +103,8 @@ async function getCurrentUserData() {
             email: user.email,
             displayName: user.displayName || user.email.split('@')[0],
             photoURL: user.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.displayName || user.email),
-            miniCoins: 100
+            miniCoins: 100,
+            learningPoints: 0
         };
         console.log('Trả về dữ liệu mặc định do lỗi:', defaultData);
         return defaultData;
@@ -110,6 +112,9 @@ async function getCurrentUserData() {
 }
 
 // Export helper functions
+const db = firebase.firestore();
+window.db = db;
+
 window.generateId = generateId;
 window.formatTimestamp = formatTimestamp;
 window.getCurrentUserData = getCurrentUserData;

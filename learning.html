@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#ff5e62">
+    <title>CineSync - Học Tập Cùng Nhau</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="shortcut icon" href="favicon.svg">
+    <link rel="apple-touch-icon" href="favicon.svg">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="learning.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="description" content="CineSync - Học tập cùng nhau với tính năng đăng bài tập và giải bài">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <h1><i class="fas fa-film"></i> CineSync</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Trang Chủ</a></li>
+                    <li><a href="index.html#rooms">Phòng Chiếu</a></li>
+                    <li><a href="forum.html">Diễn Đàn</a></li>
+                    <li><a href="chat.html">Chat</a></li>
+                    <li><a href="learning.html" class="active">Học Tập</a></li>
+                    <li><a href="index.html#about">Giới Thiệu</a></li>
+                    <li id="adminNavLink" style="display: none;"><a href="admin.html">Quản Trị</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons">
+                <button id="loginBtn" class="btn">Đăng Nhập</button>
+                <button id="signupBtn" class="btn btn-primary">Đăng Ký</button>
+            </div>
+        </header>
+
+        <main>
+            <section class="learning-hero">
+                <div class="hero-content">
+                    <h2>Học Tập Cùng Nhau</h2>
+                    <p>Đăng bài tập, giải bài và nhận điểm thưởng. Cùng nhau xây dựng cộng đồng học tập tương tác.</p>
+                    <button id="createExerciseBtn" class="btn btn-primary btn-large">Đăng Bài Tập Mới</button>
+                </div>
+                <div class="hero-image">
+                    <img src="sach.png" alt="Learning illustration">
+                </div>
+            </section>
+
+            <div class="learning-content-wrapper">
+                <!-- Cột bên trái - Danh mục môn học -->
+                <aside class="subjects-sidebar">
+                    <h3>Danh Mục Môn Học</h3>
+                    <ul class="subject-list">
+                        <li class="subject-item active" data-subject="all">
+                            <i class="fas fa-book"></i> Tất Cả Môn Học
+                        </li>
+                        <li class="subject-item" data-subject="math">
+                            <i class="fas fa-calculator"></i> Toán Học
+                        </li>
+                        <li class="subject-item" data-subject="physics">
+                            <i class="fas fa-atom"></i> Vật Lý
+                        </li>
+                        <li class="subject-item" data-subject="chemistry">
+                            <i class="fas fa-flask"></i> Hóa Học
+                        </li>
+                        <li class="subject-item" data-subject="biology">
+                            <i class="fas fa-dna"></i> Sinh Học
+                        </li>
+                        <li class="subject-item" data-subject="literature">
+                            <i class="fas fa-feather-alt"></i> Văn Học
+                        </li>
+                        <li class="subject-item" data-subject="english">
+                            <i class="fas fa-language"></i> Tiếng Anh
+                        </li>
+                        <li class="subject-item" data-subject="history">
+                            <i class="fas fa-landmark"></i> Lịch Sử
+                        </li>
+                        <li class="subject-item" data-subject="geography">
+                            <i class="fas fa-globe-asia"></i> Địa Lý
+                        </li>
+                        <li class="subject-item" data-subject="informatics">
+                            <i class="fas fa-laptop-code"></i> Tin Học
+                        </li>
+                        <li class="subject-item" data-subject="other">
+                            <i class="fas fa-ellipsis-h"></i> Khác
+                        </li>
+                    </ul>
+                </aside>
+
+                <!-- Cột giữa - Bài tập -->
+                <section class="learning-section">
+                    <h2>Bài Tập & Lời Giải</h2>
+                    <div class="search-and-filters">
+                        <div class="search-container">
+                            <input type="text" id="exerciseSearchInput" placeholder="Tìm kiếm bài tập...">
+                            <button id="exerciseSearchBtn"><i class="fas fa-search"></i></button>
+                        </div>
+                        <div class="exercise-filters">
+                            <button class="filter-btn active" data-filter="all">Tất Cả</button>
+                            <button class="filter-btn" data-filter="unsolved">Chưa Giải</button>
+                            <button class="filter-btn" data-filter="solved">Đã Giải</button>
+                            <button class="filter-btn" data-filter="my-exercises">Bài Của Tôi</button>
+                        </div>
+                    </div>
+                    <div class="exercises-container">
+                        <!-- Bài tập sẽ được thêm vào đây bằng JavaScript -->
+                    </div>
+                </section>
+
+                <!-- Cột bên phải - Bảng xếp hạng -->
+                <aside class="leaderboard-sidebar">
+                    <section class="leaderboard-section">
+                        <h2>Bảng Xếp Hạng</h2>
+                        <div class="leaderboard-container">
+                            <table class="leaderboard-table">
+                                <thead>
+                                    <tr>
+                                        <th>Hạng</th>
+                                        <th>Người Dùng</th>
+                                        <th>Điểm Số</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="leaderboardBody">
+                                    <!-- Dữ liệu bảng xếp hạng sẽ được thêm vào đây bằng JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </aside>
+            </div>
+
+            <!-- Chat Mini Button -->
+            <div class="chat-mini-button" id="chatMiniButton">
+                <i class="fas fa-comments"></i>
+                <span class="chat-notification-badge" id="chatNotificationBadge"></span>
+            </div>
+
+            <!-- Chat Mini Panel -->
+            <div class="chat-mini-panel" id="chatMiniPanel">
+                <div class="chat-mini-header">
+                    <h3>Danh Sách Chat</h3>
+                    <div class="chat-mini-header-actions">
+                        <button class="chat-mini-create-room" id="chatMiniCreateRoom" title="Tạo phòng chat mới"><i class="fas fa-plus"></i></button>
+                        <button class="chat-mini-close" id="chatMiniClose"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+                <div class="chat-mini-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="chatMiniSearchInput" placeholder="Tìm kiếm người dùng...">
+                </div>
+                <div class="chat-mini-list" id="chatUsersList">
+                    <!-- Danh sách người dùng chat sẽ được thêm vào đây bằng JavaScript -->
+                </div>
+            </div>
+
+            <!-- Chat Mini Windows Container -->
+            <div class="chat-mini-windows-container" id="chatMiniWindowsContainer">
+                <!-- Các cửa sổ chat mini sẽ được thêm vào đây bằng JavaScript -->
+            </div>
+            
+            <!-- Chat Mini Window Template (sẽ được sao chép bằng JavaScript) -->
+            <template id="chatMiniWindowTemplate">
+                <div class="chat-mini-window">
+                    <div class="chat-mini-window-header">
+                        <div class="chat-mini-user-info">
+                            <img src="" alt="">
+                            <span></span>
+                        </div>
+                        <div class="chat-mini-window-actions">
+                            <button class="chat-mini-window-settings" title="Cài đặt"><i class="fas fa-cog"></i></button>
+                            <button class="chat-mini-window-minimize" title="Thu nhỏ"><i class="fas fa-minus"></i></button>
+                            <button class="chat-mini-window-close" title="Đóng"><i class="fas fa-times"></i></button>
+                        </div>
+                    </div>
+                    <div class="chat-mini-window-messages">
+                        <!-- Tin nhắn sẽ được thêm vào đây bằng JavaScript -->
+                    </div>
+                    <div class="chat-mini-window-input">
+                        <div class="chat-mini-window-icons">
+                            <button class="chat-mini-icon-btn" title="Gửi ảnh"><i class="fas fa-image"></i></button>
+                            <button class="chat-mini-icon-btn" title="Biểu tượng cảm xúc"><i class="far fa-smile"></i></button>
+                            <button class="chat-mini-icon-btn" title="Gửi file"><i class="fas fa-paperclip"></i></button>
+                        </div>
+                        <input type="text" placeholder="Nhập tin nhắn..." class="chat-mini-message-input">
+                        <button class="chat-mini-send-btn"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </template>
+            
+            <!-- Create Chat Room Modal -->
+            <div id="createChatRoomModal" class="modal">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <h2>Tạo phòng chat mới</h2>
+                    <form id="createChatRoomForm">
+                        <div class="form-group">
+                            <label for="roomName">Tên phòng chat:</label>
+                            <input type="text" id="roomName" name="roomName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="roomDescription">Mô tả (tùy chọn):</label>
+                            <textarea id="roomDescription" name="roomDescription" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Thêm thành viên:</label>
+                            <div class="room-members-container" id="roomMembersContainer">
+                                <!-- Danh sách người dùng sẽ được thêm vào đây -->
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn primary-btn">Tạo phòng</button>
+                            <button type="button" class="btn secondary-btn" id="cancelCreateRoom">Hủy</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Chat Settings Modal -->
+            <div id="chatSettingsModal" class="modal">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <h2>Cài đặt chat</h2>
+                    <div class="chat-settings-container">
+                        <div class="setting-group">
+                            <h3>Hình nền</h3>
+                            <div class="background-options">
+                    <div class="background-option" data-bg="default">
+                        <div class="bg-preview default-bg"></div>
+                        <span>Mặc định</span>
+                    </div>
+                    <div class="background-option" data-bg="gradient1">
+                        <div class="bg-preview gradient1-bg"></div>
+                        <span>Gradient 1</span>
+                    </div>
+                    <div class="background-option" data-bg="gradient2">
+                        <div class="bg-preview gradient2-bg"></div>
+                        <span>Gradient 2</span>
+                    </div>
+                    <div class="background-option" data-bg="pattern1">
+                        <div class="bg-preview pattern1-bg"></div>
+                        <span>Họa tiết 1</span>
+                    </div>
+                    <div class="background-option" data-bg="custom">
+                        <div class="bg-preview custom-bg-upload">
+                            <i class="fas fa-upload"></i>
+                        </div>
+                        <span>Tải lên</span>
+                    </div>
+                </div>
+                <div id="customBgUploadContainer" style="display: none; margin-top: 15px;">
+                    <button id="uploadChatBgBtn" class="btn btn-secondary"><i class="fas fa-image"></i> Chọn ảnh</button>
+                    <div id="chatBgPreview" class="bg-preview-container"></div>
+                    <input type="hidden" id="chatBgImageUrl">
+                </div>
+                        </div>
+                        <div class="setting-group">
+                            <h3>Tùy chọn khác</h3>
+                            <button id="blockUserBtn" class="btn btn-danger"><i class="fas fa-ban"></i> Chặn người dùng này</button>
+                        </div>
+                    </div>
+                    <button id="saveSettingsBtn" class="btn btn-primary">Lưu cài đặt</button>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h2><i class="fas fa-film"></i> CineSync</h2>
+                    <p>Xem phim cùng nhau, dù ở xa nhau.</p>
+                </div>
+                <div class="footer-links">
+                    <h3>Liên Kết</h3>
+                    <ul>
+                        <li><a href="index.html">Trang Chủ</a></li>
+                        <li><a href="index.html#rooms">Phòng Chiếu</a></li>
+                        <li><a href="forum.html">Diễn Đàn</a></li>
+                        <li><a href="chat.html">Chat</a></li>
+                        <li><a href="learning.html">Học Tập</a></li>
+                        <li><a href="index.html#about">Giới Thiệu</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h3>Liên Hệ</h3>
+                    <p><i class="fas fa-envelope"></i> micovan105@gmail.com</p>
+                    <p><i class="fas fa-user"></i> <a href="https://lazi.vn/user/tien-nam.nguyen25" target="_blank">Lazi: tien-nam.nguyen25</a></p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="https://lazi.vn/user/tien-nam.nguyen25" target="_blank" class="lazi-icon"><img src="avatarlazi.png" alt="Lazi" width="20" height="20"></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 CineSync. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modals -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Đăng Nhập</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Mật Khẩu</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Đăng Nhập</button>
+            </form>
+            <div class="social-login">
+                <p>Hoặc đăng nhập với</p>
+                <button id="googleLoginBtn" class="btn btn-google">
+                    <i class="fab fa-google"></i> Google
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="signupModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Đăng Ký</h2>
+            <form id="signupForm">
+                <div class="form-group">
+                    <label for="signupName">Tên Hiển Thị</label>
+                    <input type="text" id="signupName" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupEmail">Email</label>
+                    <input type="email" id="signupEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Mật Khẩu</label>
+                    <input type="password" id="signupPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupConfirmPassword">Xác Nhận Mật Khẩu</label>
+                    <input type="password" id="signupConfirmPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Đăng Ký</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Create Exercise Modal -->
+    <div id="createExerciseModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Đăng Bài Tập Mới</h2>
+            <form id="createExerciseForm">
+                <div class="form-group">
+                    <label for="exerciseTitle">Tiêu Đề</label>
+                    <input type="text" id="exerciseTitle" placeholder="Nhập tiêu đề bài tập" required>
+                </div>
+                <div class="form-group">
+                    <label for="exerciseContent">Nội Dung</label>
+                    <textarea id="exerciseContent" placeholder="Mô tả chi tiết bài tập" rows="5" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="exerciseCategory">Danh Mục</label>
+                    <select id="exerciseCategory" required>
+                        <option value="">Chọn danh mục</option>
+                        <option value="math">Toán Học</option>
+                        <option value="physics">Vật Lý</option>
+                        <option value="chemistry">Hóa Học</option>
+                        <option value="biology">Sinh Học</option>
+                        <option value="literature">Văn Học</option>
+                        <option value="english">Tiếng Anh</option>
+                        <option value="history">Lịch Sử</option>
+                        <option value="geography">Địa Lý</option>
+                        <option value="informatics">Tin Học</option>
+                        <option value="other">Khác</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="exerciseImage">Hình Ảnh (nếu có)</label>
+                    <div class="upload-container">
+                        <button type="button" id="uploadImageBtn" class="btn">Tải Lên Hình Ảnh</button>
+                        <div id="imagePreview" class="image-preview"></div>
+                        <input type="hidden" id="exerciseImageUrl">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Đăng Bài Tập</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Exercise Detail Modal -->
+    <div id="exerciseDetailModal" class="modal">
+        <div class="modal-content modal-large">
+            <span class="close">&times;</span>
+            <div id="exerciseDetailContent">
+                <!-- Chi tiết bài tập sẽ được thêm vào đây bằng JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Submit Solution Modal -->
+    <div id="submitSolutionModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Gửi Lời Giải</h2>
+            <form id="submitSolutionForm">
+                <div class="form-group">
+                    <label for="solutionContent">Nội Dung Lời Giải</label>
+                    <textarea id="solutionContent" placeholder="Nhập lời giải của bạn" rows="5" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="solutionImage">Hình Ảnh (nếu có)</label>
+                    <div class="upload-container">
+                        <button type="button" id="uploadSolutionImageBtn" class="btn">Tải Lên Hình Ảnh</button>
+                        <div id="solutionImagePreview" class="image-preview"></div>
+                        <input type="hidden" id="solutionImageUrl">
+                    </div>
+                </div>
+                <input type="hidden" id="exerciseId">
+                <button type="submit" class="btn btn-primary">Gửi Lời Giải</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Rate Solution Modal -->
+    <div id="rateSolutionModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Đánh Giá Lời Giải</h2>
+            <div id="rateSolutionContent">
+                <!-- Nội dung lời giải sẽ được thêm vào đây bằng JavaScript -->
+            </div>
+            <form id="rateSolutionForm">
+                <div class="form-group">
+                    <label>Đánh Giá</label>
+                    <div class="rating">
+                        <input type="radio" id="star5" name="rating" value="5" /><label for="star5"></label>
+                        <input type="radio" id="star4" name="rating" value="4" /><label for="star4"></label>
+                        <input type="radio" id="star3" name="rating" value="3" /><label for="star3"></label>
+                        <input type="radio" id="star2" name="rating" value="2" /><label for="star2"></label>
+                        <input type="radio" id="star1" name="rating" value="1" /><label for="star1"></label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="ratingComment">Nhận Xét (không bắt buộc)</label>
+                    <textarea id="ratingComment" placeholder="Nhận xét về lời giải này"></textarea>
+                </div>
+                <input type="hidden" id="solutionId">
+                <button type="submit" class="btn btn-primary">Gửi Đánh Giá</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Cloudinary SDK -->
+    <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
+    
+    <!-- App Scripts -->
+    <script src="firebase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="learning.js"></script>
+    <script src="emoji-picker.js"></script>
+</body>
+</html>
