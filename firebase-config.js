@@ -80,6 +80,20 @@ async function getCurrentUserData() {
         return null;
     }
     
+    // Kiểm tra nếu là người dùng ẩn danh (guest)
+    if (user.isAnonymous || (typeof currentUser !== 'undefined' && currentUser.isAnonymous)) {
+        console.log('Đang lấy dữ liệu người dùng ẩn danh');
+        // Trả về thông tin người dùng ẩn danh đã được lưu trong biến currentUser
+        return {
+            uid: user.uid,
+            displayName: user.displayName || 'Khách',
+            photoURL: user.photoURL || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
+            miniCoins: 0,
+            learningPoints: 0,
+            isGuest: true
+        };
+    }
+    
     try {
         console.log('Đang lấy dữ liệu người dùng mới nhất cho:', user.uid);
         // Sử dụng .get() thay vì .once('value') để đảm bảo luôn lấy dữ liệu mới nhất từ server

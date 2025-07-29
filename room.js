@@ -151,8 +151,55 @@ async function initRoom() {
                 // Join room
                 joinRoom();
             } else {
-                // Redirect to login
-                window.location.href = 'index.html';
+                // Người dùng chưa đăng nhập - cho phép vào phòng với tư cách khách
+                if (roomData.requiresTicket) {
+                    // Nếu phòng yêu cầu vé, chuyển hướng đến trang đăng nhập
+                    showError('Phòng này yêu cầu vé để vào. Vui lòng đăng nhập để tiếp tục.');
+                    window.location.href = 'index.html';
+                    return;
+                }
+                
+                // Tạo người dùng ẩn danh
+                const guestId = 'guest_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+                currentUser = {
+                    uid: guestId,
+                    isAnonymous: true
+                };
+                
+                // Hiển thị hộp thoại nhập tên
+                const guestName = prompt('Nhập tên hiển thị của bạn để tham gia phòng:', 'Khách');
+                if (!guestName) {
+                    // Người dùng hủy nhập tên, chuyển hướng về trang chủ
+                    window.location.href = 'index.html';
+                    return;
+                }
+                
+                // Lưu thông tin người dùng ẩn danh
+                currentUser.displayName = guestName;
+                currentUser.photoURL = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y';
+                
+                // Set up room
+                setupRoom();
+                
+                // Thêm người dùng ẩn danh vào danh sách người tham gia
+                await database.ref(`rooms/${roomId}/participants/${guestId}`).set({
+                    uid: guestId,
+                    displayName: guestName,
+                    photoURL: 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
+                    isHost: false,
+                    isGuest: true,
+                    hasTicket: false,
+                    joinedAt: firebase.database.ServerValue.TIMESTAMP
+                });
+                
+                // Thêm thông báo hệ thống
+                await database.ref(`rooms/${roomId}/messages`).push({
+                    type: 'system',
+                    message: `${guestName} đã tham gia phòng với tư cách khách.`,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+                
+                showNotification(`Bạn đã tham gia phòng với tên ${guestName}. Đăng nhập để lưu lịch sử chat và nhận thêm tính năng.`, 'info');
             }
         });
     } catch (error) {
@@ -340,29 +387,35 @@ function setupRoom() {
 // Join Room
 async function joinRoom() {
     try {
-        // Get user data
-        const userData = await getCurrentUserData();
-        
-        // Add user to participants
-        await database.ref(`rooms/${roomId}/participants/${currentUser.uid}`).update({
-            uid: currentUser.uid,
-            displayName: userData.displayName,
-            photoURL: userData.photoURL,
-            isHost: isHost,
-            joinedAt: firebase.database.ServerValue.TIMESTAMP,
-            hasTicket: isHost ? true : (roomData.participants && roomData.participants[currentUser.uid] ? 
-                     roomData.participants[currentUser.uid].hasTicket : false)
-        });
-        
-        // Add system message
-        await database.ref(`rooms/${roomId}/messages`).push({
-            type: 'system',
-            content: `${userData.displayName} đã tham gia phòng.`,
-            timestamp: firebase.database.ServerValue.TIMESTAMP
-        });
-        
-        // Cập nhật hiển thị MiniCoin
-        updateMiniCoinsDisplay();
+        // Kiểm tra nếu là người dùng ẩn danh
+        if (currentUser.isAnonymous) {
+            // Người dùng ẩn danh đã được thêm vào danh sách người tham gia trong hàm initRoom()
+            // Không cần thêm lại ở đây
+        } else {
+            // Get user data
+            const userData = await getCurrentUserData();
+            
+            // Add user to participants
+            await database.ref(`rooms/${roomId}/participants/${currentUser.uid}`).update({
+                uid: currentUser.uid,
+                displayName: userData.displayName,
+                photoURL: userData.photoURL,
+                isHost: isHost,
+                joinedAt: firebase.database.ServerValue.TIMESTAMP,
+                hasTicket: isHost ? true : (roomData.participants && roomData.participants[currentUser.uid] ? 
+                         roomData.participants[currentUser.uid].hasTicket : false)
+            });
+            
+            // Add system message
+            await database.ref(`rooms/${roomId}/messages`).push({
+                type: 'system',
+                content: `${userData.displayName} đã tham gia phòng.`,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+            
+            // Cập nhật hiển thị MiniCoin
+            updateMiniCoinsDisplay();
+        }
     } catch (error) {
         console.error('Join room error:', error);
         showNotification(`Lỗi tham gia phòng: ${error.message}`, 'error');
@@ -636,6 +689,16 @@ function listenForUserNotifications() {
 // Cập nhật hiển thị MiniCoin
 async function updateMiniCoinsDisplay() {
     try {
+        // Kiểm tra nếu là người dùng ẩn danh
+        if (currentUser.isAnonymous) {
+            // Ẩn hiển thị MiniCoin cho người dùng ẩn danh
+            const miniCoinsContainer = document.querySelector('.mini-coins-container');
+            if (miniCoinsContainer) {
+                miniCoinsContainer.style.display = 'none';
+            }
+            return;
+        }
+        
         // Lấy dữ liệu người dùng mới nhất
         const userData = await getCurrentUserData();
         
@@ -795,12 +858,14 @@ function addMessageToChat(message) {
         messageElement.textContent = message.content;
     } else {
         const isOwnMessage = message.uid === currentUser.uid;
+        const isGuestMessage = message.isGuest;
         
-        messageElement.className = `message ${isOwnMessage ? 'own' : ''}`;
+        messageElement.className = `message ${isOwnMessage ? 'own' : ''} ${isGuestMessage ? 'guest-message' : ''}`;
         messageElement.innerHTML = `
             <div class="message-info">
                 <img src="${message.photoURL}" alt="${message.displayName}">
                 <span class="name">${message.displayName}</span>
+                ${isGuestMessage ? '<span class="guest-badge">Khách</span>' : ''}
                 <span class="time">${formatTimestamp(message.timestamp)}</span>
             </div>
             <div class="message-content">${message.content}</div>
@@ -831,15 +896,22 @@ function updateParticipantsList(participants) {
         // Thêm thuộc tính data-uid để dễ dàng xác định người dùng
         participantElement.setAttribute('data-uid', participant.uid);
         
-        // Không hiển thị nút tặng minicoin cho chính mình
+        // Thêm class guest nếu là người dùng ẩn danh
+        if (participant.isGuest) {
+            participantElement.classList.add('guest');
+        }
+        
+        // Không hiển thị nút tặng minicoin cho chính mình hoặc cho người dùng ẩn danh
         const isSelf = participant.uid === currentUser.uid;
+        const showGiftButton = !isSelf && !participant.isGuest && !currentUser.isAnonymous;
         
         participantElement.innerHTML = `
             <img src="${participant.photoURL}" alt="${participant.displayName}">
             <span class="name">${participant.displayName}</span>
             ${participant.isHost ? '<span class="host-badge">Chủ phòng</span>' : ''}
             ${participant.hasTicket && !participant.isHost ? '<span class="ticket-badge"><i class="fas fa-ticket-alt"></i></span>' : ''}
-            ${!isSelf ? '<button class="btn-small gift-coin-btn" title="Tặng MiniCoin"><i class="fas fa-coins"></i></button>' : ''}
+            ${participant.isGuest ? '<span class="guest-badge">Khách</span>' : ''}
+            ${showGiftButton ? '<button class="btn-small gift-coin-btn" title="Tặng MiniCoin"><i class="fas fa-coins"></i></button>' : ''}
         `;
         
         // Thêm sự kiện cho nút tặng minicoin
@@ -860,17 +932,30 @@ async function sendMessage() {
     if (!message) return;
     
     try {
-        // Get user data
-        const userData = await getCurrentUserData();
-        
-        // Add message to database
-        await database.ref(`rooms/${roomId}/messages`).push({
-            uid: currentUser.uid,
-            displayName: userData.displayName,
-            photoURL: userData.photoURL,
-            content: message,
-            timestamp: firebase.database.ServerValue.TIMESTAMP
-        });
+        // Kiểm tra nếu là người dùng ẩn danh
+        if (currentUser.isAnonymous) {
+            // Sử dụng thông tin người dùng ẩn danh đã lưu
+            await database.ref(`rooms/${roomId}/messages`).push({
+                uid: currentUser.uid,
+                displayName: currentUser.displayName,
+                photoURL: currentUser.photoURL,
+                content: message,
+                timestamp: firebase.database.ServerValue.TIMESTAMP,
+                isGuest: true
+            });
+        } else {
+            // Người dùng đã đăng nhập
+            const userData = await getCurrentUserData();
+            
+            // Add message to database
+            await database.ref(`rooms/${roomId}/messages`).push({
+                uid: currentUser.uid,
+                displayName: userData.displayName,
+                photoURL: userData.photoURL,
+                content: message,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+        }
         
         // Clear input
         messageInput.value = '';
@@ -936,6 +1021,20 @@ async function giftMiniCoin(recipientUid, recipientName) {
     console.log('=== BẮT ĐẦU QUÁ TRÌNH TẶNG MINICOIN ===');
     console.log('Người nhận:', recipientUid, recipientName);
     console.log('Người gửi:', currentUser.uid, currentUser.displayName);
+    
+    // Kiểm tra nếu người gửi là người dùng ẩn danh
+    if (currentUser.isAnonymous) {
+        showNotification('Bạn cần đăng nhập để tặng MiniCoin!', 'error');
+        return;
+    }
+    
+    // Kiểm tra nếu người nhận là người dùng ẩn danh
+    const recipientData = document.querySelector(`.participant[data-uid="${recipientUid}"]`);
+    if (recipientData && recipientData.classList.contains('guest')) {
+        showNotification('Không thể tặng MiniCoin cho người dùng ẩn danh!', 'error');
+        return;
+    }
+    
     try {
         // Hiển thị hộp thoại để nhập số lượng coin muốn tặng
         const coinAmount = prompt(`Nhập số lượng MiniCoin bạn muốn tặng cho ${recipientName}:`, "5");
