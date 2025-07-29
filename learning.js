@@ -880,35 +880,56 @@ async function handleSubmitSolution(e) {
         
         // Calculate points based on solution rank
         let pointsAwarded = 0;
-        if (solutions.length === 1) pointsAwarded = 5; // First solution
-        else if (solutions.length === 2) pointsAwarded = 4; // Second solution
-        else if (solutions.length === 3) pointsAwarded = 3; // Third solution
-        else if (solutions.length === 4) pointsAwarded = 2; // Fourth solution
-        else if (solutions.length === 5) pointsAwarded = 1; // Fifth solution
+        let miniCoinsAwarded = 0;
+        if (solutions.length === 1) {
+            pointsAwarded = 5; // First solution
+            miniCoinsAwarded = 5; // First solution also gets 5 mini-coins
+        }
+        else if (solutions.length === 2) {
+            pointsAwarded = 4; // Second solution
+            miniCoinsAwarded = 4; // Second solution gets 4 mini-coins
+        }
+        else if (solutions.length === 3) {
+            pointsAwarded = 3; // Third solution
+            miniCoinsAwarded = 3; // Third solution gets 3 mini-coins
+        }
+        else if (solutions.length === 4) {
+            pointsAwarded = 2; // Fourth solution
+            miniCoinsAwarded = 2; // Fourth solution gets 2 mini-coins
+        }
+        else if (solutions.length === 5) {
+            pointsAwarded = 1; // Fifth solution
+            miniCoinsAwarded = 1; // Fifth solution gets 1 mini-coin
+        }
         
-        // Update user's learning points
+        // Update user's learning points and mini-coins
         if (pointsAwarded > 0) {
             const userRef = firebase.database().ref(`users/${currentUser.uid}`);
             const userSnapshot = await userRef.once('value');
             const userData = userSnapshot.val() || {};
             
             const currentPoints = userData.learningPoints || 0;
+            const currentMiniCoins = userData.miniCoins || 0;
+            
             await userRef.update({
-                learningPoints: currentPoints + pointsAwarded
+                learningPoints: currentPoints + pointsAwarded,
+                miniCoins: currentMiniCoins + miniCoinsAwarded
             });
             
             // Update current user object
-            currentUser.learningPoints = currentPoints + pointsAwarded;
-            updateUIForLoggedInUser();
-        }
-        
-        // Close modal and reset form
+             currentUser.learningPoints = currentPoints + pointsAwarded;
+             if (!currentUser.miniCoins) currentUser.miniCoins = 0;
+             currentUser.miniCoins = currentMiniCoins + miniCoinsAwarded;
+             updateUIForLoggedInUser();
+         }
+         
+         // Close modal and reset form
         closeModal(submitSolutionModal);
         submitSolutionForm.reset();
         document.getElementById('solutionImagePreview').innerHTML = '';
         
         // Show success notification
-        showNotification(`Gửi lời giải thành công! ${pointsAwarded > 0 ? `Bạn nhận được ${pointsAwarded} điểm.` : ''}`, 'success');
+        showNotification(`Gửi lời giải thành công! ${pointsAwarded > 0 ? `Bạn nhận được ${pointsAwarded} điểm và ${miniCoinsAwarded} mini-coins.` : ''}`, 'success');
         
         // Reload exercise detail
         openExerciseDetail(exerciseId);

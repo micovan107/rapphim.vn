@@ -5,6 +5,8 @@ let currentUser = null;
 let currentPostId = null;
 let cloudinaryWidget = null;
 let editCloudinaryWidget = null;
+let videoCloudinaryWidget = null;
+let editVideoCloudinaryWidget = null;
 let postsData = [];
 let currentCategory = 'all';
 let currentSort = 'newest';
@@ -26,9 +28,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Thiết lập Cloudinary widget cho tạo bài viết mới
     setupCloudinaryWidget();
+    setupVideoCloudinaryWidget();
     
     // Thiết lập Cloudinary widget cho chỉnh sửa bài viết
     setupEditCloudinaryWidget();
+    setupEditVideoCloudinaryWidget();
 
     // Thiết lập các sự kiện
     setupEventListeners();
@@ -196,6 +200,89 @@ function setupCloudinaryWidget() {
         document.getElementById('postImageUrl').value = '';
         document.getElementById('imagePreviewContainer').style.display = 'none';
     });
+    
+    // Thiết lập sự kiện chuyển đổi giữa hình ảnh và video
+    document.getElementById('selectImageBtn').addEventListener('click', () => {
+        document.getElementById('selectImageBtn').classList.add('active');
+        document.getElementById('selectVideoBtn').classList.remove('active');
+        document.getElementById('imageUploadContainer').style.display = 'block';
+        document.getElementById('videoUploadContainer').style.display = 'none';
+    });
+    
+    document.getElementById('selectVideoBtn').addEventListener('click', () => {
+        document.getElementById('selectVideoBtn').classList.add('active');
+        document.getElementById('selectImageBtn').classList.remove('active');
+        document.getElementById('videoUploadContainer').style.display = 'block';
+        document.getElementById('imageUploadContainer').style.display = 'none';
+    });
+}
+
+// Thiết lập Cloudinary Widget cho video
+function setupVideoCloudinaryWidget() {
+    // Sử dụng cấu hình Cloudinary từ firebase-config.js
+    const cloudName = cloudinaryConfig.cloudName || 'demo';
+    const uploadPreset = cloudinaryConfig.uploadPreset || 'ml_default';
+    
+    videoCloudinaryWidget = cloudinary.createUploadWidget(
+        {
+            cloudName: cloudName,
+            uploadPreset: uploadPreset,
+            maxFiles: 1,
+            sources: ['local', 'url'],
+            resourceType: 'video',
+            clientAllowedFormats: ['mp4', 'mov', 'avi', 'webm'],
+            maxFileSize: 100000000, // 100MB
+            showAdvancedOptions: false,
+            multiple: false,
+            defaultSource: 'local',
+            styles: {
+                palette: {
+                    window: '#FFFFFF',
+                    windowBorder: '#90A0B3',
+                    tabIcon: '#0078FF',
+                    menuIcons: '#5A616A',
+                    textDark: '#000000',
+                    textLight: '#FFFFFF',
+                    link: '#0078FF',
+                    action: '#FF620C',
+                    inactiveTabIcon: '#0E2F5A',
+                    error: '#F44235',
+                    inProgress: '#0078FF',
+                    complete: '#20B832',
+                    sourceBg: '#E4EBF1'
+                },
+                fonts: {
+                    default: null,
+                    "'Poppins', sans-serif": {
+                        url: 'https://fonts.googleapis.com/css?family=Poppins',
+                        active: true
+                    }
+                }
+            }
+        },
+        (error, result) => {
+            if (!error && result && result.event === 'success') {
+                const videoUrl = result.info.secure_url;
+                const videoPublicId = result.info.public_id;
+                document.getElementById('postVideoUrl').value = videoUrl;
+                document.getElementById('postVideoPublicId').value = videoPublicId;
+                document.getElementById('videoPreview').src = videoUrl;
+                document.getElementById('videoPreviewContainer').style.display = 'block';
+            }
+        }
+    );
+
+    // Sự kiện nút tải lên video
+    document.getElementById('uploadVideoBtn').addEventListener('click', () => {
+        videoCloudinaryWidget.open();
+    });
+
+    // Sự kiện nút xóa video
+    document.getElementById('removeVideoBtn').addEventListener('click', () => {
+        document.getElementById('postVideoUrl').value = '';
+        document.getElementById('postVideoPublicId').value = '';
+        document.getElementById('videoPreviewContainer').style.display = 'none';
+    });
 }
 
 // Thiết lập Cloudinary widget cho chỉnh sửa bài viết
@@ -262,6 +349,89 @@ function setupEditCloudinaryWidget() {
         document.getElementById('editPostImageUrl').value = '';
         document.getElementById('editImagePreviewContainer').style.display = 'none';
     });
+    
+    // Thiết lập sự kiện chuyển đổi giữa hình ảnh và video trong form chỉnh sửa
+    document.getElementById('editSelectImageBtn').addEventListener('click', () => {
+        document.getElementById('editSelectImageBtn').classList.add('active');
+        document.getElementById('editSelectVideoBtn').classList.remove('active');
+        document.getElementById('editImageUploadContainer').style.display = 'block';
+        document.getElementById('editVideoUploadContainer').style.display = 'none';
+    });
+    
+    document.getElementById('editSelectVideoBtn').addEventListener('click', () => {
+        document.getElementById('editSelectVideoBtn').classList.add('active');
+        document.getElementById('editSelectImageBtn').classList.remove('active');
+        document.getElementById('editVideoUploadContainer').style.display = 'block';
+        document.getElementById('editImageUploadContainer').style.display = 'none';
+    });
+}
+
+// Thiết lập Cloudinary Widget cho video trong form chỉnh sửa
+function setupEditVideoCloudinaryWidget() {
+    // Sử dụng cấu hình Cloudinary từ firebase-config.js
+    const cloudName = cloudinaryConfig.cloudName || 'demo';
+    const uploadPreset = cloudinaryConfig.uploadPreset || 'ml_default';
+    
+    editVideoCloudinaryWidget = cloudinary.createUploadWidget(
+        {
+            cloudName: cloudName,
+            uploadPreset: uploadPreset,
+            maxFiles: 1,
+            sources: ['local', 'url'],
+            resourceType: 'video',
+            clientAllowedFormats: ['mp4', 'mov', 'avi', 'webm'],
+            maxFileSize: 100000000, // 100MB
+            showAdvancedOptions: false,
+            multiple: false,
+            defaultSource: 'local',
+            styles: {
+                palette: {
+                    window: '#FFFFFF',
+                    windowBorder: '#90A0B3',
+                    tabIcon: '#0078FF',
+                    menuIcons: '#5A616A',
+                    textDark: '#000000',
+                    textLight: '#FFFFFF',
+                    link: '#0078FF',
+                    action: '#FF620C',
+                    inactiveTabIcon: '#0E2F5A',
+                    error: '#F44235',
+                    inProgress: '#0078FF',
+                    complete: '#20B832',
+                    sourceBg: '#E4EBF1'
+                },
+                fonts: {
+                    default: null,
+                    "'Poppins', sans-serif": {
+                        url: 'https://fonts.googleapis.com/css?family=Poppins',
+                        active: true
+                    }
+                }
+            }
+        },
+        (error, result) => {
+            if (!error && result && result.event === 'success') {
+                const videoUrl = result.info.secure_url;
+                const videoPublicId = result.info.public_id;
+                document.getElementById('editPostVideoUrl').value = videoUrl;
+                document.getElementById('editPostVideoPublicId').value = videoPublicId;
+                document.getElementById('editVideoPreview').src = videoUrl;
+                document.getElementById('editVideoPreviewContainer').style.display = 'block';
+            }
+        }
+    );
+
+    // Sự kiện nút tải lên video
+    document.getElementById('editUploadVideoBtn').addEventListener('click', () => {
+        editVideoCloudinaryWidget.open();
+    });
+
+    // Sự kiện nút xóa video
+    document.getElementById('editRemoveVideoBtn').addEventListener('click', () => {
+        document.getElementById('editPostVideoUrl').value = '';
+        document.getElementById('editPostVideoPublicId').value = '';
+        document.getElementById('editVideoPreviewContainer').style.display = 'none';
+    });
 }
 
 // Thiết lập các sự kiện
@@ -277,7 +447,34 @@ function setupEventListeners() {
         } else {
             showNotification('Vui lòng đăng nhập để tạo bài viết', 'error');
         }
+
     });
+    // Ghi nhận tương tác đầu tiên để bật tiếng video
+let userHasInteracted = false;
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        const video = entry.target;
+        if (entry.isIntersecting && userHasInteracted) {
+            video.muted = false;
+            video.play().catch(() => {});
+        } else {
+            video.pause();
+            video.muted = true;
+        }
+    });
+}, {
+    threshold: 0.5
+});
+
+['click', 'touchstart', 'keydown'].forEach(evt => {
+    window.addEventListener(evt, () => {
+        userHasInteracted = true;
+        document.querySelectorAll('video').forEach(video => {
+            observer.observe(video);
+        });
+    }, { once: true });
+});
+
 
     closeCreatePostBtn.addEventListener('click', () => {
         createPostModal.style.display = 'none';
@@ -362,6 +559,40 @@ function setupEventListeners() {
         currentSort = sortSelect.value;
         loadPosts();
     });
+    
+    // Sự kiện click vào video để phát
+    document.addEventListener('click', (e) => {
+        // Kiểm tra nếu click vào nút play hoặc container video
+        const videoContainer = e.target.closest('.post-video-container');
+        const playButton = e.target.closest('.video-play-button') || e.target.classList.contains('video-play-button');
+        
+        if (videoContainer || playButton) {
+            // Tìm thẻ cha .post-card
+            const postCard = videoContainer ? videoContainer.closest('.post-card') : 
+                             e.target.closest('.post-card');
+            
+            if (postCard) {
+                const postId = postCard.dataset.id;
+                if (postId) {
+                    // Mở modal chi tiết bài viết
+                    loadPostDetail(postId);
+                    
+                    // Tự động phát video trong modal
+                    setTimeout(() => {
+                        const detailVideo = document.querySelector('.post-detail-video');
+                        if (detailVideo) {
+                            detailVideo.play().catch(err => {
+                                console.log('Không thể tự động phát video trong modal:', err);
+                            });
+                        }
+                    }, 500);
+                }
+            }
+        }
+    });
+    
+    // Thiết lập Intersection Observer để tự động phát video khi lướt đến
+    setupVideoAutoplay();
 
     // Đóng modal khi click bên ngoài
     window.addEventListener('click', (e) => {
@@ -394,6 +625,8 @@ async function handleCreatePost(e) {
     const category = document.getElementById('postCategory').value;
     const content = document.getElementById('postContent').value.trim();
     const imageUrl = document.getElementById('postImageUrl').value;
+    const videoUrl = document.getElementById('postVideoUrl').value;
+    const videoPublicId = document.getElementById('postVideoPublicId').value;
     
     if (!title || !category || !content) {
         showNotification('Vui lòng điền đầy đủ thông tin bài viết', 'error');
@@ -412,6 +645,8 @@ async function handleCreatePost(e) {
             category,
             content,
             imageUrl: imageUrl || null,
+            videoUrl: videoUrl || null,
+            videoPublicId: videoPublicId || null,
             authorId: currentUser.uid,
             authorName: userData.displayName || currentUser.displayName || 'Người dùng ẩn danh',
             authorPhotoURL: userData.photoURL || currentUser.photoURL || null,
@@ -431,7 +666,12 @@ async function handleCreatePost(e) {
         document.getElementById('createPostModal').style.display = 'none';
         document.getElementById('createPostForm').reset();
         document.getElementById('postImageUrl').value = '';
+        document.getElementById('postVideoUrl').value = '';
+        document.getElementById('postVideoPublicId').value = '';
         document.getElementById('imagePreviewContainer').style.display = 'none';
+        document.getElementById('videoPreviewContainer').style.display = 'none';
+        // Reset về tab hình ảnh
+        document.getElementById('selectImageBtn').click();
         
         showNotification('Bài viết đã được tạo thành công', 'success');
         
@@ -457,6 +697,8 @@ async function handleEditPost(e) {
     const category = document.getElementById('editPostCategory').value;
     const content = document.getElementById('editPostContent').value.trim();
     const imageUrl = document.getElementById('editPostImageUrl').value;
+    const videoUrl = document.getElementById('editPostVideoUrl').value;
+    const videoPublicId = document.getElementById('editPostVideoPublicId').value;
     
     if (!title || !category || !content) {
         showNotification('Vui lòng điền đầy đủ thông tin bài viết', 'error');
@@ -486,6 +728,8 @@ async function handleEditPost(e) {
             category,
             content,
             imageUrl: imageUrl || null,
+            videoUrl: videoUrl || null,
+            videoPublicId: videoPublicId || null,
             updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
         });
         
@@ -724,8 +968,14 @@ function renderPosts(posts) {
         const isLiked = currentUser && post.likedBy && post.likedBy[currentUser.uid] === true;
         
         postElement.innerHTML = `
-            <div class="post-image ${!post.imageUrl ? 'no-image-container' : ''}">
+            <div class="post-media ${!post.imageUrl && !post.videoUrl ? 'no-media-container' : ''}">
                 ${post.imageUrl ? `<img src="${post.imageUrl}" alt="${post.title}">` : ''}
+                ${post.videoUrl ? `
+                    <div class="post-video-container">
+                        <video class="post-video" src="${post.videoUrl}" poster="${post.videoUrl.replace(/\.[^/.]+$/, '.jpg')}" preload="metadata" muted loop playsinline></video>
+                        <div class="video-play-button"><i class="fas fa-play"></i></div>
+                    </div>
+                ` : ''}
                 <div class="post-category">${getCategoryLabel(post.category)}</div>
             </div>
             <div class="post-content">
@@ -782,6 +1032,72 @@ function renderPosts(posts) {
         }
         
         postsListElement.appendChild(postElement);
+    });
+    
+    // Thiết lập tự động phát video cho các bài viết mới
+    setupVideoAutoplay();
+}
+
+// Thiết lập tự động phát video khi lướt đến
+function setupVideoAutoplay() {
+    // Tạo Intersection Observer
+    const videoObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            // Lấy video element và container
+            const container = entry.target;
+            const video = container.querySelector('video');
+            if (!video) return;
+            
+            if (entry.isIntersecting) {
+                // Video đang trong viewport, phát video
+                video.play().then(() => {
+                    // Thêm class playing khi video đang phát
+                    container.classList.add('playing');
+                }).catch(error => {
+                    // Xử lý lỗi khi phát video (thường do chính sách tự động phát của trình duyệt)
+                    console.log('Không thể tự động phát video:', error);
+                    container.classList.remove('playing');
+                });
+                
+                // Thêm sự kiện khi video kết thúc
+                video.onended = () => {
+                    // Phát lại video khi kết thúc (loop)
+                    video.play().catch(() => {});
+                };
+            } else {
+                // Video không còn trong viewport, dừng video
+                video.pause();
+                // Xóa class playing
+                container.classList.remove('playing');
+            }
+        });
+    }, {
+        threshold: 0.5, // Video phải hiển thị ít nhất 50% mới phát
+        rootMargin: '0px' // Không có margin
+    });
+    
+    // Quan sát tất cả các container video
+    document.querySelectorAll('.post-video-container').forEach(container => {
+        videoObserver.observe(container);
+        
+        // Thêm sự kiện click vào nút play
+        const playButton = container.querySelector('.video-play-button');
+        const video = container.querySelector('video');
+        
+        if (playButton && video) {
+            playButton.addEventListener('click', (e) => {
+                e.stopPropagation(); // Ngăn sự kiện nổi bọt
+                
+                if (video.paused) {
+                    video.play().then(() => {
+                        container.classList.add('playing');
+                    }).catch(() => {});
+                } else {
+                    video.pause();
+                    container.classList.remove('playing');
+                }
+            });
+        }
     });
 }
 
@@ -841,6 +1157,11 @@ async function loadPostDetail(postId) {
                     <div class="post-detail-category"><span>${getCategoryLabel(post.category)}</span></div>
                     <div class="post-detail-text">${post.content}</div>
                     ${post.imageUrl ? `<div class="post-detail-image-container"><img src="${post.imageUrl}" alt="${post.title}" class="post-detail-image"></div>` : ''}
+                    ${post.videoUrl ? `
+                    <div class="post-detail-video-container">
+                        <video src="${post.videoUrl}" controls class="post-detail-video" autoplay></video>
+                    </div>
+                    ` : ''}
                 <div class="post-actions">
                     <div class="post-reactions">
                         <div>
@@ -1235,12 +1556,27 @@ function openEditPostModal(post) {
     document.getElementById('editPostCategory').value = post.category;
     document.getElementById('editPostContent').value = post.content;
     document.getElementById('editPostImageUrl').value = post.imageUrl || '';
+    document.getElementById('editPostVideoUrl').value = post.videoUrl || '';
+    document.getElementById('editPostVideoPublicId').value = post.videoPublicId || '';
     
-    if (post.imageUrl) {
+    // Hiển thị phương tiện phù hợp
+    if (post.videoUrl) {
+        // Nếu có video, hiển thị tab video
+        document.getElementById('editSelectVideoBtn').click();
+        document.getElementById('editVideoPreview').src = post.videoUrl;
+        document.getElementById('editVideoPreviewContainer').style.display = 'block';
+        document.getElementById('editImagePreviewContainer').style.display = 'none';
+    } else if (post.imageUrl) {
+        // Nếu có hình ảnh, hiển thị tab hình ảnh
+        document.getElementById('editSelectImageBtn').click();
         document.getElementById('editImagePreview').src = post.imageUrl;
         document.getElementById('editImagePreviewContainer').style.display = 'block';
+        document.getElementById('editVideoPreviewContainer').style.display = 'none';
     } else {
+        // Nếu không có phương tiện nào, ẩn cả hai
+        document.getElementById('editSelectImageBtn').click();
         document.getElementById('editImagePreviewContainer').style.display = 'none';
+        document.getElementById('editVideoPreviewContainer').style.display = 'none';
     }
     
     document.getElementById('editPostModal').style.display = 'block';

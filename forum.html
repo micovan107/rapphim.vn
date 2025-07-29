@@ -224,14 +224,31 @@
                     <textarea id="postContent" placeholder="Nhập nội dung bài viết" rows="6" required></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="postImage">Hình Ảnh (Tùy Chọn)</label>
-                    <div class="image-upload-container">
-                        <button type="button" id="uploadImageBtn" class="btn"><i class="fas fa-upload"></i> Tải Lên Hình Ảnh</button>
-                        <div id="imagePreviewContainer" class="image-preview-container" style="display: none;">
-                            <img id="imagePreview" src="" alt="Xem trước hình ảnh">
-                            <button type="button" id="removeImageBtn" class="btn btn-danger"><i class="fas fa-times"></i></button>
+                    <label for="postMedia">Phương Tiện (Tùy Chọn)</label>
+                    <div class="media-type-selector">
+                        <button type="button" id="selectImageBtn" class="btn media-type-btn active"><i class="fas fa-image"></i> Hình Ảnh</button>
+                        <button type="button" id="selectVideoBtn" class="btn media-type-btn"><i class="fas fa-video"></i> Video</button>
+                    </div>
+                    <div id="imageUploadContainer" class="media-upload-container">
+                        <div class="image-upload-container">
+                            <button type="button" id="uploadImageBtn" class="btn"><i class="fas fa-upload"></i> Tải Lên Hình Ảnh</button>
+                            <div id="imagePreviewContainer" class="image-preview-container" style="display: none;">
+                                <img id="imagePreview" src="" alt="Xem trước hình ảnh">
+                                <button type="button" id="removeImageBtn" class="btn btn-danger"><i class="fas fa-times"></i></button>
+                            </div>
+                            <input type="hidden" id="postImageUrl">
                         </div>
-                        <input type="hidden" id="postImageUrl">
+                    </div>
+                    <div id="videoUploadContainer" class="media-upload-container" style="display: none;">
+                        <div class="video-upload-container">
+                            <button type="button" id="uploadVideoBtn" class="btn"><i class="fas fa-upload"></i> Tải Lên Video</button>
+                            <div id="videoPreviewContainer" class="video-preview-container" style="display: none;">
+                                <video id="videoPreview" controls></video>
+                                <button type="button" id="removeVideoBtn" class="btn btn-danger"><i class="fas fa-times"></i></button>
+                            </div>
+                            <input type="hidden" id="postVideoUrl">
+                            <input type="hidden" id="postVideoPublicId">
+                        </div>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary">Đăng Bài</button>
@@ -289,14 +306,31 @@
                     <textarea id="editPostContent" placeholder="Nhập nội dung bài viết" rows="6" required></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="editPostImage">Hình Ảnh (Tùy Chọn)</label>
-                    <div class="image-upload-container">
-                        <button type="button" id="editUploadImageBtn" class="btn"><i class="fas fa-upload"></i> Tải Lên Hình Ảnh</button>
-                        <div id="editImagePreviewContainer" class="image-preview-container" style="display: none;">
-                            <img id="editImagePreview" src="" alt="Xem trước hình ảnh">
-                            <button type="button" id="editRemoveImageBtn" class="btn btn-danger"><i class="fas fa-times"></i></button>
+                    <label for="editPostMedia">Phương Tiện (Tùy Chọn)</label>
+                    <div class="media-type-selector">
+                        <button type="button" id="editSelectImageBtn" class="btn media-type-btn active"><i class="fas fa-image"></i> Hình Ảnh</button>
+                        <button type="button" id="editSelectVideoBtn" class="btn media-type-btn"><i class="fas fa-video"></i> Video</button>
+                    </div>
+                    <div id="editImageUploadContainer" class="media-upload-container">
+                        <div class="image-upload-container">
+                            <button type="button" id="editUploadImageBtn" class="btn"><i class="fas fa-upload"></i> Tải Lên Hình Ảnh</button>
+                            <div id="editImagePreviewContainer" class="image-preview-container" style="display: none;">
+                                <img id="editImagePreview" src="" alt="Xem trước hình ảnh">
+                                <button type="button" id="editRemoveImageBtn" class="btn btn-danger"><i class="fas fa-times"></i></button>
+                            </div>
+                            <input type="hidden" id="editPostImageUrl">
                         </div>
-                        <input type="hidden" id="editPostImageUrl">
+                    </div>
+                    <div id="editVideoUploadContainer" class="media-upload-container" style="display: none;">
+                        <div class="video-upload-container">
+                            <button type="button" id="editUploadVideoBtn" class="btn"><i class="fas fa-upload"></i> Tải Lên Video</button>
+                            <div id="editVideoPreviewContainer" class="video-preview-container" style="display: none;">
+                                <video id="editVideoPreview" controls></video>
+                                <button type="button" id="editRemoveVideoBtn" class="btn btn-danger"><i class="fas fa-times"></i></button>
+                            </div>
+                            <input type="hidden" id="editPostVideoUrl">
+                            <input type="hidden" id="editPostVideoPublicId">
+                        </div>
                     </div>
                 </div>
                 <input type="hidden" id="editPostId">
