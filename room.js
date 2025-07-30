@@ -59,6 +59,13 @@ async function initRoom() {
             return;
         }
         
+        // Initialize WebRTC for screen sharing
+        if (isScreenSharingSupported()) {
+            initScreenSharing(roomId);
+        } else {
+            console.warn('Screen sharing is not supported in this browser.');
+        }
+        
         // Check if user is authenticated
         auth.onAuthStateChanged(async (user) => {
             if (user) {
@@ -79,8 +86,8 @@ async function initRoom() {
                             // Get user data to check mini coins using the helper function
                             const userData = await getCurrentUserData();
                             
-                            if (!userData) {
-                                showError('Không tìm thấy thông tin người dùng.');
+                            if (!userData || userData.isGuest) {
+                                showError('Bạn cần đăng nhập để mua vé!');
                                 window.location.href = 'index.html';
                                 return;
                             }
@@ -238,6 +245,12 @@ function setupRoom() {
                         <button class="control-btn" id="fullscreenBtn" title="Toàn màn hình">
                             <i class="fas fa-expand"></i>
                         </button>
+                        <button class="control-btn" id="startScreenShareBtn" title="Chia sẻ màn hình">
+                            <i class="fas fa-desktop"></i>
+                        </button>
+                        <button class="control-btn" id="stopScreenShareBtn" title="Dừng chia sẻ màn hình" style="display:none;">
+                            <i class="fas fa-stop"></i>
+                        </button>
                         <div class="time-display">00:00 / 00:00</div>
                     </div>
                     <div class="host-controls">
@@ -326,6 +339,51 @@ function setupRoom() {
     document.addEventListener('mozfullscreenchange', updateFullscreenButtonState);
     document.addEventListener('MSFullscreenChange', updateFullscreenButtonState);
     
+    // Add screen sharing button event listeners
+    const startScreenShareBtn = document.getElementById('startScreenShareBtn');
+    const stopScreenShareBtn = document.getElementById('stopScreenShareBtn');
+    
+    // Hiển thị hoặc ẩn nút chia sẻ màn hình dựa vào loại phòng
+    if (roomData.isScreenSharing) {
+        // Nếu là phòng chia sẻ màn hình, chỉ chủ phòng mới có thể chia sẻ
+        if (!isHost) {
+            startScreenShareBtn.style.display = 'none';
+            stopScreenShareBtn.style.display = 'none';
+        } else {
+            startScreenShareBtn.style.display = 'inline-block';
+        }
+    }
+    
+    if (startScreenShareBtn && stopScreenShareBtn) {
+        startScreenShareBtn.addEventListener('click', async () => {
+            if (isScreenSharingSupported()) {
+                await startScreenSharing();
+            } else {
+                showError('Trình duyệt của bạn không hỗ trợ chia sẻ màn hình.');
+            }
+        });
+        
+        stopScreenShareBtn.addEventListener('click', stopScreenSharing);
+    }
+    
+    // Add close remote screen button event listener
+    const closeRemoteScreenBtn = document.getElementById('closeRemoteScreenBtn');
+    if (closeRemoteScreenBtn) {
+        closeRemoteScreenBtn.addEventListener('click', () => {
+            const remoteScreenContainer = document.getElementById('remoteScreenContainer');
+            if (remoteScreenContainer) {
+                remoteScreenContainer.style.display = 'none';
+                
+                // Stop the video stream
+                const remoteVideo = document.getElementById('remoteScreenShare');
+                if (remoteVideo && remoteVideo.srcObject) {
+                    remoteVideo.srcObject.getTracks().forEach(track => track.stop());
+                    remoteVideo.srcObject = null;
+                }
+            }
+        });
+    }
+    
     // Add host control event listeners
     if (isHost) {
         const startBtn = document.getElementById('startBtn');
@@ -363,8 +421,14 @@ function setupRoom() {
         });
     }
     
-    // Initialize YouTube player
-    loadYouTubeAPI();
+    // Initialize YouTube player or screen sharing based on room type
+    if (roomData.isScreenSharing) {
+        // Khởi tạo chia sẻ màn hình nếu là phòng chia sẻ màn hình
+        initScreenSharing();
+    } else {
+        // Khởi tạo trình phát video nếu là phòng video thông thường
+        loadYouTubeAPI();
+    }
     
     // Listen for room updates
     listenForRoomUpdates();
@@ -382,6 +446,9 @@ function setupRoom() {
     
     // Lắng nghe thông báo cho người dùng hiện tại
     listenForUserNotifications();
+    
+    // Thiết lập sự kiện khi người dùng rời khỏi trang
+    window.addEventListener('beforeunload', leaveRoom);
 }
 
 // Join Room
@@ -394,6 +461,12 @@ async function joinRoom() {
         } else {
             // Get user data
             const userData = await getCurrentUserData();
+            
+            if (!userData || userData.isGuest) {
+                showError('Bạn cần đăng nhập để tham gia phòng!');
+                window.location.href = 'index.html';
+                return;
+            }
             
             // Add user to participants
             await database.ref(`rooms/${roomId}/participants/${currentUser.uid}`).update({
@@ -689,8 +762,8 @@ function listenForUserNotifications() {
 // Cập nhật hiển thị MiniCoin
 async function updateMiniCoinsDisplay() {
     try {
-        // Kiểm tra nếu là người dùng ẩn danh
-        if (currentUser.isAnonymous) {
+        // Kiểm tra nếu là người dùng ẩn danh hoặc không có người dùng
+        if (!currentUser || currentUser.isAnonymous) {
             // Ẩn hiển thị MiniCoin cho người dùng ẩn danh
             const miniCoinsContainer = document.querySelector('.mini-coins-container');
             if (miniCoinsContainer) {
@@ -947,6 +1020,11 @@ async function sendMessage() {
             // Người dùng đã đăng nhập
             const userData = await getCurrentUserData();
             
+            if (!userData) {
+                console.error('Không thể lấy thông tin người dùng');
+                return;
+            }
+            
             // Add message to database
             await database.ref(`rooms/${roomId}/messages`).push({
                 uid: currentUser.uid,
@@ -1054,8 +1132,9 @@ async function giftMiniCoin(recipientUid, recipientName) {
         // Lấy thông tin người dùng hiện tại
         const userData = await getCurrentUserData();
         
-        if (!userData) {
-            showNotification('Không tìm thấy thông tin người dùng!', 'error');
+        if (!userData || userData.isGuest) {
+            showNotification('Bạn cần đăng nhập để gửi MiniCoin!', 'error');
+            openModal(document.getElementById('loginModal'));
             return;
         }
         
@@ -1158,6 +1237,12 @@ async function giftMiniCoin(recipientUid, recipientName) {
         console.log('Đang cập nhật giao diện với dữ liệu mới...');
         const newUserData = await getCurrentUserData();
         console.log('Dữ liệu người dùng mới:', newUserData);
+        
+        if (!newUserData) {
+            console.error('Không thể lấy thông tin người dùng mới');
+            return;
+        }
+        
         const miniCoinsElement = document.getElementById('miniCoins');
         console.log('Element miniCoins:', miniCoinsElement);
         if (miniCoinsElement && newUserData) {
@@ -1437,6 +1522,25 @@ function loadYouTubeAPI() {
     
     // Set up YouTube player when API is ready
     window.onYouTubeIframeAPIReady = () => {
+        // Kiểm tra nếu phòng là phòng chia sẻ màn hình
+        if (roomData.isScreenSharing) {
+            // Tạo container cho chia sẻ màn hình
+            const playerContainer = document.getElementById('player');
+            playerContainer.innerHTML = `
+                <div class="screen-sharing-placeholder">
+                    <div class="screen-sharing-message">
+                        <i class="fas fa-desktop"></i>
+                        <p>Phòng chia sẻ màn hình</p>
+                        <p class="screen-sharing-instruction">Chủ phòng sẽ bắt đầu chia sẻ màn hình khi sẵn sàng</p>
+                    </div>
+                </div>
+            `;
+            
+            // Không cần khởi tạo player cho phòng chia sẻ màn hình
+            playerType = 'screen_sharing';
+            return;
+        }
+        
         // Kiểm tra nếu videoId là Cloudinary ID (bắt đầu bằng 'cloudinary_')
         // Trong trường hợp này, không khởi tạo trình phát YouTube mà chuyển sang xử lý video Cloudinary
         if (roomData.videoId && roomData.videoId.startsWith('cloudinary_') && roomData.videoUrl) {
@@ -2157,6 +2261,32 @@ function toggleFullscreen() {
             document.msExitFullscreen();
         }
     }
+}
+
+// Hàm xử lý khi người dùng rời khỏi phòng
+function leaveRoom(event) {
+    // Nếu người dùng đang chia sẻ màn hình, dừng chia sẻ
+    if (typeof cleanupScreenSharing === 'function') {
+        cleanupScreenSharing();
+    }
+    
+    // Nếu người dùng đã đăng nhập và không phải là chủ phòng
+    if (currentUser && !isHost) {
+        // Sử dụng phương thức đồng bộ để đảm bảo thực hiện trước khi trang đóng
+        // Xóa người dùng khỏi danh sách người tham gia
+        database.ref(`rooms/${roomId}/participants/${currentUser.uid}`).remove();
+        
+        // Thêm thông báo hệ thống
+        database.ref(`rooms/${roomId}/messages`).push({
+            type: 'system',
+            content: `${currentUser.displayName || 'Khách'} đã rời khỏi phòng.`,
+            timestamp: firebase.database.ServerValue.TIMESTAMP
+        });
+    }
+    
+    // Không hiển thị hộp thoại xác nhận khi rời trang
+    // Nếu cần hiển thị hộp thoại, bỏ comment dòng dưới
+    // event.returnValue = "Bạn có chắc chắn muốn rời khỏi phòng?"; 
 }
 
 // Function to update fullscreen button state

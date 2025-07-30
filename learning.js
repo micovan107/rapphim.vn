@@ -54,10 +54,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 initChatFeatures(); // Initialize chat features
             });
         } else {
-            currentUser = null;
-            updateUIForLoggedOutUser();
-            loadExercises();
-            loadLeaderboard();
+            // Lấy dữ liệu người dùng khách
+            getCurrentUserData().then(guestData => {
+                updateUIForLoggedOutUser(guestData);
+                loadExercises();
+                loadLeaderboard();
+            });
             // Hide chat features for logged out users
             document.getElementById('chatMiniButton').style.display = 'none';
         }
@@ -354,7 +356,12 @@ function updateUIForLoggedInUser() {
     }
 }
 
-function updateUIForLoggedOutUser() {
+function updateUIForLoggedOutUser(guestData) {
+    // Lưu thông tin người dùng khách vào biến toàn cục nếu có
+    if (guestData) {
+        window.currentUser = guestData;
+    }
+    
     const authButtons = document.querySelector('.auth-buttons');
     if (authButtons) {
         authButtons.innerHTML = `
@@ -1939,8 +1946,9 @@ function listenForNewMessages() {
                         // Auto-open chat window for private messages ONLY if it's a new message
                         // that arrived after page load and the window wasn't manually closed by the user
                         const existingWindow = document.querySelector(`.chat-mini-window[data-user-id="${user.id}"]`);
-                        if (!existingWindow && !closedChatWindows[user.id] && isMessageAfterPageLoad) {
-                            // Find the user object
+                        if (!existingWindow && isMessageAfterPageLoad) {
+                            // Luôn mở cửa sổ chat khi có tin nhắn mới, bỏ qua kiểm tra closedChatWindows
+                            // để sửa lỗi ô chat mini không tự bật khi có tin nhắn từ người cụ thể
                             const chatUser = chatUsers.find(u => u.id === user.id);
                             if (chatUser) {
                                 openChatWindow(chatUser, true); // Force open with new message

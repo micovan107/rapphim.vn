@@ -1,0 +1,192 @@
+/* Screen Sharing Styles */
+
+/* Screen sharing placeholder for room */
+.screen-sharing-placeholder {
+    width: 100%;
+    height: 100%;
+    background-color: #1a1a1a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.screen-sharing-message {
+    text-align: center;
+    color: white;
+    padding: 20px;
+}
+
+.screen-sharing-message i {
+    font-size: 48px;
+    margin-bottom: 15px;
+    color: #4285f4;
+}
+
+.screen-sharing-message p {
+    font-size: 24px;
+    margin: 10px 0;
+}
+
+.screen-sharing-instruction {
+    font-size: 16px !important;
+    opacity: 0.7;
+}
+
+/* Screen sharing container */
+.screen-sharing-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    height: 180px;
+    background-color: #000;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.screen-sharing-container:hover {
+    transform: scale(1.05);
+}
+
+.screen-preview-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+#screenPreview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.screen-preview-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.screen-preview-wrapper:hover .screen-preview-overlay {
+    opacity: 1;
+}
+
+/* Remote screen container */
+.remote-screen-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 2000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.remote-screen-wrapper {
+    position: relative;
+    width: 90%;
+    height: 90%;
+    max-width: 1600px;
+    max-height: 900px;
+}
+
+#remoteScreenShare {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background-color: #000;
+}
+
+.remote-screen-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px;
+    box-sizing: border-box;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.remote-screen-wrapper:hover .remote-screen-overlay {
+    opacity: 1;
+}
+
+.remote-screen-overlay p {
+    color: white;
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 8px 16px;
+    border-radius: 20px;
+    align-self: flex-start;
+    margin: 0;
+}
+
+#closeRemoteScreenBtn {
+    align-self: flex-end;
+    background-color: #ff5e62;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#closeRemoteScreenBtn:hover {
+    background-color: #ff3c41;
+}
+
+/* Screen sharing buttons */
+#startScreenShareBtn, #stopScreenShareBtn {
+    background-color: transparent;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+#startScreenShareBtn:hover {
+    color: #4caf50;
+}
+
+#stopScreenShareBtn {
+    color: #ff5e62;
+}
+
+#stopScreenShareBtn:hover {
+    color: #ff3c41;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .screen-sharing-container {
+        width: 200px;
+        height: 120px;
+        bottom: 10px;
+        right: 10px;
+    }
+    
+    .remote-screen-wrapper {
+        width: 95%;
+        height: 95%;
+    }
+}

@@ -173,7 +173,8 @@ firebase.auth().onAuthStateChanged(async (user) => {
         updateUIForLoggedInUser(userData);
     } else {
         // User is signed out
-        updateUIForLoggedOutUser();
+        const guestData = await getCurrentUserData(); // Sẽ trả về dữ liệu khách
+        updateUIForLoggedOutUser(guestData);
     }
 });
 
@@ -273,9 +274,14 @@ function toggleDarkMode() {
 }
 
 // Update UI for logged out user
-function updateUIForLoggedOutUser() {
+function updateUIForLoggedOutUser(guestData) {
     // Check if auth buttons element exists
     if (!authButtons) return;
+    
+    // Lưu thông tin người dùng khách vào biến toàn cục nếu có
+    if (guestData) {
+        window.currentUser = guestData;
+    }
     
     // Clear auth buttons
     authButtons.innerHTML = '';

@@ -43,8 +43,8 @@ function setupUI(user) {
     const createPostBtn = document.getElementById('createPostBtn');
     const authButtons = document.querySelector('.auth-buttons');
     
-    if (user) {
-        // Người dùng đã đăng nhập
+    if (user && !user.isAnonymous) {
+        // Người dùng đã đăng nhập và không phải người dùng ẩn danh
         createPostBtn.style.display = 'block';
         
         // Lấy dữ liệu người dùng từ database
@@ -868,19 +868,8 @@ async function loadPosts() {
     postsListElement.innerHTML = '<div class="loading">Đang tải bài viết...</div>';
     
     try {
-        // Kiểm tra xem người dùng đã đăng nhập chưa
+        // Cho phép người dùng chưa đăng nhập vẫn xem được bài viết
         const currentUser = firebase.auth().currentUser;
-        if (!currentUser) {
-            // Nếu chưa đăng nhập, thử đăng nhập ẩn danh
-            try {
-                await firebase.auth().signInAnonymously();
-                console.log('Đã đăng nhập ẩn danh để đọc bài viết');
-            } catch (authError) {
-                console.error('Lỗi đăng nhập ẩn danh:', authError);
-                postsListElement.innerHTML = '<div class="error">Vui lòng đăng nhập để xem bài viết.</div>';
-                return;
-            }
-        }
         
         // Sử dụng Realtime Database thay vì Firestore
         const postsRef = firebase.database().ref('posts');
@@ -1415,8 +1404,11 @@ function setupCommentEvents(commentElement, comment) {
 
 // Xử lý thích bài viết
 async function handleLikePost(postId) {
-    if (!currentUser) {
+    if (!currentUser || currentUser.isAnonymous) {
         showNotification('Vui lòng đăng nhập để thích bài viết', 'error');
+        // Mở modal đăng nhập
+        const loginModal = document.getElementById('loginModal');
+        if (loginModal) loginModal.style.display = 'block';
         return;
     }
     
@@ -1739,14 +1731,14 @@ function toggleDarkMode() {
     }
     
     // Lưu trạng thái vào localStorage
-    localStorage.setItem('darkMode', isDarkMode ? 'enabled' : 'disabled');
+    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
 }
 
 // Kiểm tra và áp dụng chế độ sáng/tối khi tải trang
 document.addEventListener('DOMContentLoaded', () => {
-    const savedDarkMode = localStorage.getItem('darkMode');
-    if (savedDarkMode === 'enabled') {
-        document.body.classList.add('dark-mode');
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-theme');
         const darkModeToggle = document.getElementById('darkModeToggle');
         if (darkModeToggle) {
             darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
@@ -1755,6 +1747,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Tải bảng xếp hạng người dùng
     loadUserRanking();
+    
+    // Kiểm tra và cấp minicoin hàng ngày
+    checkDailyReward();
 });
 
 // Hàm tải bảng xếp hạng người dùng
@@ -1825,3 +1820,60 @@ async function loadUserRanking() {
         }
     }
 }
+
+// Kiểm tra và cấp minicoin hàng ngày
+async function checkDailyReward() {
+    try {
+        // Kiểm tra nếu người dùng đã đăng nhập
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            console.log('Người dùng chưa đăng nhập, không thể nhận minicoin hàng ngày');
+            return;
+        }
+        
+        // Lấy dữ liệu người dùng từ database
+        const userRef = firebase.database().ref(`users/${user.uid}`);
+        const snapshot = await userRef.once('value');
+        const userData = snapshot.val() || {};
+        
+        // Kiểm tra xem người dùng đã nhận minicoin hôm nay chưa
+        const lastRewardDate = userData.lastDailyReward ? new Date(userData.lastDailyReward) : null;
+        const today = new Date();
+        
+        // Hàm kiểm tra xem hai ngày có phải là cùng một ngày không
+        function isSameDay(date1, date2) {
+            return date1.getFullYear() === date2.getFullYear() &&
+                   date1.getMonth() === date2.getMonth() &&
+                   date1.getDate() === date2.getDate();
+        }
+        
+        // Nếu chưa nhận thưởng hôm nay hoặc chưa từng nhận thưởng
+        if (!lastRewardDate || !isSameDay(lastRewardDate, today)) {
+            // Cập nhật số minicoin và thời gian nhận thưởng
+            const currentMiniCoins = userData.miniCoins || 0;
+            await userRef.update({
+                miniCoins: currentMiniCoins + 50,
+                lastDailyReward: today.getTime()
+            });
+            
+            // Hiển thị thông báo
+            showNotification('Chúc mừng! Bạn đã nhận được 50 minicoin hàng ngày!', 'success');
+            
+            // Cập nhật hiển thị minicoin trên giao diện nếu có
+            const miniCoinsElement = document.getElementById('miniCoins');
+            if (miniCoinsElement) {
+                miniCoinsElement.textContent = currentMiniCoins + 50;
+            }
+            
+            // Cập nhật bảng xếp hạng
+            setTimeout(() => {
+                loadUserRanking();
+            }, 1000);
+        } else {
+            console.log('Người dùng đã nhận minicoin hôm nay');
+        }
+    } catch (error) {
+        console.error('Lỗi khi kiểm tra minicoin hàng ngày:', error);
+    }
+}
+

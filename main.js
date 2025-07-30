@@ -3,6 +3,9 @@
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
+    // Kiểm tra và cấp thưởng minicoin hàng ngày
+    checkDailyReward();
+    
     // Initialize tooltips if any
     initTooltips();
     
@@ -880,5 +883,47 @@ function showNotification(message, type = 'info') {
             }, 300);
         }
     }, 5000);
+}
+
+// Hàm kiểm tra và cấp thưởng minicoin hàng ngày
+async function checkDailyReward() {
+    // Kiểm tra xem người dùng đã đăng nhập chưa
+    const user = firebase.auth().currentUser;
+    if (!user) return; // Nếu chưa đăng nhập, không làm gì cả
+    
+    try {
+        // Lấy dữ liệu người dùng từ Firebase
+        const userRef = firebase.database().ref(`users/${user.uid}`);
+        const snapshot = await userRef.get();
+        const userData = snapshot.val() || {};
+        
+        // Lấy ngày hiện tại
+        const today = new Date();
+        const todayString = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
+        
+        // Kiểm tra xem người dùng đã nhận thưởng hôm nay chưa
+        if (userData.lastRewardDate !== todayString) {
+            // Cập nhật số minicoin và ngày nhận thưởng
+            const currentCoins = userData.miniCoins || 0;
+            const newCoins = currentCoins + 50; // Thưởng 50 minicoin mỗi ngày
+            
+            // Cập nhật dữ liệu trong Firebase
+            await userRef.update({
+                miniCoins: newCoins,
+                lastRewardDate: todayString
+            });
+            
+            // Hiển thị thông báo
+            showNotification('Chúc mừng! Bạn đã nhận được 50 Mini Coin cho lần đăng nhập đầu tiên hôm nay!', 'success');
+            
+            // Cập nhật hiển thị minicoin trên giao diện
+            const miniCoinsElement = document.getElementById('miniCoins');
+            if (miniCoinsElement) {
+                miniCoinsElement.textContent = newCoins;
+            }
+        }
+    } catch (error) {
+        console.error('Lỗi khi kiểm tra phần thưởng hàng ngày:', error);
+    }
 }
 

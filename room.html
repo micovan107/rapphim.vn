@@ -11,6 +11,7 @@
     <link rel="shortcut icon" href="favicon.svg">
     <link rel="apple-touch-icon" href="favicon.svg">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="screen-sharing.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -123,6 +124,27 @@
         </div>
     </div>
     
+    <!-- Screen Sharing Container -->
+    <div id="screenSharingContainer" class="screen-sharing-container" style="display: none;">
+        <div class="screen-preview-wrapper">
+            <video id="screenPreview" autoplay muted playsinline></video>
+            <div class="screen-preview-overlay">
+                <p>Đang chia sẻ màn hình của bạn</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Remote Screen Container -->
+    <div id="remoteScreenContainer" class="remote-screen-container" style="display: none;">
+        <div class="remote-screen-wrapper">
+            <video id="remoteScreenShare" autoplay playsinline></video>
+            <div class="remote-screen-overlay">
+                <p>Màn hình được chia sẻ</p>
+                <button id="closeRemoteScreenBtn" class="btn"><i class="fas fa-times"></i> Đóng</button>
+            </div>
+        </div>
+    </div>
+    
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
@@ -136,6 +158,7 @@
     <!-- App Scripts -->
     <script src="firebase-config.js"></script>
     <script src="auth.js"></script>
+    <script src="webrtc-screen-sharing.js"></script>
     <script src="room.js"></script>
     <script src="main.js"></script>
 </body>
