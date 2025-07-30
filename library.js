@@ -449,7 +449,7 @@ async function translateBookContent() {
                 const bookTitle = document.getElementById('readBookTitle').textContent;
                 translatedContent.innerHTML = `
                     <div class="translation-notice">
-                        <p><i class="fas fa-info-circle"></i> Tính năng dịch thuật đang được phát triển. Bạn sẽ cần đăng ký API key Google Translate để sử dụng.</p>
+                        <p><i class="fas fa-info-circle"></i> Tính năng dịch thuật đang được phát triển. Chắc không có xiền á.</p>
                     </div>
                     <div class="sample-content ${fontSizeClass}">
                         <h3>Bản dịch: ${bookTitle}</h3>
@@ -462,7 +462,7 @@ async function translateBookContent() {
                 // For regular content
                 translatedContent.innerHTML = `
                     <div class="translation-notice">
-                        <p><i class="fas fa-info-circle"></i> Tính năng dịch thuật đang được phát triển. Bạn sẽ cần đăng ký API key Google Translate để sử dụng.</p>
+                        <p><i class="fas fa-info-circle"></i> Tính năng dịch thuật đang được phát triển. Chắc ko có xiền á.</p>
                     </div>
                     <p>Đây là bản dịch mẫu của nội dung sách. Trong ứng dụng thực tế, nội dung sẽ được dịch bằng Google Translate API.</p>
                     ${originalContent.innerHTML}
