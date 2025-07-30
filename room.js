@@ -47,6 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
 // Initialize Room
 async function initRoom() {
     try {
+        // Tải modal cho người dùng khách
+        loadGuestModal();
+        
         // Kiểm tra và cập nhật nhiệm vụ hàng ngày
         checkDailyTask();
         
@@ -57,13 +60,6 @@ async function initRoom() {
         if (!roomData) {
             showError('Phòng không tồn tại!');
             return;
-        }
-        
-        // Initialize WebRTC for screen sharing
-        if (isScreenSharingSupported()) {
-            initScreenSharing(roomId);
-        } else {
-            console.warn('Screen sharing is not supported in this browser.');
         }
         
         // Check if user is authenticated
@@ -86,8 +82,8 @@ async function initRoom() {
                             // Get user data to check mini coins using the helper function
                             const userData = await getCurrentUserData();
                             
-                            if (!userData || userData.isGuest) {
-                                showError('Bạn cần đăng nhập để mua vé!');
+                            if (!userData) {
+                                showError('Không tìm thấy thông tin người dùng.');
                                 window.location.href = 'index.html';
                                 return;
                             }
@@ -158,55 +154,8 @@ async function initRoom() {
                 // Join room
                 joinRoom();
             } else {
-                // Người dùng chưa đăng nhập - cho phép vào phòng với tư cách khách
-                if (roomData.requiresTicket) {
-                    // Nếu phòng yêu cầu vé, chuyển hướng đến trang đăng nhập
-                    showError('Phòng này yêu cầu vé để vào. Vui lòng đăng nhập để tiếp tục.');
-                    window.location.href = 'index.html';
-                    return;
-                }
-                
-                // Tạo người dùng ẩn danh
-                const guestId = 'guest_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-                currentUser = {
-                    uid: guestId,
-                    isAnonymous: true
-                };
-                
-                // Hiển thị hộp thoại nhập tên
-                const guestName = prompt('Nhập tên hiển thị của bạn để tham gia phòng:', 'Khách');
-                if (!guestName) {
-                    // Người dùng hủy nhập tên, chuyển hướng về trang chủ
-                    window.location.href = 'index.html';
-                    return;
-                }
-                
-                // Lưu thông tin người dùng ẩn danh
-                currentUser.displayName = guestName;
-                currentUser.photoURL = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y';
-                
-                // Set up room
-                setupRoom();
-                
-                // Thêm người dùng ẩn danh vào danh sách người tham gia
-                await database.ref(`rooms/${roomId}/participants/${guestId}`).set({
-                    uid: guestId,
-                    displayName: guestName,
-                    photoURL: 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
-                    isHost: false,
-                    isGuest: true,
-                    hasTicket: false,
-                    joinedAt: firebase.database.ServerValue.TIMESTAMP
-                });
-                
-                // Thêm thông báo hệ thống
-                await database.ref(`rooms/${roomId}/messages`).push({
-                    type: 'system',
-                    message: `${guestName} đã tham gia phòng với tư cách khách.`,
-                    timestamp: firebase.database.ServerValue.TIMESTAMP
-                });
-                
-                showNotification(`Bạn đã tham gia phòng với tên ${guestName}. Đăng nhập để lưu lịch sử chat và nhận thêm tính năng.`, 'info');
+                // Hiển thị modal cho người dùng khách
+                showGuestModal();
             }
         });
     } catch (error) {
@@ -244,12 +193,6 @@ function setupRoom() {
                         ` : ''}
                         <button class="control-btn" id="fullscreenBtn" title="Toàn màn hình">
                             <i class="fas fa-expand"></i>
-                        </button>
-                        <button class="control-btn" id="startScreenShareBtn" title="Chia sẻ màn hình">
-                            <i class="fas fa-desktop"></i>
-                        </button>
-                        <button class="control-btn" id="stopScreenShareBtn" title="Dừng chia sẻ màn hình" style="display:none;">
-                            <i class="fas fa-stop"></i>
                         </button>
                         <div class="time-display">00:00 / 00:00</div>
                     </div>
@@ -339,51 +282,6 @@ function setupRoom() {
     document.addEventListener('mozfullscreenchange', updateFullscreenButtonState);
     document.addEventListener('MSFullscreenChange', updateFullscreenButtonState);
     
-    // Add screen sharing button event listeners
-    const startScreenShareBtn = document.getElementById('startScreenShareBtn');
-    const stopScreenShareBtn = document.getElementById('stopScreenShareBtn');
-    
-    // Hiển thị hoặc ẩn nút chia sẻ màn hình dựa vào loại phòng
-    if (roomData.isScreenSharing) {
-        // Nếu là phòng chia sẻ màn hình, chỉ chủ phòng mới có thể chia sẻ
-        if (!isHost) {
-            startScreenShareBtn.style.display = 'none';
-            stopScreenShareBtn.style.display = 'none';
-        } else {
-            startScreenShareBtn.style.display = 'inline-block';
-        }
-    }
-    
-    if (startScreenShareBtn && stopScreenShareBtn) {
-        startScreenShareBtn.addEventListener('click', async () => {
-            if (isScreenSharingSupported()) {
-                await startScreenSharing();
-            } else {
-                showError('Trình duyệt của bạn không hỗ trợ chia sẻ màn hình.');
-            }
-        });
-        
-        stopScreenShareBtn.addEventListener('click', stopScreenSharing);
-    }
-    
-    // Add close remote screen button event listener
-    const closeRemoteScreenBtn = document.getElementById('closeRemoteScreenBtn');
-    if (closeRemoteScreenBtn) {
-        closeRemoteScreenBtn.addEventListener('click', () => {
-            const remoteScreenContainer = document.getElementById('remoteScreenContainer');
-            if (remoteScreenContainer) {
-                remoteScreenContainer.style.display = 'none';
-                
-                // Stop the video stream
-                const remoteVideo = document.getElementById('remoteScreenShare');
-                if (remoteVideo && remoteVideo.srcObject) {
-                    remoteVideo.srcObject.getTracks().forEach(track => track.stop());
-                    remoteVideo.srcObject = null;
-                }
-            }
-        });
-    }
-    
     // Add host control event listeners
     if (isHost) {
         const startBtn = document.getElementById('startBtn');
@@ -421,14 +319,8 @@ function setupRoom() {
         });
     }
     
-    // Initialize YouTube player or screen sharing based on room type
-    if (roomData.isScreenSharing) {
-        // Khởi tạo chia sẻ màn hình nếu là phòng chia sẻ màn hình
-        initScreenSharing();
-    } else {
-        // Khởi tạo trình phát video nếu là phòng video thông thường
-        loadYouTubeAPI();
-    }
+    // Initialize YouTube player
+    loadYouTubeAPI();
     
     // Listen for room updates
     listenForRoomUpdates();
@@ -446,27 +338,36 @@ function setupRoom() {
     
     // Lắng nghe thông báo cho người dùng hiện tại
     listenForUserNotifications();
-    
-    // Thiết lập sự kiện khi người dùng rời khỏi trang
-    window.addEventListener('beforeunload', leaveRoom);
 }
 
 // Join Room
 async function joinRoom() {
     try {
-        // Kiểm tra nếu là người dùng ẩn danh
-        if (currentUser.isAnonymous) {
-            // Người dùng ẩn danh đã được thêm vào danh sách người tham gia trong hàm initRoom()
-            // Không cần thêm lại ở đây
-        } else {
-            // Get user data
-            const userData = await getCurrentUserData();
+        // Xử lý khác nhau cho người dùng đã đăng nhập và người dùng khách
+        if (currentUser.isGuest) {
+            // Người dùng khách - sử dụng thông tin từ form đăng nhập khách
+            const userData = currentUser;
             
-            if (!userData || userData.isGuest) {
-                showError('Bạn cần đăng nhập để tham gia phòng!');
-                window.location.href = 'index.html';
-                return;
-            }
+            // Add user to participants with guest flag
+            await database.ref(`rooms/${roomId}/participants/${currentUser.uid}`).update({
+                uid: currentUser.uid,
+                displayName: userData.displayName,
+                photoURL: userData.photoURL,
+                isHost: false, // Khách không bao giờ là host
+                isGuest: true,
+                joinedAt: firebase.database.ServerValue.TIMESTAMP,
+                hasTicket: true // Khách luôn có vé xem
+            });
+            
+            // Add system message
+            await database.ref(`rooms/${roomId}/messages`).push({
+                type: 'system',
+                content: `${userData.displayName} (Khách) đã tham gia phòng.`,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+        } else {
+            // Người dùng đã đăng nhập - sử dụng thông tin từ Firebase
+            const userData = await getCurrentUserData();
             
             // Add user to participants
             await database.ref(`rooms/${roomId}/participants/${currentUser.uid}`).update({
@@ -762,16 +663,6 @@ function listenForUserNotifications() {
 // Cập nhật hiển thị MiniCoin
 async function updateMiniCoinsDisplay() {
     try {
-        // Kiểm tra nếu là người dùng ẩn danh hoặc không có người dùng
-        if (!currentUser || currentUser.isAnonymous) {
-            // Ẩn hiển thị MiniCoin cho người dùng ẩn danh
-            const miniCoinsContainer = document.querySelector('.mini-coins-container');
-            if (miniCoinsContainer) {
-                miniCoinsContainer.style.display = 'none';
-            }
-            return;
-        }
-        
         // Lấy dữ liệu người dùng mới nhất
         const userData = await getCurrentUserData();
         
@@ -931,14 +822,12 @@ function addMessageToChat(message) {
         messageElement.textContent = message.content;
     } else {
         const isOwnMessage = message.uid === currentUser.uid;
-        const isGuestMessage = message.isGuest;
         
-        messageElement.className = `message ${isOwnMessage ? 'own' : ''} ${isGuestMessage ? 'guest-message' : ''}`;
+        messageElement.className = `message ${isOwnMessage ? 'own' : ''}`;
         messageElement.innerHTML = `
             <div class="message-info">
                 <img src="${message.photoURL}" alt="${message.displayName}">
                 <span class="name">${message.displayName}</span>
-                ${isGuestMessage ? '<span class="guest-badge">Khách</span>' : ''}
                 <span class="time">${formatTimestamp(message.timestamp)}</span>
             </div>
             <div class="message-content">${message.content}</div>
@@ -969,22 +858,15 @@ function updateParticipantsList(participants) {
         // Thêm thuộc tính data-uid để dễ dàng xác định người dùng
         participantElement.setAttribute('data-uid', participant.uid);
         
-        // Thêm class guest nếu là người dùng ẩn danh
-        if (participant.isGuest) {
-            participantElement.classList.add('guest');
-        }
-        
-        // Không hiển thị nút tặng minicoin cho chính mình hoặc cho người dùng ẩn danh
+        // Không hiển thị nút tặng minicoin cho chính mình
         const isSelf = participant.uid === currentUser.uid;
-        const showGiftButton = !isSelf && !participant.isGuest && !currentUser.isAnonymous;
         
         participantElement.innerHTML = `
             <img src="${participant.photoURL}" alt="${participant.displayName}">
             <span class="name">${participant.displayName}</span>
             ${participant.isHost ? '<span class="host-badge">Chủ phòng</span>' : ''}
             ${participant.hasTicket && !participant.isHost ? '<span class="ticket-badge"><i class="fas fa-ticket-alt"></i></span>' : ''}
-            ${participant.isGuest ? '<span class="guest-badge">Khách</span>' : ''}
-            ${showGiftButton ? '<button class="btn-small gift-coin-btn" title="Tặng MiniCoin"><i class="fas fa-coins"></i></button>' : ''}
+            ${!isSelf ? '<button class="btn-small gift-coin-btn" title="Tặng MiniCoin"><i class="fas fa-coins"></i></button>' : ''}
         `;
         
         // Thêm sự kiện cho nút tặng minicoin
@@ -1005,35 +887,26 @@ async function sendMessage() {
     if (!message) return;
     
     try {
-        // Kiểm tra nếu là người dùng ẩn danh
-        if (currentUser.isAnonymous) {
-            // Sử dụng thông tin người dùng ẩn danh đã lưu
-            await database.ref(`rooms/${roomId}/messages`).push({
-                uid: currentUser.uid,
-                displayName: currentUser.displayName,
-                photoURL: currentUser.photoURL,
-                content: message,
-                timestamp: firebase.database.ServerValue.TIMESTAMP,
-                isGuest: true
-            });
+        let userData;
+        
+        // Xử lý khác nhau cho người dùng đã đăng nhập và người dùng khách
+        if (currentUser.isGuest) {
+            // Người dùng khách - sử dụng thông tin từ đối tượng currentUser
+            userData = currentUser;
         } else {
-            // Người dùng đã đăng nhập
-            const userData = await getCurrentUserData();
-            
-            if (!userData) {
-                console.error('Không thể lấy thông tin người dùng');
-                return;
-            }
-            
-            // Add message to database
-            await database.ref(`rooms/${roomId}/messages`).push({
-                uid: currentUser.uid,
-                displayName: userData.displayName,
-                photoURL: userData.photoURL,
-                content: message,
-                timestamp: firebase.database.ServerValue.TIMESTAMP
-            });
+            // Người dùng đã đăng nhập - lấy thông tin từ Firebase
+            userData = await getCurrentUserData();
         }
+        
+        // Add message to database
+        await database.ref(`rooms/${roomId}/messages`).push({
+            uid: currentUser.uid,
+            displayName: userData.displayName,
+            photoURL: userData.photoURL,
+            content: message,
+            isGuest: currentUser.isGuest || false,
+            timestamp: firebase.database.ServerValue.TIMESTAMP
+        });
         
         // Clear input
         messageInput.value = '';
@@ -1046,6 +919,12 @@ async function sendMessage() {
 // Kiểm tra và cập nhật nhiệm vụ hàng ngày
 async function checkDailyTask() {
     try {
+        // Bỏ qua nhiệm vụ hàng ngày cho người dùng khách
+        if (currentUser && currentUser.isGuest) {
+            console.log('Người dùng khách không nhận nhiệm vụ hàng ngày');
+            return;
+        }
+        
         if (!currentUser) {
             // Đợi cho đến khi người dùng đăng nhập
             await new Promise(resolve => {
@@ -1099,20 +978,6 @@ async function giftMiniCoin(recipientUid, recipientName) {
     console.log('=== BẮT ĐẦU QUÁ TRÌNH TẶNG MINICOIN ===');
     console.log('Người nhận:', recipientUid, recipientName);
     console.log('Người gửi:', currentUser.uid, currentUser.displayName);
-    
-    // Kiểm tra nếu người gửi là người dùng ẩn danh
-    if (currentUser.isAnonymous) {
-        showNotification('Bạn cần đăng nhập để tặng MiniCoin!', 'error');
-        return;
-    }
-    
-    // Kiểm tra nếu người nhận là người dùng ẩn danh
-    const recipientData = document.querySelector(`.participant[data-uid="${recipientUid}"]`);
-    if (recipientData && recipientData.classList.contains('guest')) {
-        showNotification('Không thể tặng MiniCoin cho người dùng ẩn danh!', 'error');
-        return;
-    }
-    
     try {
         // Hiển thị hộp thoại để nhập số lượng coin muốn tặng
         const coinAmount = prompt(`Nhập số lượng MiniCoin bạn muốn tặng cho ${recipientName}:`, "5");
@@ -1132,9 +997,8 @@ async function giftMiniCoin(recipientUid, recipientName) {
         // Lấy thông tin người dùng hiện tại
         const userData = await getCurrentUserData();
         
-        if (!userData || userData.isGuest) {
-            showNotification('Bạn cần đăng nhập để gửi MiniCoin!', 'error');
-            openModal(document.getElementById('loginModal'));
+        if (!userData) {
+            showNotification('Không tìm thấy thông tin người dùng!', 'error');
             return;
         }
         
@@ -1237,12 +1101,6 @@ async function giftMiniCoin(recipientUid, recipientName) {
         console.log('Đang cập nhật giao diện với dữ liệu mới...');
         const newUserData = await getCurrentUserData();
         console.log('Dữ liệu người dùng mới:', newUserData);
-        
-        if (!newUserData) {
-            console.error('Không thể lấy thông tin người dùng mới');
-            return;
-        }
-        
         const miniCoinsElement = document.getElementById('miniCoins');
         console.log('Element miniCoins:', miniCoinsElement);
         if (miniCoinsElement && newUserData) {
@@ -1522,25 +1380,6 @@ function loadYouTubeAPI() {
     
     // Set up YouTube player when API is ready
     window.onYouTubeIframeAPIReady = () => {
-        // Kiểm tra nếu phòng là phòng chia sẻ màn hình
-        if (roomData.isScreenSharing) {
-            // Tạo container cho chia sẻ màn hình
-            const playerContainer = document.getElementById('player');
-            playerContainer.innerHTML = `
-                <div class="screen-sharing-placeholder">
-                    <div class="screen-sharing-message">
-                        <i class="fas fa-desktop"></i>
-                        <p>Phòng chia sẻ màn hình</p>
-                        <p class="screen-sharing-instruction">Chủ phòng sẽ bắt đầu chia sẻ màn hình khi sẵn sàng</p>
-                    </div>
-                </div>
-            `;
-            
-            // Không cần khởi tạo player cho phòng chia sẻ màn hình
-            playerType = 'screen_sharing';
-            return;
-        }
-        
         // Kiểm tra nếu videoId là Cloudinary ID (bắt đầu bằng 'cloudinary_')
         // Trong trường hợp này, không khởi tạo trình phát YouTube mà chuyển sang xử lý video Cloudinary
         if (roomData.videoId && roomData.videoId.startsWith('cloudinary_') && roomData.videoUrl) {
@@ -2263,32 +2102,6 @@ function toggleFullscreen() {
     }
 }
 
-// Hàm xử lý khi người dùng rời khỏi phòng
-function leaveRoom(event) {
-    // Nếu người dùng đang chia sẻ màn hình, dừng chia sẻ
-    if (typeof cleanupScreenSharing === 'function') {
-        cleanupScreenSharing();
-    }
-    
-    // Nếu người dùng đã đăng nhập và không phải là chủ phòng
-    if (currentUser && !isHost) {
-        // Sử dụng phương thức đồng bộ để đảm bảo thực hiện trước khi trang đóng
-        // Xóa người dùng khỏi danh sách người tham gia
-        database.ref(`rooms/${roomId}/participants/${currentUser.uid}`).remove();
-        
-        // Thêm thông báo hệ thống
-        database.ref(`rooms/${roomId}/messages`).push({
-            type: 'system',
-            content: `${currentUser.displayName || 'Khách'} đã rời khỏi phòng.`,
-            timestamp: firebase.database.ServerValue.TIMESTAMP
-        });
-    }
-    
-    // Không hiển thị hộp thoại xác nhận khi rời trang
-    // Nếu cần hiển thị hộp thoại, bỏ comment dòng dưới
-    // event.returnValue = "Bạn có chắc chắn muốn rời khỏi phòng?"; 
-}
-
 // Function to update fullscreen button state
 function updateFullscreenButtonState() {
     const fullscreenBtn = document.getElementById('fullscreenBtn');
@@ -2304,5 +2117,109 @@ function updateFullscreenButtonState() {
         // Not in fullscreen mode
         fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
         fullscreenBtn.title = 'Toàn màn hình';
+    }
+}
+
+// Tải modal cho người dùng khách
+async function loadGuestModal() {
+    try {
+        const response = await fetch('guest-modal.html');
+        const html = await response.text();
+        
+        // Thêm modal vào body
+        document.body.insertAdjacentHTML('beforeend', html);
+        
+        // Thêm sự kiện cho modal
+        setupGuestModal();
+    } catch (error) {
+        console.error('Lỗi khi tải modal khách:', error);
+    }
+}
+
+// Thiết lập sự kiện cho modal khách
+function setupGuestModal() {
+    const guestModal = document.getElementById('guestModal');
+    if (!guestModal) return;
+    
+    const closeBtn = guestModal.querySelector('.close');
+    const guestForm = document.getElementById('guestForm');
+    const switchToLoginBtn = document.getElementById('switchToLoginBtn');
+    
+    // Đóng modal khi click vào nút đóng
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            guestModal.style.display = 'none';
+            window.location.href = 'index.html';
+        });
+    }
+    
+    // Xử lý form đăng nhập khách
+    if (guestForm) {
+        guestForm.addEventListener('submit', handleGuestLogin);
+    }
+    
+    // Chuyển sang đăng nhập thông thường
+    if (switchToLoginBtn) {
+        switchToLoginBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            guestModal.style.display = 'none';
+            window.location.href = 'index.html';
+        });
+    }
+}
+
+// Hiển thị modal khách
+function showGuestModal() {
+    const guestModal = document.getElementById('guestModal');
+    if (guestModal) {
+        guestModal.style.display = 'block';
+    } else {
+        // Nếu modal chưa được tải, tải và hiển thị
+        loadGuestModal().then(() => {
+            const modal = document.getElementById('guestModal');
+            if (modal) modal.style.display = 'block';
+        });
+    }
+}
+
+// Xử lý đăng nhập khách
+async function handleGuestLogin(e) {
+    e.preventDefault();
+    
+    const guestNameInput = document.getElementById('guestName');
+    if (!guestNameInput || !guestNameInput.value.trim()) {
+        showNotification('Vui lòng nhập tên hiển thị', 'error');
+        return;
+    }
+    
+    const displayName = guestNameInput.value.trim();
+    
+    try {
+        // Tạo thông tin người dùng khách
+        const guestUser = {
+            uid: 'guest_' + generateId(10),
+            displayName: displayName,
+            photoURL: `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}`,
+            isGuest: true,
+            miniCoins: 0
+        };
+        
+        // Lưu thông tin người dùng khách vào biến toàn cục
+        currentUser = guestUser;
+        window.currentUser = guestUser;
+        
+        // Đóng modal
+        const guestModal = document.getElementById('guestModal');
+        if (guestModal) guestModal.style.display = 'none';
+        
+        // Thiết lập phòng cho người dùng khách
+        isHost = false; // Khách không bao giờ là host
+        setupRoom();
+        joinRoom();
+        
+        showNotification(`Chào mừng ${displayName} đến với phòng chiếu phim!`, 'success');
+    } catch (error) {
+        console.error('Lỗi đăng nhập khách:', error);
+        showNotification('Có lỗi xảy ra khi đăng nhập. Vui lòng thử lại.', 'error');
     }
 }

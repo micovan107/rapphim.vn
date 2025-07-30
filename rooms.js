@@ -181,37 +181,6 @@ function initCreateRoomForm() {
         });
     }
     
-    // Add event listeners for video source radio buttons
-    const youtubeSourceRadio = document.getElementById('youtubeSource');
-    const uploadSourceRadio = document.getElementById('uploadSource');
-    const screenShareSourceRadio = document.getElementById('screenShareSource');
-    const youtubeUrlContainer = document.getElementById('youtubeUrlContainer');
-    const uploadVideoContainer = document.getElementById('uploadVideoContainer');
-    const screenShareInfoContainer = document.getElementById('screenShareInfoContainer');
-    
-    if (youtubeSourceRadio && uploadSourceRadio && screenShareSourceRadio) {
-        youtubeSourceRadio.addEventListener('change', function() {
-            youtubeUrlContainer.style.display = 'block';
-            uploadVideoContainer.style.display = 'none';
-            screenShareInfoContainer.style.display = 'none';
-            document.getElementById('videoUrl').required = true;
-        });
-        
-        uploadSourceRadio.addEventListener('change', function() {
-            youtubeUrlContainer.style.display = 'none';
-            uploadVideoContainer.style.display = 'block';
-            screenShareInfoContainer.style.display = 'none';
-            document.getElementById('videoUrl').required = false;
-        });
-        
-        screenShareSourceRadio.addEventListener('change', function() {
-            youtubeUrlContainer.style.display = 'none';
-            uploadVideoContainer.style.display = 'none';
-            screenShareInfoContainer.style.display = 'block';
-            document.getElementById('videoUrl').required = false;
-        });
-    }
-    
     // Thêm sự kiện click cho nút tạo phòng ở trang chủ
     const createRoomBtnHome = document.getElementById('createRoomBtn');
     if (createRoomBtnHome) {
@@ -301,36 +270,11 @@ function initCreateRoomForm() {
             // Get form values
             const name = document.getElementById('roomName').value;
             const description = document.getElementById('roomDescription').value;
+            const videoUrl = document.getElementById('videoUrl').value;
+            const videoPublicId = document.getElementById('videoUrl').dataset.publicId || null;
+            const cloudinaryUrl = document.getElementById('videoUrl').dataset.cloudinaryUrl || null;
             const isPrivate = document.getElementById('isPrivate').checked;
             const requiresTicket = document.getElementById('requiresTicket').checked;
-            
-            // Get selected video source
-            const youtubeSource = document.getElementById('youtubeSource').checked;
-            const uploadSource = document.getElementById('uploadSource').checked;
-            const screenShareSource = document.getElementById('screenShareSource').checked;
-            
-            // Get video URL or Cloudinary info based on selected source
-            let videoUrl = '';
-            let videoPublicId = null;
-            let cloudinaryUrl = null;
-            let isScreenSharing = false;
-            
-            if (youtubeSource) {
-                videoUrl = document.getElementById('videoUrl').value;
-            } else if (uploadSource) {
-                videoUrl = document.getElementById('videoUrl').value;
-                videoPublicId = document.getElementById('videoUrl').dataset.publicId || null;
-                cloudinaryUrl = document.getElementById('videoUrl').dataset.cloudinaryUrl || null;
-                
-                if (!videoUrl || !cloudinaryUrl) {
-                    showNotification('Vui lòng tải video lên trước khi tạo phòng!', 'error');
-                    return;
-                }
-            } else if (screenShareSource) {
-                // For screen sharing, we'll use a special identifier
-                videoUrl = 'screen_sharing';
-                isScreenSharing = true;
-            }
             
             // Get ticket options if requires ticket is checked
             let ticketType = 'manual';
@@ -352,9 +296,9 @@ function initCreateRoomForm() {
                 submitBtn.textContent = 'Đang tạo phòng...';
                 submitBtn.disabled = true;
                 
-                // Extract video ID from URL if not screen sharing
-                let videoId = isScreenSharing ? 'screen_sharing' : extractVideoId(videoUrl);
-                if (!videoId && !isScreenSharing) {
+                // Extract video ID from URL
+                const videoId = extractVideoId(videoUrl);
+                if (!videoId) {
                     showNotification('URL video không hợp lệ!', 'error');
                     submitBtn.textContent = originalText;
                     submitBtn.disabled = false;
@@ -368,9 +312,8 @@ function initCreateRoomForm() {
                 const userData = await getCurrentUserData();
                 
                 // Kiểm tra lại userData
-                if (!userData || userData.isGuest) {
-                    showNotification('Bạn cần đăng nhập để tạo phòng!', 'error');
-                    openModal(document.getElementById('loginModal'));
+                if (!userData) {
+                    showNotification('Không thể lấy thông tin người dùng. Vui lòng đăng nhập lại!', 'error');
                     return;
                 }
                 
@@ -383,7 +326,6 @@ function initCreateRoomForm() {
                     videoUrl: videoId && videoId.startsWith('cloudinary_') ? cloudinaryUrl : videoUrl,
                     videoPublicId: videoPublicId, // Cloudinary public_id for later deletion
                     isCloudinaryVideo: videoId && videoId.startsWith('cloudinary_'),
-                    isScreenSharing: isScreenSharing,
                     isPrivate: isPrivate,
                     requiresTicket: requiresTicket,
                     ticketType: requiresTicket ? ticketType : null,
@@ -565,9 +507,8 @@ async function openTicketRequestModal(roomId) {
         // Get user data to check mini coins using the helper function
         const userData = await getCurrentUserData();
         
-        if (!userData || userData.isGuest) {
-            showNotification('Bạn cần đăng nhập để mua vé!', 'error');
-            openModal(document.getElementById('loginModal'));
+        if (!userData) {
+            showNotification('Không tìm thấy thông tin người dùng.', 'error');
             return;
         }
         
@@ -615,12 +556,6 @@ async function requestTicket(roomId) {
         // Get user data
         const userData = await getCurrentUserData();
         
-        if (!userData || userData.isGuest) {
-            showNotification('Bạn cần đăng nhập để yêu cầu vé!', 'error');
-            openModal(document.getElementById('loginModal'));
-            return;
-        }
-        
         // Add ticket request to database
         await database.ref(`rooms/${roomId}/ticketRequests/${user.uid}`).set({
             uid: user.uid,
@@ -649,9 +584,8 @@ async function purchaseAutoTicket(roomId, ticketPrice) {
         // Get user data using the helper function
         const userData = await getCurrentUserData();
         
-        if (!userData || userData.isGuest) {
-            showNotification('Bạn cần đăng nhập để mua vé!', 'error');
-            openModal(document.getElementById('loginModal'));
+        if (!userData) {
+            showNotification('Không tìm thấy thông tin người dùng.', 'error');
             return;
         }
         
@@ -811,11 +745,6 @@ function addSearchFunctionality() {
 
 // Helper function to extract YouTube video ID from URL
 function extractVideoId(url) {
-    // Kiểm tra nếu là chia sẻ màn hình
-    if (url === 'screen_sharing') {
-        return 'screen_sharing';
-    }
-    
     // Kiểm tra nếu là URL Cloudinary đặc biệt
     if (url.includes('watch?v=cloudinary_')) {
         // Trích xuất public_id từ URL giả

@@ -11,7 +11,6 @@
     <link rel="shortcut icon" href="favicon.svg">
     <link rel="apple-touch-icon" href="favicon.svg">
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="screen-sharing.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <meta name="description" content="CineSync - Xem phim cùng bạn bè từ xa với tính năng đồng bộ hoàn hảo">
@@ -199,34 +198,8 @@
                     <textarea id="roomDescription" placeholder="Mô tả ngắn về phòng chiếu" required></textarea>
                 </div>
                 <div class="form-group">
-                    <label>Chọn nguồn video:</label>
-                    <div class="radio-group">
-                        <label class="radio-label">
-                            <input type="radio" name="videoSource" id="youtubeSource" value="youtube" checked>
-                            Link YouTube
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" name="videoSource" id="uploadSource" value="upload">
-                            Tải video lên
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" name="videoSource" id="screenShareSource" value="screenShare">
-                            Chia sẻ màn hình
-                        </label>
-                    </div>
-                </div>
-                <div id="youtubeUrlContainer" class="form-group">
                     <label for="videoUrl">URL Video YouTube</label>
                     <input type="url" id="videoUrl" placeholder="https://www.youtube.com/watch?v=..." required>
-                </div>
-                <div id="uploadVideoContainer" class="form-group" style="display: none;">
-                    <button type="button" id="uploadVideoBtn" class="btn btn-secondary">
-                        <i class="fas fa-cloud-upload-alt"></i> Tải Video Lên
-                    </button>
-                    <div id="uploadStatus" style="margin-top: 10px; display: none;"></div>
-                </div>
-                <div id="screenShareInfoContainer" class="form-group" style="display: none;">
-                    <p class="info-text"><i class="fas fa-info-circle"></i> Bạn sẽ có thể chia sẻ màn hình sau khi tạo phòng.</p>
                 </div>
                 <div class="form-group">
                     <label class="checkbox-label">
@@ -291,7 +264,6 @@
     <!-- App Scripts -->
     <script src="firebase-config.js"></script>
     <script src="auth.js"></script>
-    <script src="webrtc-screen-sharing.js"></script>
     <script src="rooms.js"></script>
     <script src="main.js"></script>
 </body>

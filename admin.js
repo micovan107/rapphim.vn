@@ -798,13 +798,9 @@ function saveSettings() {
 
 // Show notification
 function showNotification(message, type = 'info') {
-    // Check if showNotification function exists in global scope (defined in auth.js)
-    if (typeof window.showNotification === 'function') {
-        window.showNotification(message, type);
-    } else {
-        // Fallback notification if the global function is not available
-        alert(message);
-    }
+    // Avoid recursive call to window.showNotification
+    // Instead, create a simple notification or use alert
+    alert(message);
 }
 
 // Initialize the admin page when the DOM is loaded

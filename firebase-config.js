@@ -19,7 +19,13 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const database = firebase.database();
 const storage = firebase.storage();
-const firestore = firebase.firestore();
+// Kiểm tra xem firestore có tồn tại không trước khi sử dụng
+let firestore = null;
+if (typeof firebase.firestore === 'function') {
+    firestore = firebase.firestore();
+} else {
+    console.warn('Firebase Firestore không được hỗ trợ hoặc chưa được tải. Một số chức năng có thể không hoạt động.');
+}
 
 // Bật xác thực ẩn danh
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
@@ -133,8 +139,14 @@ async function getCurrentUserData() {
 }
 
 // Export helper functions
-const db = firebase.firestore();
-window.db = db;
+// Kiểm tra xem firestore có tồn tại không trước khi khởi tạo db
+let db = null;
+if (typeof firebase.firestore === 'function') {
+    db = firebase.firestore();
+    window.db = db;
+} else {
+    console.warn('Firebase Firestore không được hỗ trợ hoặc chưa được tải. Một số chức năng có thể không hoạt động.');
+}
 
 window.generateId = generateId;
 window.formatTimestamp = formatTimestamp;

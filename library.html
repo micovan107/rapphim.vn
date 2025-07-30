@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#ff5e62">
+    <title>CineSync - Thư Viện Sách</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="shortcut icon" href="favicon.svg">
+    <link rel="apple-touch-icon" href="favicon.svg">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="library.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="description" content="CineSync - Thư viện sách trực tuyến với hàng ngàn đầu sách miễn phí">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <h1><i class="fas fa-film"></i> CineSync</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Trang Chủ</a></li>
+                    <li><a href="index.html#rooms">Phòng Chiếu</a></li>
+                    <li><a href="forum.html">Diễn Đàn</a></li>
+                    <li><a href="chat.html">Chat</a></li>
+                    <li><a href="learning.html">Học Tập</a></li>
+                    <li><a href="library.html" class="active">Thư Viện</a></li>
+                    <li><a href="index.html#about">Giới Thiệu</a></li>
+                    <li id="adminNavLink" style="display: none;"><a href="admin.html">Quản Trị</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons">
+                <button id="loginBtn" class="btn">Đăng Nhập</button>
+                <button id="signupBtn" class="btn btn-primary">Đăng Ký</button>
+            </div>
+        </header>
+
+        <main>
+            <section class="library-hero">
+                <div class="hero-content">
+                    <h2>Thư Viện Sách</h2>
+                    <p>Khám phá hàng ngàn đầu sách miễn phí từ Project Gutenberg. Đọc trực tuyến hoặc tải về để đọc offline.</p>
+                    <div class="search-container">
+                        <input type="text" id="bookSearchInput" placeholder="Tìm kiếm sách...">
+                        <button id="bookSearchBtn"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="library-filters">
+                <div class="filter-container">
+                    <div class="filter-group">
+                        <label for="languageFilter">Ngôn ngữ:</label>
+                        <select id="languageFilter">
+                            <option value="">Tất cả</option>
+                            <option value="en">Tiếng Anh</option>
+                            <option value="fr">Tiếng Pháp</option>
+                            <option value="de">Tiếng Đức</option>
+                            <option value="es">Tiếng Tây Ban Nha</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="sortBy">Sắp xếp theo:</label>
+                        <select id="sortBy">
+                            <option value="popular">Phổ biến</option>
+                            <option value="title">Tên sách (A-Z)</option>
+                            <option value="author">Tác giả (A-Z)</option>
+                            <option value="newest">Mới nhất</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <section class="books-container">
+                <div class="books-grid" id="booksGrid">
+                    <!-- Sách sẽ được thêm vào đây bằng JavaScript -->
+                </div>
+                <div class="loading-spinner" id="loadingSpinner">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </div>
+                <div class="pagination">
+                    <button id="prevPageBtn" class="btn" disabled><i class="fas fa-chevron-left"></i> Trang trước</button>
+                    <span id="currentPage">Trang 1</span>
+                    <button id="nextPageBtn" class="btn">Trang sau <i class="fas fa-chevron-right"></i></button>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h2><i class="fas fa-film"></i> CineSync</h2>
+                    <p>Xem phim cùng nhau, dù ở xa nhau.</p>
+                </div>
+                <div class="footer-links">
+                    <h3>Liên Kết</h3>
+                    <ul>
+                        <li><a href="index.html">Trang Chủ</a></li>
+                        <li><a href="index.html#rooms">Phòng Chiếu</a></li>
+                        <li><a href="forum.html">Diễn Đàn</a></li>
+                        <li><a href="chat.html">Chat</a></li>
+                        <li><a href="learning.html">Học Tập</a></li>
+                        <li><a href="library.html">Thư Viện</a></li>
+                        <li><a href="index.html#about">Giới Thiệu</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h3>Liên Hệ</h3>
+                    <p><i class="fas fa-envelope"></i> micovan105@gmail.com</p>
+                    <p><i class="fas fa-user"></i> <a href="https://lazi.vn/user/tien-nam.nguyen25" target="_blank">Lazi: tien-nam.nguyen25</a></p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="https://lazi.vn/user/tien-nam.nguyen25" target="_blank" class="lazi-icon"><img src="avatarlazi.png" alt="Lazi" width="20" height="20"></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 CineSync. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Book Detail Modal -->
+    <div id="bookDetailModal" class="modal">
+        <div class="modal-content book-detail-content">
+            <span class="close">&times;</span>
+            <div class="book-detail-container">
+                <div class="book-cover">
+                    <img id="bookDetailCover" src="" alt="Book cover">
+                </div>
+                <div class="book-info">
+                    <h2 id="bookDetailTitle"></h2>
+                    <p class="book-author">Tác giả: <span id="bookDetailAuthor"></span></p>
+                    <p class="book-language">Ngôn ngữ: <span id="bookDetailLanguage"></span></p>
+                    <p class="book-subjects">Thể loại: <span id="bookDetailSubjects"></span></p>
+                    <div class="book-download">
+                        <h3>Tải xuống:</h3>
+                        <div id="bookDetailDownloads" class="download-links"></div>
+                    </div>
+                    <div class="book-read-online">
+                        <h3>Đọc trực tuyến:</h3>
+                        <div id="bookDetailReadOnline" class="read-online-links"></div>
+                        <button id="readDirectlyBtn" class="btn btn-primary" style="margin-top: 10px;">
+                            <i class="fas fa-book-reader"></i> Đọc Ngay Trên Web
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Read Book Modal -->
+    <div id="readBookModal" class="modal">
+        <div class="modal-content read-book-content">
+            <span class="close">&times;</span>
+            <div class="read-book-header">
+                <h2 id="readBookTitle"></h2>
+                <div class="read-book-controls">
+                    <button id="translateBtn" class="btn">
+                        <i class="fas fa-language"></i> Dịch Sang Tiếng Việt
+                    </button>
+                    <button id="originalBtn" class="btn" style="display: none;">
+                        <i class="fas fa-language"></i> Xem Bản Gốc
+                    </button>
+                    <select id="fontSizeSelect" class="font-size-select">
+                        <option value="small">Cỡ chữ nhỏ</option>
+                        <option value="medium" selected>Cỡ chữ vừa</option>
+                        <option value="large">Cỡ chữ lớn</option>
+                    </select>
+                </div>
+            </div>
+            <div class="read-book-container">
+                <div id="bookContent" class="book-content"></div>
+                <div id="translatedContent" class="book-content" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    
+    <!-- App Scripts -->
+    <script src="firebase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="library.js"></script>
+</body>
+</html>
