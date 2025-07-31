@@ -208,6 +208,7 @@ function updateUIForLoggedInUser(userData) {
             <a href="#" id="myRoomsBtn">Phòng Của Tôi</a>
             <a href="profile.html" id="profileBtn">Hồ Sơ</a>
             <a href="library.html" id="thuvien">Thư viện</a>
+            <a href="news.html" id="tinTuc">Tin Tức</a>
             ${userData.email === 'micovan108@gmail.com' ? '<a href="admin.html" id="adminBtn">Quản Trị</a>' : ''}
             <a href="#" id="logoutBtn">Đăng Xuất</a>
         </div>

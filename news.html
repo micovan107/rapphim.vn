@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#ff5e62">
+    <title>CineSync - Tin Tức</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="shortcut icon" href="favicon.svg">
+    <link rel="apple-touch-icon" href="favicon.svg">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="news.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="description" content="CineSync - Tin tức mới nhất từ nhiều nguồn">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <h1><i class="fas fa-film"></i> CineSync</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Trang Chủ</a></li>
+                    <li><a href="index.html#rooms">Phòng Chiếu</a></li>
+                    <li><a href="forum.html">Diễn Đàn</a></li>
+                    <li><a href="chat.html">Chat</a></li>
+                    <li><a href="learning.html">Học Tập</a></li>
+                    
+                    
+                    <li id="adminNavLink" style="display: none;"><a href="admin.html">Quản Trị</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons">
+                <button id="loginBtn" class="btn">Đăng Nhập</button>
+                <button id="signupBtn" class="btn btn-primary">Đăng Ký</button>
+            </div>
+        </header>
+
+        <main class="news-container">
+            <div class="news-header">
+                <h2>Tin Tức</h2>
+                <div class="news-categories">
+                    <button class="category-btn active" data-category="latest">Tin mới nhất</button>
+                    <button class="category-btn" data-category="sports">Thể thao</button>
+                    <button class="category-btn" data-category="entertainment">Giải trí</button>
+                    <button class="category-btn" data-category="business">Kinh doanh</button>
+                    <button class="category-btn" data-category="technology">Công nghệ</button>
+                    <button class="category-btn" data-category="health">Sức khỏe</button>
+                </div>
+            </div>
+
+            <div class="news-content">
+                <div id="latest" class="news-category-content active">
+                    <div class="loading-spinner">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Đang tải tin tức...</p>
+                    </div>
+                    <div class="news-list"></div>
+                </div>
+                <div id="sports" class="news-category-content">
+                    <div class="loading-spinner">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Đang tải tin tức...</p>
+                    </div>
+                    <div class="news-list"></div>
+                </div>
+                <div id="entertainment" class="news-category-content">
+                    <div class="loading-spinner">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Đang tải tin tức...</p>
+                    </div>
+                    <div class="news-list"></div>
+                </div>
+                <div id="business" class="news-category-content">
+                    <div class="loading-spinner">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Đang tải tin tức...</p>
+                    </div>
+                    <div class="news-list"></div>
+                </div>
+                <div id="technology" class="news-category-content">
+                    <div class="loading-spinner">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Đang tải tin tức...</p>
+                    </div>
+                    <div class="news-list"></div>
+                </div>
+                <div id="health" class="news-category-content">
+                    <div class="loading-spinner">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Đang tải tin tức...</p>
+                    </div>
+                    <div class="news-list"></div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Về CineSync</h3>
+                    <p>CineSync là nền tảng xem phim trực tuyến cho phép bạn và bạn bè xem phim cùng nhau từ xa với tính năng đồng bộ hoàn hảo.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Liên Kết</h3>
+                    <ul>
+                        <li><a href="index.html">Trang Chủ</a></li>
+                        <li><a href="forum.html">Diễn Đàn</a></li>
+                        <li><a href="chat.html">Chat</a></li>
+                        <li><a href="learning.html">Học Tập</a></li>
+                        <li><a href="news.html">Tin Tức</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Kết Nối</h3>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 CineSync. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modals -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Đăng Nhập</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Mật khẩu</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Đăng Nhập</button>
+                <p class="form-footer">Chưa có tài khoản? <a href="#" id="switchToSignup">Đăng ký ngay</a></p>
+                <div class="social-login">
+                    <button type="button" id="googleLoginBtn" class="btn btn-social">
+                        <i class="fab fa-google"></i> Đăng nhập với Google
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="signupModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Đăng Ký</h2>
+            <form id="signupForm">
+                <div class="form-group">
+                    <label for="signupName">Tên hiển thị</label>
+                    <input type="text" id="signupName" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupEmail">Email</label>
+                    <input type="email" id="signupEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Mật khẩu</label>
+                    <input type="password" id="signupPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupConfirmPassword">Xác nhận mật khẩu</label>
+                    <input type="password" id="signupConfirmPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Đăng Ký</button>
+                <p class="form-footer">Đã có tài khoản? <a href="#" id="switchToLogin">Đăng nhập</a></p>
+            </form>
+        </div>
+    </div>
+
+    
+
+    <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="news.js"></script>
+</body>
+</html>
