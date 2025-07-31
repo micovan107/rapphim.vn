@@ -22,9 +22,10 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             setupUI(null);
         }
-        // Tải bài viết sau khi kiểm tra đăng nhập
-        loadPosts();
+        // Bắt đầu lắng nghe bài viết real-time
+        listenToPosts(); // ✅ ← THAY VÀO ĐÂY
     });
+
 
     // Thiết lập Cloudinary widget cho tạo bài viết mới
     setupCloudinaryWidget();
@@ -863,73 +864,60 @@ async function handleReport(e) {
 }
 
 // Tải danh sách bài viết
-async function loadPosts() {
+function listenToPosts() {
     const postsListElement = document.getElementById('postsList');
     postsListElement.innerHTML = '<div class="loading">Đang tải bài viết...</div>';
-    
-    try {
-        // Cho phép người dùng chưa đăng nhập vẫn xem được bài viết
-        const currentUser = firebase.auth().currentUser;
-        
-        // Sử dụng Realtime Database thay vì Firestore
-        const postsRef = firebase.database().ref('posts');
-        let postsSnapshot;
-        
-        // Lọc và sắp xếp
-        if (currentSort === 'newest') {
-            postsSnapshot = await postsRef.orderByChild('createdAt').once('value');
-        } else if (currentSort === 'oldest') {
-            postsSnapshot = await postsRef.orderByChild('createdAt').once('value');
-        } else if (currentSort === 'popular') {
-            postsSnapshot = await postsRef.orderByChild('likes').once('value');
-        } else {
-            postsSnapshot = await postsRef.once('value');
-        }
-        
-        postsData = [];
-        
-        // Chuyển đổi snapshot thành mảng
-        postsSnapshot.forEach(childSnapshot => {
+
+    const postsRef = firebase.database().ref('posts');
+
+    postsRef.on('value', snapshot => {
+        let posts = [];
+
+        snapshot.forEach(childSnapshot => {
             const post = childSnapshot.val();
-            postsData.push({
+            posts.push({
                 id: childSnapshot.key,
                 ...post
             });
         });
-        
-        // Đảo ngược mảng nếu sắp xếp theo mới nhất
+
+        // Sắp xếp theo lựa chọn hiện tại
         if (currentSort === 'newest') {
-            postsData.reverse();
+            posts.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        } else if (currentSort === 'oldest') {
+            posts.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+        } else if (currentSort === 'popular') {
+            posts.sort((a, b) => (b.likes || 0) - (a.likes || 0));
         }
-        
+
         // Lọc theo danh mục
         if (currentCategory !== 'all') {
-            postsData = postsData.filter(post => post.category === currentCategory);
+            posts = posts.filter(post => post.category === currentCategory);
         }
-        
+
         // Lọc theo tìm kiếm
         if (searchQuery) {
             const searchLower = searchQuery.toLowerCase();
-            postsData = postsData.filter(post => 
-                post.title.toLowerCase().includes(searchLower) || 
-                post.content.toLowerCase().includes(searchLower) ||
-                (post.authorName && post.authorName.toLowerCase().includes(searchLower))
+            posts = posts.filter(post =>
+                post.title?.toLowerCase().includes(searchLower) ||
+                post.content?.toLowerCase().includes(searchLower) ||
+                post.authorName?.toLowerCase().includes(searchLower)
             );
         }
-        
-        // Hiển thị số lượng kết quả tìm kiếm
-        if (searchQuery && postsData.length === 0) {
-            postsListElement.innerHTML = '<div class="no-posts">Không tìm thấy bài viết nào phù hợp với tìm kiếm.</div>';
-            return;
+
+        postsData = posts;
+
+        if (posts.length === 0) {
+            postsListElement.innerHTML = '<div class="no-posts">Không có bài viết nào phù hợp.</div>';
+        } else {
+            renderPosts(posts);
         }
-        
-        // Hiển thị bài viết
-        renderPosts(postsData);
-    } catch (error) {
-        console.error('Lỗi khi tải bài viết:', error);
-        postsListElement.innerHTML = '<div class="error">Đã xảy ra lỗi khi tải bài viết. Vui lòng thử lại sau.</div>';
-    }
+    }, error => {
+        console.error('Lỗi khi lắng nghe bài viết:', error);
+        postsListElement.innerHTML = '<div class="error">Không thể tải bài viết.</div>';
+    });
 }
+
 
 // Hiển thị danh sách bài viết
 function renderPosts(posts) {
