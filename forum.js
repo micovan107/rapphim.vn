@@ -12,6 +12,28 @@ let currentCategory = 'all';
 let currentSort = 'newest';
 let searchQuery = '';
 
+// Hàm trích xuất ID video từ URL YouTube
+function getYouTubeVideoId(url) {
+    if (!url) return null;
+    
+    // Các mẫu URL YouTube phổ biến
+    const patterns = [
+        /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([^&]+)/i,  // youtube.com/watch?v=VIDEO_ID
+        /(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([^/?]+)/i,   // youtube.com/embed/VIDEO_ID
+        /(?:https?:\/\/)?(?:www\.)?youtube\.com\/v\/([^/?]+)/i,      // youtube.com/v/VIDEO_ID
+        /(?:https?:\/\/)?(?:www\.)?youtu\.be\/([^/?]+)/i            // youtu.be/VIDEO_ID
+    ];
+    
+    for (const pattern of patterns) {
+        const match = url.match(pattern);
+        if (match && match[1]) {
+            return match[1];
+        }
+    }
+    
+    return null;
+}
+
 // Khởi tạo trang
 document.addEventListener('DOMContentLoaded', () => {
     // Kiểm tra người dùng đã đăng nhập chưa
@@ -269,6 +291,10 @@ function setupVideoCloudinaryWidget() {
                 document.getElementById('postVideoPublicId').value = videoPublicId;
                 document.getElementById('videoPreview').src = videoUrl;
                 document.getElementById('videoPreviewContainer').style.display = 'block';
+                
+                // Ẩn YouTube preview nếu đang hiển thị
+                document.getElementById('youtubePreviewContainer').style.display = 'none';
+                document.getElementById('youtubeVideoId').value = '';
             }
         }
     );
@@ -283,6 +309,37 @@ function setupVideoCloudinaryWidget() {
         document.getElementById('postVideoUrl').value = '';
         document.getElementById('postVideoPublicId').value = '';
         document.getElementById('videoPreviewContainer').style.display = 'none';
+    });
+    
+    // Thiết lập sự kiện cho nút thêm video YouTube
+    document.getElementById('addYoutubeLink').addEventListener('click', () => {
+        const youtubeLink = document.getElementById('youtubeLink').value.trim();
+        const videoId = getYouTubeVideoId(youtubeLink);
+        
+        if (videoId) {
+            // Cập nhật iframe với video YouTube
+            const youtubePreview = document.getElementById('youtubePreview');
+            youtubePreview.src = `https://www.youtube.com/embed/${videoId}`;
+            
+            // Hiển thị container preview và cập nhật giá trị input hidden
+            document.getElementById('youtubePreviewContainer').style.display = 'block';
+            document.getElementById('youtubeVideoId').value = videoId;
+            
+            // Ẩn video upload nếu đang hiển thị
+            document.getElementById('videoPreviewContainer').style.display = 'none';
+            document.getElementById('postVideoUrl').value = '';
+            document.getElementById('postVideoPublicId').value = '';
+        } else {
+            showNotification('Link YouTube không hợp lệ', 'error');
+        }
+    });
+    
+    // Thiết lập sự kiện cho nút xóa video YouTube
+    document.getElementById('removeYoutubeBtn').addEventListener('click', () => {
+        document.getElementById('youtubePreview').src = '';
+        document.getElementById('youtubePreviewContainer').style.display = 'none';
+        document.getElementById('youtubeVideoId').value = '';
+        document.getElementById('youtubeLink').value = '';
     });
 }
 
@@ -418,6 +475,10 @@ function setupEditVideoCloudinaryWidget() {
                 document.getElementById('editPostVideoPublicId').value = videoPublicId;
                 document.getElementById('editVideoPreview').src = videoUrl;
                 document.getElementById('editVideoPreviewContainer').style.display = 'block';
+                
+                // Ẩn YouTube preview nếu đang hiển thị
+                document.getElementById('editYoutubePreviewContainer').style.display = 'none';
+                document.getElementById('editYoutubeVideoId').value = '';
             }
         }
     );
@@ -432,6 +493,37 @@ function setupEditVideoCloudinaryWidget() {
         document.getElementById('editPostVideoUrl').value = '';
         document.getElementById('editPostVideoPublicId').value = '';
         document.getElementById('editVideoPreviewContainer').style.display = 'none';
+    });
+    
+    // Thiết lập sự kiện cho nút thêm video YouTube
+    document.getElementById('editAddYoutubeLink').addEventListener('click', () => {
+        const youtubeLink = document.getElementById('editYoutubeLink').value.trim();
+        const videoId = getYouTubeVideoId(youtubeLink);
+        
+        if (videoId) {
+            // Cập nhật iframe với video YouTube
+            const youtubePreview = document.getElementById('editYoutubePreview');
+            youtubePreview.src = `https://www.youtube.com/embed/${videoId}`;
+            
+            // Hiển thị container preview và cập nhật giá trị input hidden
+            document.getElementById('editYoutubePreviewContainer').style.display = 'block';
+            document.getElementById('editYoutubeVideoId').value = videoId;
+            
+            // Ẩn video upload nếu đang hiển thị
+            document.getElementById('editVideoPreviewContainer').style.display = 'none';
+            document.getElementById('editPostVideoUrl').value = '';
+            document.getElementById('editPostVideoPublicId').value = '';
+        } else {
+            showNotification('Link YouTube không hợp lệ', 'error');
+        }
+    });
+    
+    // Thiết lập sự kiện cho nút xóa video YouTube
+    document.getElementById('editRemoveYoutubeBtn').addEventListener('click', () => {
+        document.getElementById('editYoutubePreview').src = '';
+        document.getElementById('editYoutubePreviewContainer').style.display = 'none';
+        document.getElementById('editYoutubeVideoId').value = '';
+        document.getElementById('editYoutubeLink').value = '';
     });
 }
 
@@ -534,7 +626,7 @@ const observer = new IntersectionObserver((entries) => {
             tab.classList.add('active');
             
             // Tải lại bài viết
-            loadPosts();
+            listenToPosts();
         });
     });
 
@@ -544,13 +636,13 @@ const observer = new IntersectionObserver((entries) => {
 
     searchBtn.addEventListener('click', () => {
         searchQuery = searchInput.value.trim();
-        loadPosts();
+        listenToPosts();
     });
 
     searchInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             searchQuery = searchInput.value.trim();
-            loadPosts();
+            listenToPosts();
         }
     });
 
@@ -558,7 +650,7 @@ const observer = new IntersectionObserver((entries) => {
     const sortSelect = document.getElementById('sortPosts');
     sortSelect.addEventListener('change', () => {
         currentSort = sortSelect.value;
-        loadPosts();
+        listenToPosts();
     });
     
     // Sự kiện click vào video để phát
@@ -628,6 +720,7 @@ async function handleCreatePost(e) {
     const imageUrl = document.getElementById('postImageUrl').value;
     const videoUrl = document.getElementById('postVideoUrl').value;
     const videoPublicId = document.getElementById('postVideoPublicId').value;
+    const youtubeVideoId = document.getElementById('youtubeVideoId').value;
     
     if (!title || !category || !content) {
         showNotification('Vui lòng điền đầy đủ thông tin bài viết', 'error');
@@ -648,6 +741,7 @@ async function handleCreatePost(e) {
             imageUrl: imageUrl || null,
             videoUrl: videoUrl || null,
             videoPublicId: videoPublicId || null,
+            youtubeVideoId: youtubeVideoId || null,
             authorId: currentUser.uid,
             authorName: userData.displayName || currentUser.displayName || 'Người dùng ẩn danh',
             authorPhotoURL: userData.photoURL || currentUser.photoURL || null,
@@ -669,15 +763,18 @@ async function handleCreatePost(e) {
         document.getElementById('postImageUrl').value = '';
         document.getElementById('postVideoUrl').value = '';
         document.getElementById('postVideoPublicId').value = '';
+        document.getElementById('youtubeVideoId').value = '';
         document.getElementById('imagePreviewContainer').style.display = 'none';
         document.getElementById('videoPreviewContainer').style.display = 'none';
+        document.getElementById('youtubePreviewContainer').style.display = 'none';
+        document.getElementById('youtubePreview').src = '';
         // Reset về tab hình ảnh
         document.getElementById('selectImageBtn').click();
         
         showNotification('Bài viết đã được tạo thành công', 'success');
         
         // Tải lại bài viết
-        loadPosts();
+        listenToPosts();
     } catch (error) {
         console.error('Lỗi khi tạo bài viết:', error);
         showNotification('Đã xảy ra lỗi khi tạo bài viết', 'error');
@@ -700,6 +797,7 @@ async function handleEditPost(e) {
     const imageUrl = document.getElementById('editPostImageUrl').value;
     const videoUrl = document.getElementById('editPostVideoUrl').value;
     const videoPublicId = document.getElementById('editPostVideoPublicId').value;
+    const youtubeVideoId = document.getElementById('editYoutubeVideoId').value;
     
     if (!title || !category || !content) {
         showNotification('Vui lòng điền đầy đủ thông tin bài viết', 'error');
@@ -707,15 +805,16 @@ async function handleEditPost(e) {
     }
     
     try {
-        const postRef = firebase.firestore().collection('posts').doc(postId);
-        const postDoc = await postRef.get();
+        // Lấy thông tin bài viết từ Realtime Database
+        const postRef = firebase.database().ref(`posts/${postId}`);
+        const postSnapshot = await postRef.once('value');
         
-        if (!postDoc.exists) {
+        if (!postSnapshot.exists()) {
             showNotification('Bài viết không tồn tại', 'error');
             return;
         }
         
-        const postData = postDoc.data();
+        const postData = postSnapshot.val();
         
         // Kiểm tra quyền chỉnh sửa
         if (postData.authorId !== currentUser.uid && !isAdmin(currentUser.uid)) {
@@ -731,7 +830,8 @@ async function handleEditPost(e) {
             imageUrl: imageUrl || null,
             videoUrl: videoUrl || null,
             videoPublicId: videoPublicId || null,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            youtubeVideoId: youtubeVideoId || null,
+            updatedAt: firebase.database.ServerValue.TIMESTAMP,
         });
         
         // Đóng modal và reset form
@@ -745,7 +845,7 @@ async function handleEditPost(e) {
         }
         
         // Tải lại bài viết
-        loadPosts();
+        listenToPosts();
     } catch (error) {
         console.error('Lỗi khi chỉnh sửa bài viết:', error);
         showNotification('Đã xảy ra lỗi khi chỉnh sửa bài viết', 'error');
@@ -944,15 +1044,29 @@ function renderPosts(posts) {
         // Kiểm tra người dùng đã thích bài viết chưa
         const isLiked = currentUser && post.likedBy && post.likedBy[currentUser.uid] === true;
         
+        // Xác định loại media để hiển thị
+        let mediaContent = '';
+        if (post.imageUrl) {
+            mediaContent = `<img src="${post.imageUrl}" alt="${post.title}">`;
+        } else if (post.videoUrl) {
+            mediaContent = `
+                <div class="post-video-container">
+                    <video class="post-video" src="${post.videoUrl}" poster="${post.videoUrl.replace(/\.[^/.]+$/, '.jpg')}" preload="metadata" muted loop playsinline></video>
+                    <div class="video-play-button"><i class="fas fa-play"></i></div>
+                </div>
+            `;
+        } else if (post.youtubeVideoId) {
+            mediaContent = `
+                <div class="youtube-embed-container post-video-container">
+                    <img src="https://i.ytimg.com/vi/${post.youtubeVideoId}/hqdefault.jpg" alt="YouTube Video" class="youtube-thumbnail post-video">
+                    <div class="video-play-button youtube-play"><i class="fab fa-youtube"></i></div>
+                </div>
+            `;
+        }
+        
         postElement.innerHTML = `
-            <div class="post-media ${!post.imageUrl && !post.videoUrl ? 'no-media-container' : ''}">
-                ${post.imageUrl ? `<img src="${post.imageUrl}" alt="${post.title}">` : ''}
-                ${post.videoUrl ? `
-                    <div class="post-video-container">
-                        <video class="post-video" src="${post.videoUrl}" poster="${post.videoUrl.replace(/\.[^/.]+$/, '.jpg')}" preload="metadata" muted loop playsinline></video>
-                        <div class="video-play-button"><i class="fas fa-play"></i></div>
-                    </div>
-                ` : ''}
+            <div class="post-media ${!mediaContent ? 'no-media-container' : ''}">
+                ${mediaContent}
                 <div class="post-category">${getCategoryLabel(post.category)}</div>
             </div>
             <div class="post-content">
@@ -960,7 +1074,7 @@ function renderPosts(posts) {
                 <p class="post-excerpt">${excerpt}</p>
                 <div class="post-meta">
                     <div class="post-author">
-                        ${post.authorPhotoURL ? `<img src="${post.authorPhotoURL}" alt="${post.authorName}">` : '<i class="fas fa-user"></i>'}
+                        ${post.authorPhotoURL ? `<img src="${post.authorPhotoURL}" alt="${post.authorName}" class="author-avatar">` : '<i class="fas fa-user"></i>'}
                         <span>${post.authorName}</span>
                     </div>
                     <div class="post-stats">
@@ -994,6 +1108,15 @@ function renderPosts(posts) {
             loadPostDetail(post.id);
         });
         
+        // Sự kiện click vào avatar tác giả
+        const authorAvatar = postElement.querySelector('.author-avatar');
+        if (authorAvatar && post.authorId) {
+            authorAvatar.addEventListener('click', (e) => {
+                e.stopPropagation();
+                window.location.href = `user-profile.html?id=${post.authorId}`;
+            });
+        }
+        
         // Thiết lập sự kiện cho các nút
         const likeBtn = postElement.querySelector('.like-btn');
         if (likeBtn) {
@@ -1017,7 +1140,7 @@ function renderPosts(posts) {
 
 // Thiết lập tự động phát video khi lướt đến
 function setupVideoAutoplay() {
-    // Tạo Intersection Observer
+    // Tạo Intersection Observer cho video thông thường
     const videoObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             // Lấy video element và container
@@ -1053,6 +1176,42 @@ function setupVideoAutoplay() {
         rootMargin: '0px' // Không có margin
     });
     
+    // Tạo Intersection Observer cho video YouTube
+    const youtubeObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            const container = entry.target;
+            const postId = container.closest('.post-card')?.dataset.id;
+            if (!postId) return;
+            
+            if (entry.isIntersecting) {
+                // Lấy ID video YouTube từ bài viết
+                const post = postsData.find(p => p.id === postId);
+                if (post && post.youtubeVideoId) {
+                    // Tự động tạo iframe YouTube khi container trong viewport
+                    container.innerHTML = `<iframe src="https://www.youtube.com/embed/${post.youtubeVideoId}?autoplay=1&mute=1" 
+                        frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen></iframe>`;
+                    // Thêm class playing
+                    container.classList.add('youtube-playing');
+                }
+            } else {
+                // Khi container không còn trong viewport, khôi phục lại thumbnail
+                const post = postsData.find(p => p.id === postId);
+                if (post && post.youtubeVideoId) {
+                    container.innerHTML = `
+                        <img src="https://i.ytimg.com/vi/${post.youtubeVideoId}/hqdefault.jpg" alt="YouTube Video" class="youtube-thumbnail post-video">
+                        <div class="video-play-button youtube-play"><i class="fab fa-youtube"></i></div>
+                    `;
+                    // Xóa class playing
+                    container.classList.remove('youtube-playing');
+                }
+            }
+        });
+    }, {
+        threshold: 0.5, // Container phải hiển thị ít nhất 50%
+        rootMargin: '0px' // Không có margin
+    });
+    
     // Quan sát tất cả các container video
     document.querySelectorAll('.post-video-container').forEach(container => {
         videoObserver.observe(container);
@@ -1076,7 +1235,49 @@ function setupVideoAutoplay() {
             });
         }
     });
+    
+    // Quan sát tất cả các container YouTube
+    document.querySelectorAll('.youtube-embed-container').forEach(container => {
+        youtubeObserver.observe(container);
+        
+        const postId = container.closest('.post-card')?.dataset.id;
+        if (!postId) return;
+        
+        // Thêm sự kiện click vào container YouTube để mở chi tiết bài viết
+        container.addEventListener('click', (e) => {
+            // Kiểm tra nếu đã có iframe (đang phát video), không mở chi tiết bài viết
+            if (container.querySelector('iframe')) {
+                e.stopPropagation();
+                return;
+            }
+            
+            // Nếu chưa có iframe, mở chi tiết bài viết
+            loadPostDetail(postId);
+        });
+        
+        // Thêm sự kiện click vào nút play YouTube
+        const playButton = container.querySelector('.video-play-button');
+        if (playButton) {
+            playButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                
+                // Lấy ID video YouTube từ bài viết
+                const post = postsData.find(p => p.id === postId);
+                if (post && post.youtubeVideoId) {
+                    // Tạo iframe YouTube khi click vào nút play
+                    container.innerHTML = `<iframe src="https://www.youtube.com/embed/${post.youtubeVideoId}?autoplay=1" 
+                        frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen></iframe>`;
+                    // Thêm class playing
+                    container.classList.add('youtube-playing');
+                } else {
+                    loadPostDetail(postId);
+                }
+            });
+        }
+    });
 }
+
 
 // Tải chi tiết bài viết
 async function loadPostDetail(postId) {
@@ -1122,7 +1323,7 @@ async function loadPostDetail(postId) {
             <div class="post-detail">
                 <div class="post-detail-header">
                     <div class="post-detail-author">
-                        ${post.authorPhotoURL ? `<img src="${post.authorPhotoURL}" alt="${post.authorName}">` : '<i class="fas fa-user"></i>'}
+                        ${post.authorPhotoURL ? `<img src="${post.authorPhotoURL}" alt="${post.authorName}" class="author-avatar">` : '<i class="fas fa-user"></i>'}
                         <div class="post-detail-author-info">
                             <span class="post-detail-author-name">${post.authorName}</span>
                             <span class="post-detail-time"><i class="fas fa-clock"></i> ${createdAt} ${updatedAt ? `· ${updatedAt}` : ''}</span>
@@ -1137,6 +1338,11 @@ async function loadPostDetail(postId) {
                     ${post.videoUrl ? `
                     <div class="post-detail-video-container">
                         <video src="${post.videoUrl}" controls class="post-detail-video" autoplay></video>
+                    </div>
+                    ` : ''}
+                    ${post.youtubeVideoId ? `
+                    <div class="post-detail-youtube-container">
+                        <iframe src="https://www.youtube.com/embed/${post.youtubeVideoId}?autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="post-detail-youtube"></iframe>
                     </div>
                     ` : ''}
                 <div class="post-actions">
@@ -1210,6 +1416,15 @@ function setupPostDetailEvents(post) {
             navigator.clipboard.writeText(url)
                 .then(() => showNotification('Đã sao chép liên kết bài viết vào clipboard', 'success'))
                 .catch(() => showNotification('Không thể sao chép liên kết', 'error'));
+        });
+    }
+    
+    // Sự kiện click vào avatar tác giả
+    const authorAvatar = postDetailElement.querySelector('.author-avatar');
+    if (authorAvatar && post.authorId) {
+        authorAvatar.addEventListener('click', (e) => {
+            e.stopPropagation();
+            window.location.href = `user-profile.html?id=${post.authorId}`;
         });
     }
     
@@ -1364,6 +1579,16 @@ function setupCommentEvents(commentElement, comment) {
         });
     }
     
+    // Sự kiện click vào avatar tác giả
+    const authorAvatar = commentElement.querySelector('.comment-author img');
+    if (authorAvatar && comment.authorId) {
+        authorAvatar.classList.add('author-avatar');
+        authorAvatar.addEventListener('click', (e) => {
+            e.stopPropagation();
+            window.location.href = `user-profile.html?id=${comment.authorId}`;
+        });
+    }
+    
     // Nút báo cáo
     const reportBtn = commentElement.querySelector('.comment-action[data-action="report"]');
     if (reportBtn) {
@@ -1462,7 +1687,7 @@ async function handleLikePost(postId) {
         }
         
         // Cập nhật danh sách bài viết
-        loadPosts();
+        listenToPosts();
     } catch (error) {
         console.error('Lỗi khi thích bài viết:', error);
         showNotification('Đã xảy ra lỗi khi thích bài viết', 'error');
@@ -1538,6 +1763,7 @@ function openEditPostModal(post) {
     document.getElementById('editPostImageUrl').value = post.imageUrl || '';
     document.getElementById('editPostVideoUrl').value = post.videoUrl || '';
     document.getElementById('editPostVideoPublicId').value = post.videoPublicId || '';
+    document.getElementById('editYoutubeVideoId').value = post.youtubeVideoId || '';
     
     // Hiển thị phương tiện phù hợp
     if (post.videoUrl) {
@@ -1546,17 +1772,28 @@ function openEditPostModal(post) {
         document.getElementById('editVideoPreview').src = post.videoUrl;
         document.getElementById('editVideoPreviewContainer').style.display = 'block';
         document.getElementById('editImagePreviewContainer').style.display = 'none';
+        document.getElementById('editYoutubePreviewContainer').style.display = 'none';
+    } else if (post.youtubeVideoId) {
+        // Nếu có video YouTube, hiển thị tab video và preview YouTube
+        document.getElementById('editSelectVideoBtn').click();
+        document.getElementById('editYoutubeVideoInput').value = `https://www.youtube.com/watch?v=${post.youtubeVideoId}`;
+        document.getElementById('editYoutubePreview').src = `https://www.youtube.com/embed/${post.youtubeVideoId}`;
+        document.getElementById('editYoutubePreviewContainer').style.display = 'block';
+        document.getElementById('editVideoPreviewContainer').style.display = 'none';
+        document.getElementById('editImagePreviewContainer').style.display = 'none';
     } else if (post.imageUrl) {
         // Nếu có hình ảnh, hiển thị tab hình ảnh
         document.getElementById('editSelectImageBtn').click();
         document.getElementById('editImagePreview').src = post.imageUrl;
         document.getElementById('editImagePreviewContainer').style.display = 'block';
         document.getElementById('editVideoPreviewContainer').style.display = 'none';
+        document.getElementById('editYoutubePreviewContainer').style.display = 'none';
     } else {
-        // Nếu không có phương tiện nào, ẩn cả hai
+        // Nếu không có phương tiện nào, ẩn tất cả
         document.getElementById('editSelectImageBtn').click();
         document.getElementById('editImagePreviewContainer').style.display = 'none';
         document.getElementById('editVideoPreviewContainer').style.display = 'none';
+        document.getElementById('editYoutubePreviewContainer').style.display = 'none';
     }
     
     document.getElementById('editPostModal').style.display = 'block';
@@ -1594,7 +1831,7 @@ async function deletePost(postId) {
         showNotification('Bài viết đã được xóa thành công', 'success');
         
         // Tải lại bài viết
-        loadPosts();
+        listenToPosts();
     } catch (error) {
         console.error('Lỗi khi xóa bài viết:', error);
         showNotification('Đã xảy ra lỗi khi xóa bài viết', 'error');

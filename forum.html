@@ -13,6 +13,68 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Styles cho YouTube video */
+        .youtube-embed-container {
+            position: relative;
+            padding-bottom: 56.25%; /* Tỷ lệ 16:9 */
+            height: 0;
+            overflow: hidden;
+            max-width: 100%;
+            cursor: pointer;
+        }
+        
+        .youtube-embed-container iframe, .post-detail-youtube-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .youtube-preview-container {
+            position: relative;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+        
+        .youtube-thumbnail {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .youtube-play {
+            background-color: rgba(255, 0, 0, 0.7);
+        }
+        
+        .youtube-embed-container.youtube-playing .youtube-thumbnail {
+            transform: scale(1.05);
+        }
+        
+        .youtube-embed-container.youtube-playing .video-play-button {
+            opacity: 0;
+        }
+        
+        .post-detail-youtube-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            max-width: 100%;
+            margin: 15px 0;
+        }
+        
+        .author-avatar {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .author-avatar:hover {
+            transform: scale(1.1);
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -251,6 +313,20 @@
                             <input type="hidden" id="postVideoUrl">
                             <input type="hidden" id="postVideoPublicId">
                         </div>
+                        <div class="youtube-link-container">
+                            <h4>Hoặc nhập link YouTube</h4>
+                            <div class="form-group">
+                                <input type="text" id="youtubeLink" placeholder="Nhập link video YouTube">
+                                <button type="button" id="addYoutubeLink" class="btn"><i class="fab fa-youtube"></i> Thêm Video</button>
+                            </div>
+                            <div id="youtubePreviewContainer" class="youtube-preview-container" style="display: none;">
+                                <div class="youtube-embed-container">
+                                    <iframe id="youtubePreview" frameborder="0" allowfullscreen></iframe>
+                                </div>
+                                <button type="button" id="removeYoutubeBtn" class="btn btn-danger"><i class="fas fa-times"></i></button>
+                            </div>
+                            <input type="hidden" id="youtubeVideoId">
+                        </div>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary">Đăng Bài</button>
@@ -332,6 +408,20 @@
                             </div>
                             <input type="hidden" id="editPostVideoUrl">
                             <input type="hidden" id="editPostVideoPublicId">
+                        </div>
+                        <div class="youtube-link-container">
+                            <h4>Hoặc nhập link YouTube</h4>
+                            <div class="form-group">
+                                <input type="text" id="editYoutubeLink" placeholder="Nhập link video YouTube">
+                                <button type="button" id="editAddYoutubeLink" class="btn"><i class="fab fa-youtube"></i> Thêm Video</button>
+                            </div>
+                            <div id="editYoutubePreviewContainer" class="youtube-preview-container" style="display: none;">
+                                <div class="youtube-embed-container">
+                                    <iframe id="editYoutubePreview" frameborder="0" allowfullscreen></iframe>
+                                </div>
+                                <button type="button" id="editRemoveYoutubeBtn" class="btn btn-danger"><i class="fas fa-times"></i></button>
+                            </div>
+                            <input type="hidden" id="editYoutubeVideoId">
                         </div>
                     </div>
                 </div>
