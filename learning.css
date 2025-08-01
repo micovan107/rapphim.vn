@@ -1879,3 +1879,10 @@ img.profile-link:hover {
     color: #ff3b30;
     padding: 20px;
 }
+#chatMiniButton,
+#chatMiniPanel,
+#chatMiniWindowsContainer,
+#createChatRoomModal,
+#chatSettingsModal {
+    display: none !important;
+}
