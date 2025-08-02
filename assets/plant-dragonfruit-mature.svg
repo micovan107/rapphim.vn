@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="85" r="12" fill="#795548" />
+  <path d="M50 5 L50 75" stroke="#7B1FA2" stroke-width="5" />
+  <path d="M50 15 L30 20" stroke="#7B1FA2" stroke-width="3" />
+  <path d="M50 25 L70 30" stroke="#7B1FA2" stroke-width="3" />
+  <path d="M50 35 L30 40" stroke="#7B1FA2" stroke-width="3" />
+  <path d="M50 45 L70 50" stroke="#7B1FA2" stroke-width="3" />
+  <path d="M50 55 L30 60" stroke="#7B1FA2" stroke-width="3" />
+  <path d="M50 65 L70 70" stroke="#7B1FA2" stroke-width="3" />
+  <circle cx="30" cy="20" r="10" fill="#E91E63" />
+  <circle cx="70" cy="30" r="10" fill="#E91E63" />
+  <circle cx="30" cy="40" r="10" fill="#E91E63" />
+  <circle cx="70" cy="50" r="10" fill="#E91E63" />
+  <circle cx="30" cy="60" r="10" fill="#E91E63" />
+  <circle cx="70" cy="70" r="10" fill="#E91E63" />
+  <circle cx="50" cy="5" r="12" fill="#E91E63" />
+  <path d="M25 15 L35 25" stroke="#7B1FA2" stroke-width="1" />
+  <path d="M35 15 L25 25" stroke="#7B1FA2" stroke-width="1" />
+  <path d="M65 25 L75 35" stroke="#7B1FA2" stroke-width="1" />
+  <path d="M75 25 L65 35" stroke="#7B1FA2" stroke-width="1" />
+  <path d="M25 35 L35 45" stroke="#7B1FA2" stroke-width="1" />
+  <path d="M35 35 L25 45" stroke="#7B1FA2" stroke-width="1" />
+  <path d="M65 45 L75 55" stroke="#7B1FA2" stroke-width="1" />
+  <path d="M75 45 L65 55" stroke="#7B1FA2" stroke-width="1" />
+  <path d="M25 55 L35 65" stroke="#7B1FA2" stroke-width="1" />
+  <path d="M35 55 L25 65" stroke="#7B1FA2" stroke-width="1" />
+  <path d="M65 65 L75 75" stroke="#7B1FA2" stroke-width="1" />
+  <path d="M75 65 L65 75" stroke="#7B1FA2" stroke-width="1" />
+  <path d="M45 0 L55 10" stroke="#7B1FA2" stroke-width="1" />
+  <path d="M55 0 L45 10" stroke="#7B1FA2" stroke-width="1" />
+</svg>
