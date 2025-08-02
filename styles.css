@@ -1,8 +1,7 @@
 /* Base Styles */
 :root {
-    --primary-color: #ff5e62;
-    --secondary-color: #ff9966;
-    --dark-color: #2c3e50;
+    --primary-color: #04c2d0;
+    --secondary-color: #04c2d0;    --dark-color: #2c3e50;
     --light-color: #f4f4f4;
     --success-color: #28a745;
     --danger-color: #dc3545;
@@ -18,7 +17,7 @@
 
 body {
     font-family: 'Montserrat', sans-serif;
-    line-height: 1.6;
+    line-height: 1.4;
     color: var(--dark-color);
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     min-height: 100vh;
@@ -191,25 +190,39 @@ nav ul, .nav-links {
 nav a {
     font-weight: 600;
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+nav a i {
+    font-size: 1.5rem;
 }
 
 nav a:hover, nav a.active {
     color: var(--primary-color);
+    background-color: rgba(255, 94, 98, 0.1);
 }
 
 nav a::after {
     content: '';
     position: absolute;
     bottom: -5px;
-    left: 0;
+    left: 50%;
+    transform: translateX(-50%);
     width: 0;
-    height: 2px;
+    height: 3px;
     background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
     transition: var(--transition);
+    border-radius: 3px;
 }
 
 nav a:hover::after, nav a.active::after {
-    width: 100%;
+    width: 20px;
 }
 
 /* Mobile Menu Styles */
@@ -964,6 +977,32 @@ footer {
     width: 20px;
     height: 20px;
     object-fit: cover;
+}
+
+.footer-nav-icons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.footer-nav-icons a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #ddd;
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+.footer-nav-icons a:hover {
+    background-color: var(--primary-color);
+    color: white;
+    transform: translateY(-3px);
 }
 
 .footer-bottom {
@@ -2560,14 +2599,31 @@ footer {
 }
 
 .message-time {
-    font-size: 0.7rem;
-    color: #888;
-    margin-top: 5px;
+    font-size: 0.65rem;
+    color: #aaa;
+    margin-top: 2px;
     text-align: left;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    position: absolute;
+    right: -65px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(240, 240, 240, 0.8);
+    padding: 2px 5px;
+    border-radius: 3px;
+    white-space: nowrap;
+    z-index: 10;
+}
+
+.message-bubble:hover .message-time {
+    opacity: 1;
 }
 
 .message.outgoing .message-time {
     text-align: right;
+    right: auto;
+    left: -65px;
 }
 
 /* Dark Theme for Chat Page */
@@ -2610,7 +2666,13 @@ footer {
 }
 
 .dark-theme .message-time {
-    color: #aaa;
+    color: #888;
+    opacity: 0;
+    background: rgba(22, 33, 62, 0.8);
+}
+
+.dark-theme .message-bubble:hover .message-time {
+    opacity: 1;
 }
 
 /* Responsive Styles */

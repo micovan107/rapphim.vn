@@ -232,6 +232,9 @@ async function loadUserProfile() {
         // Load recent activity
         loadRecentActivity();
         
+        // Load user achievements
+        loadUserAchievements();
+        
         // Update document title
         document.title = `${viewedUserData.displayName || 'Người dùng'} - CineSync`;
     } catch (error) {
@@ -843,6 +846,199 @@ function generateStarRating(rating) {
     }
     
     return starsHtml;
+}
+
+// Load user achievements
+async function loadUserAchievements() {
+    const userAchievementsGrid = document.getElementById('userAchievementsGrid');
+    userAchievementsGrid.innerHTML = '<div class="loading">Đang tải thành tựu...</div>';
+    
+    try {
+        // Tải dữ liệu người dùng từ mini-game trồng cây
+        const plantGameRef = firebase.database().ref(`plantGame/${viewedUserId}`);
+        const snapshot = await plantGameRef.once('value');
+        const plantGameData = snapshot.val();
+        
+        if (!plantGameData) {
+            userAchievementsGrid.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-trophy"></i>
+                    <p>Chưa có thành tựu nào từ mini-game trồng cây</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // Tải danh sách thành tựu từ mini-game
+        const achievements = await loadAchievementDefinitions();
+        
+        // Lấy thành tựu đã mở khóa của người dùng
+        const userAchievements = plantGameData.achievements || [];
+        
+        // Tạo dữ liệu người dùng để tính toán tiến trình
+        const userData = {
+            plants: plantGameData.plants || [],
+            stats: plantGameData.stats || {},
+            resources: plantGameData.resources || {},
+            gardenSize: plantGameData.gardenSize || 9
+        };
+        
+        // Render thành tựu
+        userAchievementsGrid.innerHTML = '';
+        
+        if (achievements.length > 0) {
+            achievements.forEach(achievement => {
+                const achievementCard = document.createElement('div');
+                achievementCard.className = 'achievement-card';
+                
+                // Kiểm tra xem thành tựu đã mở khóa chưa
+                const isUnlocked = userAchievements.some(a => a.id === achievement.id);
+                if (!isUnlocked) {
+                    achievementCard.classList.add('locked');
+                }
+                
+                // Tính toán tiến trình
+                const progress = achievement.progress(userData);
+                const progressPercent = Math.min(100, (progress / achievement.total) * 100);
+                
+                achievementCard.innerHTML = `
+                    <div class="achievement-icon">
+                        <i class="fas ${achievement.icon}"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <div class="achievement-title">${achievement.title}</div>
+                        <div class="achievement-description">${achievement.description}</div>
+                        <div class="achievement-progress">
+                            <div class="achievement-progress-bar" style="width: ${progressPercent}%"></div>
+                        </div>
+                        <div class="achievement-progress-text">${progress}/${achievement.total}</div>
+                        ${isUnlocked ? `<div class="achievement-reward">Phần thưởng: ${achievement.reward.coins} xu</div>` : ''}
+                    </div>
+                `;
+                
+                userAchievementsGrid.appendChild(achievementCard);
+            });
+        } else {
+            userAchievementsGrid.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-trophy"></i>
+                    <p>Chưa có thành tựu nào từ mini-game trồng cây</p>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error loading user achievements:', error);
+        userAchievementsGrid.innerHTML = `
+            <div class="error-state">
+                <i class="fas fa-exclamation-circle"></i>
+                <p>Đã xảy ra lỗi khi tải thành tựu</p>
+            </div>
+        `;
+    }
+}
+
+// Load achievement definitions
+async function loadAchievementDefinitions() {
+    // Định nghĩa thành tựu từ mini-game trồng cây
+    return [
+        {
+            id: 'first_plant',
+            title: 'Người Trồng Cây Đầu Tiên',
+            description: 'Trồng cây đầu tiên của bạn',
+            icon: 'fa-seedling',
+            reward: { coins: 10 },
+            condition: (userData) => userData.plants && userData.plants.length >= 1,
+            progress: (userData) => userData.plants ? Math.min(userData.plants.length, 1) : 0,
+            total: 1
+        },
+        {
+            id: 'plant_collector',
+            title: 'Sưu Tầm Cây',
+            description: 'Trồng 5 loại cây khác nhau',
+            icon: 'fa-leaf',
+            reward: { coins: 50 },
+            condition: (userData) => {
+                if (!userData.plants) return false;
+                const uniquePlantTypes = new Set(userData.plants.map(plant => plant.typeId));
+                return uniquePlantTypes.size >= 5;
+            },
+            progress: (userData) => {
+                if (!userData.plants) return 0;
+                const uniquePlantTypes = new Set(userData.plants.map(plant => plant.typeId));
+                return Math.min(uniquePlantTypes.size, 5);
+            },
+            total: 5
+        },
+        {
+            id: 'water_master',
+            title: 'Bậc Thầy Tưới Nước',
+            description: 'Tưới nước cho cây 20 lần',
+            icon: 'fa-tint',
+            reward: { coins: 30 },
+            condition: (userData) => userData.stats && userData.stats.wateringCount >= 20,
+            progress: (userData) => userData.stats ? Math.min(userData.stats.wateringCount || 0, 20) : 0,
+            total: 20
+        },
+        {
+            id: 'harvest_king',
+            title: 'Vua Thu Hoạch',
+            description: 'Thu hoạch 10 cây trưởng thành',
+            icon: 'fa-hand-holding-heart',
+            reward: { coins: 100 },
+            condition: (userData) => userData.stats && userData.stats.harvestCount >= 10,
+            progress: (userData) => userData.stats ? Math.min(userData.stats.harvestCount || 0, 10) : 0,
+            total: 10
+        },
+        {
+            id: 'garden_expander',
+            title: 'Mở Rộng Vườn',
+            description: 'Mở rộng vườn của bạn đến kích thước tối đa',
+            icon: 'fa-expand',
+            reward: { coins: 200 },
+            condition: (userData) => userData.gardenSize >= 16,
+            progress: (userData) => Math.min((userData.gardenSize || 9) - 9, 7),
+            total: 7
+        },
+        {
+            id: 'rich_gardener',
+            title: 'Nhà Vườn Giàu Có',
+            description: 'Sở hữu 500 xu',
+            icon: 'fa-coins',
+            reward: { coins: 50 },
+            condition: (userData) => userData.resources && userData.resources.coins >= 500,
+            progress: (userData) => userData.resources ? Math.min(userData.resources.coins || 0, 500) : 0,
+            total: 500
+        },
+        {
+            id: 'legendary_collector',
+            title: 'Sưu Tầm Huyền Thoại',
+            description: 'Sở hữu một cây huyền thoại',
+            icon: 'fa-crown',
+            reward: { coins: 300 },
+            condition: (userData) => {
+                if (!userData.plants) return false;
+                return userData.plants.some(plant => {
+                    // Giả định rằng cây huyền thoại có id bắt đầu bằng 'legendary_'
+                    return plant.typeId && plant.typeId.startsWith('legendary_');
+                });
+            },
+            progress: (userData) => {
+                if (!userData.plants) return 0;
+                return userData.plants.some(plant => plant.typeId && plant.typeId.startsWith('legendary_')) ? 1 : 0;
+            },
+            total: 1
+        },
+        {
+            id: 'social_gardener',
+            title: 'Nhà Vườn Xã Hội',
+            description: 'Thăm vườn của 5 người bạn',
+            icon: 'fa-users',
+            reward: { coins: 50 },
+            condition: (userData) => userData.stats && userData.stats.friendGardensVisited >= 5,
+            progress: (userData) => userData.stats ? Math.min(userData.stats.friendGardensVisited || 0, 5) : 0,
+            total: 5
+        }
+    ];
 }
 
 // Load recent activity

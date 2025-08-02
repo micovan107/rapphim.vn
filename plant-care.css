@@ -1,0 +1,1664 @@
+/* Plant Care Styles */
+:root {
+    --plant-primary: #4CAF50;
+    --plant-secondary: #8BC34A;
+    --plant-accent: #FFC107;
+    --plant-dark: #2E7D32;
+    --plant-light: #E8F5E9;
+    --soil-color: #795548;
+    --water-color: #2196F3;
+    --energy-color: #FF9800;
+    --coin-color: #FFD700;
+}
+
+/* Hero Section */
+.plant-hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    align-items: center;
+    padding: 40px 0;
+    margin-bottom: 30px;
+    background: linear-gradient(135deg, var(--plant-light) 0%, #ffffff 100%);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: var(--box-shadow);
+}
+
+.plant-hero .hero-content {
+    padding: 0 30px;
+}
+
+.plant-hero h2 {
+    color: var(--plant-primary);
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.plant-hero p {
+    color: var(--dark-color);
+    font-size: 1.1rem;
+    margin-bottom: 25px;
+    line-height: 1.6;
+}
+
+.plant-hero .hero-image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-right: 30px;
+}
+
+.plant-hero .hero-image img {
+    max-width: 100%;
+    height: auto;
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+    transition: transform 0.5s ease;
+}
+
+.plant-hero .hero-image img:hover {
+    transform: translateY(-10px);
+}
+
+/* Garden Section */
+.garden-container {
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: var(--box-shadow);
+    padding: 25px;
+    margin-bottom: 30px;
+    display: none;
+}
+
+.garden-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.garden-header h3 {
+    color: var(--plant-dark);
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.garden-stats {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.stat {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background-color: var(--plant-light);
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+.stat i {
+    font-size: 1.1rem;
+}
+
+.stat:nth-child(1) i {
+    color: var(--plant-primary);
+}
+
+.stat:nth-child(2) i {
+    color: var(--water-color);
+}
+
+.stat:nth-child(3) i {
+    color: var(--energy-color);
+}
+
+.stat:nth-child(4) i {
+    color: var(--coin-color);
+}
+
+.garden-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+    min-height: 400px;
+}
+
+.garden-plot {
+    background-color: var(--soil-color);
+    border-radius: 10px;
+    height: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 -5px 10px rgba(0,0,0,0.2);
+    perspective: 1000px;
+}
+
+.garden-plot:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1), inset 0 -5px 10px rgba(0,0,0,0.2);
+}
+
+.garden-plot .soil {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 30px;
+    background: linear-gradient(to bottom, var(--soil-color) 0%, #5D4037 100%);
+    border-radius: 0 0 10px 10px;
+    z-index: 1;
+}
+
+.garden-plot.empty {
+    background: linear-gradient(to bottom, #8D6E63 0%, #5D4037 100%);
+}
+
+.garden-plot.empty:hover {
+    background: linear-gradient(to bottom, #8D6E63 0%, #5D4037 100%);
+}
+
+.garden-plot .empty-plot-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+.garden-plot .empty-plot-content i {
+    font-size: 2rem;
+    color: rgba(255, 255, 255, 0.5);
+    transition: all 0.3s ease;
+}
+
+.garden-plot:hover .empty-plot-content i {
+    color: rgba(255, 255, 255, 0.8);
+    transform: scale(1.2);
+}
+
+.garden-plot .plant {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    position: relative;
+    z-index: 2;
+}
+
+/* Weather effects */
+.garden-plot .plant.rain-effect::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: 0;
+    width: 100%;
+    height: 120%;
+    pointer-events: none;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 2px);
+    background-size: 10px 20px;
+    animation: rain-fall 1s linear infinite;
+    z-index: 2;
+}
+
+.garden-plot .plant.rain-effect::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(0,100,255,0.1), rgba(0,100,255,0));
+    z-index: 1;
+}
+
+.garden-plot .plant.sandstorm-effect::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    width: 120%;
+    height: 120%;
+    background-color: rgba(210, 180, 140, 0.2);
+    border-radius: 50%;
+    animation: sandstorm-swirl 8s linear infinite;
+    z-index: 1;
+}
+
+.garden-plot .plant.sandstorm-effect::after {
+    content: '';
+    position: absolute;
+    width: 120%;
+    height: 120%;
+    top: -10px;
+    left: -10px;
+    background-image: radial-gradient(circle, rgba(210, 180, 140, 0.6) 1px, transparent 2px);
+    background-size: 8px 8px;
+    animation: sand-particle 3s linear infinite;
+    z-index: 2;
+}
+
+.garden-plot .plant.rainbow-effect {
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.7));
+}
+
+.garden-plot .plant.rainbow-effect::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    width: 120%;
+    height: 120%;
+    background: linear-gradient(124deg, 
+        rgba(255,0,0,0.2), 
+        rgba(255,165,0,0.2), 
+        rgba(255,255,0,0.2), 
+        rgba(0,128,0,0.2), 
+        rgba(0,0,255,0.2), 
+        rgba(75,0,130,0.2), 
+        rgba(238,130,238,0.2));
+    background-size: 400% 400%;
+    animation: rainbow-shift 10s linear infinite;
+    border-radius: 50%;
+    z-index: 1;
+    mix-blend-mode: screen;
+}
+
+.garden-plot .plant.rainbow-effect::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    animation: plant-glow 2s ease-in-out infinite alternate;
+    z-index: 2;
+}
+
+.garden-plot .plant-image {
+    width: 80%;
+    height: 80%;
+    background-size: contain;
+    background-position: bottom center;
+    background-repeat: no-repeat;
+    transition: all 0.5s ease;
+    transform-origin: bottom center;
+    z-index: 2;
+    filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2));
+}
+
+.garden-plot .plant.growing .plant-image {
+    animation: plantGrow 2s ease-in-out infinite alternate;
+}
+
+.garden-plot .plant.ready-to-harvest .plant-image {
+    animation: plantReady 1s ease-in-out infinite alternate;
+}
+
+.garden-plot .plant.thirsty .plant-image {
+    filter: saturate(0.7) brightness(0.9);
+}
+
+/* Hiệu ứng thời tiết */
+.garden-plot .plant.effect-rain {
+    position: relative;
+    overflow: visible;
+}
+
+.garden-plot .plant.effect-rain::after {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(135,206,250,0.2) 100%);
+    pointer-events: none;
+    animation: rain-fall 1s linear infinite;
+    z-index: 2;
+}
+
+.garden-plot .plant.effect-rain .rain-drop {
+    position: absolute;
+    width: 2px;
+    height: 10px;
+    background-color: rgba(135, 206, 250, 0.6);
+    border-radius: 50%;
+    animation: rain-drop 1s linear infinite;
+    z-index: 2;
+}
+
+.garden-plot .plant.effect-sandstorm {
+    position: relative;
+    overflow: visible;
+}
+
+.garden-plot .plant.effect-sandstorm::after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    width: calc(100% + 10px);
+    height: calc(100% + 10px);
+    background: radial-gradient(circle, rgba(210, 180, 140, 0.2) 0%, rgba(210, 180, 140, 0) 70%);
+    pointer-events: none;
+    animation: sandstorm-swirl 3s linear infinite;
+    z-index: 2;
+}
+
+.garden-plot .plant.effect-sandstorm .sand-particle {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background-color: rgba(210, 180, 140, 0.7);
+    border-radius: 50%;
+    animation: sand-particle 2s linear infinite;
+    z-index: 2;
+}
+
+.garden-plot .plant.effect-rainbow {
+    position: relative;
+    overflow: visible;
+}
+
+.garden-plot .plant.effect-rainbow::after {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    width: calc(100% + 20px);
+    height: calc(100% + 20px);
+    background: linear-gradient(124deg, rgba(255,0,0,0.1), rgba(255,165,0,0.1), rgba(255,255,0,0.1), rgba(0,128,0,0.1), rgba(0,0,255,0.1), rgba(75,0,130,0.1), rgba(238,130,238,0.1));
+    background-size: 1400% 1400%;
+    pointer-events: none;
+    animation: rainbow-shift 10s ease infinite;
+    border-radius: 50%;
+    z-index: 1;
+}
+
+.garden-plot .plant.effect-rainbow .plant-image {
+    animation: plant-glow 2s ease-in-out infinite alternate;
+}
+
+.garden-plot:hover .plant-image {
+    transform: scale(1.05) translateY(-5px);
+}
+
+.garden-plot .plant-info {
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 8px;
+    padding: 5px 10px;
+    position: absolute;
+    bottom: 35px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 3;
+}
+
+.garden-plot:hover .plant-info {
+    opacity: 1;
+}
+
+.garden-plot .plant-name {
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 2px;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+
+.garden-plot .plant-stage {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.7rem;
+    font-weight: 400;
+}
+    /* Animations for plants */
+@keyframes plantGrow {
+    0% {
+        transform: scale(1) rotate(0deg);
+    }
+    50% {
+        transform: scale(1.03) rotate(1deg);
+    }
+    100% {
+        transform: scale(1.05) rotate(-1deg);
+    }
+}
+
+@keyframes plantReady {
+    0% {
+        transform: scale(1);
+        filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2)) brightness(1);
+    }
+    50% {
+        transform: scale(1.08);
+        filter: drop-shadow(0 8px 15px rgba(0,0,0,0.3)) brightness(1.1);
+    }
+    100% {
+        transform: scale(1.05);
+        filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2)) brightness(1);
+    }
+}
+
+@keyframes rain-fall {
+    0% { opacity: 0.7; transform: translateY(-5px); }
+    100% { opacity: 0; transform: translateY(15px); }
+}
+
+@keyframes rain-drop {
+    0% { top: -10px; opacity: 0.7; }
+    100% { top: 100%; opacity: 0; }
+}
+
+@keyframes sandstorm-swirl {
+    0% { transform: rotate(0deg); opacity: 0.5; }
+    50% { opacity: 0.7; }
+    100% { transform: rotate(360deg); opacity: 0.5; }
+}
+
+@keyframes sand-particle {
+    0% { transform: translate(0, 0); opacity: 0.7; }
+    100% { transform: translate(20px, 10px); opacity: 0; }
+}
+
+@keyframes rainbow-shift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes plant-glow {
+    0% { filter: brightness(1); }
+    100% { filter: brightness(1.3) saturate(1.5); }
+}
+
+/* Water indicator */
+.garden-plot .water-indicator {
+    position: absolute;
+    bottom: 35px;
+    right: 10px;
+    color: var(--water-color);
+    font-size: 1rem;
+    opacity: 0.8;
+    z-index: 3;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+}
+
+/* Harvest indicator */
+.garden-plot .harvest-indicator {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: var(--coin-color);
+    font-size: 1rem;
+    opacity: 0;
+    z-index: 3;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+    transition: all 0.3s ease;
+}
+
+.garden-plot .plant.ready-to-harvest .harvest-indicator {
+    opacity: 1;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.plant-info {
+    padding: 2px 0;
+}
+
+.garden-plot .water-level {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background-color: var(--water-color);
+    opacity: 0.7;
+    z-index: 1;
+}
+
+.garden-plot .growth-indicator {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--plant-accent);
+    color: white;
+    font-size: 0.7rem;
+    z-index: 3;
+}
+
+.garden-controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.garden-controls .btn {
+    flex: 1;
+    min-width: 120px;
+}
+
+/* Shop Section */
+.plant-shop {
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: var(--box-shadow);
+    padding: 25px;
+    margin-bottom: 30px;
+    display: none;
+    position: relative;
+}
+
+.shop-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.shop-header h3 {
+    color: var(--plant-dark);
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.shop-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+}
+
+.shop-refresh-time {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 15px;
+    padding: 8px;
+    background-color: var(--plant-light);
+    border-radius: 8px;
+    font-weight: 500;
+    color: var(--plant-dark);
+}
+
+.btn-inventory {
+    width: 100%;
+    margin-bottom: 20px;
+    background-color: var(--plant-accent);
+    color: white;
+}
+
+.shop-item {
+    background-color: var(--plant-light);
+    border-radius: 10px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.shop-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Độ hiếm của vật phẩm */
+.shop-item.rarity-common {
+    border: 1px solid #aaa;
+}
+
+.shop-item.rarity-uncommon {
+    border: 1px solid #4CAF50;
+}
+
+.shop-item.rarity-rare {
+    border: 1px solid #2196F3;
+    box-shadow: 0 0 5px rgba(33, 150, 243, 0.5);
+}
+
+.shop-item.rarity-legendary {
+    border: 1px solid #FF9800;
+    box-shadow: 0 0 10px rgba(255, 152, 0, 0.7);
+}
+
+.shop-item.rarity-legendary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(90deg, #FF9800, #FF5722, #FF9800);
+    animation: rainbow 2s linear infinite;
+}
+
+@keyframes rainbow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.shop-item .item-image {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 10px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.shop-item .item-name {
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: var(--plant-dark);
+    text-align: center;
+}
+
+.shop-item .item-description {
+    font-size: 0.8rem;
+    color: #666;
+    text-align: center;
+    margin-bottom: 10px;
+    flex-grow: 1;
+}
+
+.shop-item .item-price {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 500;
+    color: var(--coin-color);
+}
+
+.shop-item .item-price i {
+    color: var(--coin-color);
+}
+
+.shop-item .item-quantity {
+    font-size: 0.8rem;
+    color: #666;
+    margin: 5px 0;
+}
+
+.shop-item .btn {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.shop-item .btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Túi đồ */
+.inventory-section {
+    margin-bottom: 20px;
+}
+
+.inventory-section h4 {
+    margin-bottom: 10px;
+    color: var(--plant-dark);
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+.inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+}
+
+.inventory-item {
+    background-color: var(--plant-light);
+    border-radius: 10px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.3s ease;
+}
+
+.inventory-item:hover {
+    transform: scale(1.05);
+}
+
+.inventory-item .item-image {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 10px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.inventory-item .item-name {
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: var(--plant-dark);
+    text-align: center;
+}
+
+.inventory-item .item-count {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.inventory-resources {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.resource-item {
+    background-color: var(--plant-light);
+    border-radius: 10px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 120px;
+}
+
+.resource-item i {
+    font-size: 1.5rem;
+    color: var(--plant-accent);
+}
+
+/* Collection Section */
+.plant-collection {
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: var(--box-shadow);
+    padding: 25px;
+    margin-bottom: 30px;
+}
+
+.collection-header {
+    margin-bottom: 20px;
+}
+
+.collection-header h3 {
+    color: var(--plant-dark);
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.collection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+}
+
+.collection-item {
+    background-color: var(--plant-light);
+    border-radius: 10px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.collection-item:hover {
+    transform: scale(1.05);
+}
+
+.collection-item .item-image {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 10px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.collection-item .item-name {
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: var(--plant-dark);
+    text-align: center;
+}
+
+.collection-item .item-rarity {
+    font-size: 0.8rem;
+    padding: 3px 8px;
+    border-radius: 10px;
+    color: white;
+    margin-top: 5px;
+}
+
+.collection-item .rarity-common {
+    background-color: #8BC34A;
+}
+
+.collection-item .rarity-uncommon {
+    background-color: #29B6F6;
+}
+
+.collection-item .rarity-rare {
+    background-color: #9C27B0;
+}
+
+.collection-item .rarity-legendary {
+    background-color: #FF9800;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+/* Community Garden Section */
+.community-garden {
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: var(--box-shadow);
+    padding: 25px;
+    margin-bottom: 30px;
+}
+
+.community-header {
+    margin-bottom: 20px;
+}
+
+.community-header h3 {
+    color: var(--plant-dark);
+    font-size: 1.5rem;
+    margin: 0 0 5px 0;
+}
+
+.community-header .community-description {
+    color: #666;
+    font-size: 0.95rem;
+    margin: 0 0 15px 0;
+}
+
+.friend-gardens {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.friend-garden {
+    background-color: var(--plant-light);
+    border-radius: 10px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.friend-garden:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.friend-garden .garden-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.friend-garden .user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #ddd;
+    overflow: hidden;
+}
+
+.friend-garden .user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.friend-garden .user-name {
+    font-weight: 600;
+    color: var(--plant-dark);
+}
+
+.friend-garden .garden-preview {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.friend-garden .preview-plant {
+    width: 50px;
+    height: 50px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.friend-garden .garden-stats {
+    margin-top: 10px;
+    font-size: 0.9rem;
+}
+
+.friend-gardens .empty-state {
+    background-color: var(--plant-light);
+    border-radius: 10px;
+    padding: 30px;
+    text-align: center;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.friend-gardens .empty-state i {
+    font-size: 3rem;
+    color: var(--plant-accent);
+    opacity: 0.7;
+}
+
+.friend-gardens .empty-state p {
+    margin: 0;
+    color: var(--plant-dark);
+    font-size: 1.2rem;
+}
+
+.friend-gardens .empty-state .empty-state-sub {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.friend-garden .empty-preview {
+    width: 100%;
+    padding: 15px;
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    background-color: rgba(0,0,0,0.05);
+    border-radius: 8px;
+}
+
+/* Friend Garden Modal Styles */
+.friend-garden-details {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.friend-garden-stats {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    padding: 15px;
+    background-color: var(--plant-light);
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.friend-garden-stats .stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.friend-garden-stats .stat i {
+    font-size: 1.5rem;
+    color: var(--plant-accent);
+}
+
+.friend-garden-stats .stat span {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--plant-dark);
+}
+
+.friend-garden-stats .stat label {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.friend-garden-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 15px;
+    padding: 10px;
+}
+
+.friend-garden-grid .garden-plot {
+    height: 100px;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.friend-garden-grid .garden-plot.empty {
+    background: linear-gradient(to bottom, #8BC34A 0%, #689F38 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.8rem;
+}
+
+.friend-garden-grid .plant-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.friend-garden-grid .plant-image {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+}
+
+.friend-garden-grid .plant-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0,0,0,0.6);
+    color: white;
+    padding: 3px 5px;
+    font-size: 0.7rem;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Achievements Section */
+.achievements {
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: var(--box-shadow);
+    padding: 25px;
+    margin-bottom: 30px;
+}
+
+.achievements-header {
+    margin-bottom: 20px;
+}
+
+.achievements-header h3 {
+    color: var(--plant-dark);
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.achievement {
+    background-color: var(--plant-light);
+    border-radius: 10px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.achievement.unlocked {
+    background: linear-gradient(135deg, var(--plant-light) 0%, #FFF9C4 100%);
+    cursor: pointer;
+    border: 2px solid var(--plant-accent);
+}
+
+.achievement.unlocked::before {
+    content: '✓';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: var(--plant-accent);
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    z-index: 1;
+}
+
+.achievement.unlocked:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.achievement.locked {
+    filter: grayscale(1);
+    opacity: 0.8;
+}
+
+.achievement .achievement-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: var(--plant-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    color: white;
+    font-size: 1.8rem;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.achievement:hover .achievement-icon {
+    transform: scale(1.1);
+}
+
+.achievement .achievement-title {
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: var(--plant-dark);
+    text-align: center;
+}
+
+.achievement .achievement-description {
+    font-size: 0.85rem;
+    color: #666;
+    text-align: center;
+    margin-bottom: 15px;
+    line-height: 1.4;
+}
+
+.achievement .achievement-progress {
+    width: 100%;
+    height: 10px;
+    background-color: #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-top: 5px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.achievement .progress-bar {
+    height: 100%;
+    background-color: var(--plant-primary);
+    border-radius: 5px;
+    transition: width 0.5s ease-out;
+    position: relative;
+}
+
+.achievement .progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, 
+        rgba(255,255,255,0.1) 0%, 
+        rgba(255,255,255,0.3) 50%, 
+        rgba(255,255,255,0.1) 100%);
+    background-size: 200% 100%;
+    animation: progress-shine 2s linear infinite;
+}
+
+@keyframes progress-shine {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: var(--plant-dark);
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #666;
+    transition: color 0.3s ease;
+}
+
+.btn-close:hover {
+    color: var(--danger-color);
+}
+
+/* Seed Selection */
+.seed-selection {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 15px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.seed-item {
+    background-color: var(--plant-light);
+    border-radius: 10px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.seed-item:hover {
+    transform: translateY(-3px);
+}
+
+.seed-item.selected {
+    border-color: var(--plant-primary);
+    background-color: rgba(76, 175, 80, 0.1);
+}
+
+.seed-item .seed-image {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 5px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.seed-item .seed-name {
+    font-weight: 500;
+    font-size: 0.9rem;
+    text-align: center;
+    color: var(--plant-dark);
+}
+
+.seed-item .seed-count {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* Plant Info Modal */
+.plant-info-details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.plant-image {
+    width: 150px;
+    height: 150px;
+    margin-bottom: 20px;
+}
+
+.plant-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.plant-stats {
+    width: 100%;
+}
+
+.plant-stats p {
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 10px;
+    background-color: #eee;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-top: 15px;
+}
+
+.progress {
+    height: 100%;
+    background-color: var(--plant-primary);
+    border-radius: 5px;
+    transition: width 0.3s ease;
+}
+
+/* Achievement Modal */
+.achievement-modal {
+    max-width: 400px;
+}
+
+.achievement-details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.achievement-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: var(--plant-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    color: white;
+    font-size: 2rem;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7);
+    }
+    70% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 10px rgba(255, 193, 7, 0);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
+    }
+}
+
+.achievement-reward {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: var(--plant-light);
+    border-radius: 10px;
+    font-weight: 500;
+}
+
+.achievement-reward span {
+    color: var(--coin-color);
+    font-weight: 600;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .plant-hero {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .plant-hero .hero-content {
+        order: 2;
+    }
+
+    .plant-hero .hero-image {
+        order: 1;
+        padding-right: 0;
+    }
+
+    .garden-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .garden-stats {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .garden-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    }
+
+    .shop-items,
+    .collection-grid,
+    .friend-gardens,
+    .achievements-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    }
+}
+
+/* Dark Theme Support */
+.dark-theme {
+    background: linear-gradient(135deg, #1a2a3a 0%, #0d1b2a 100%);
+    color: #f4f4f4;
+}
+
+.dark-theme .container {
+    background-color: transparent;
+}
+
+.dark-theme .plant-hero,
+.dark-theme .garden-container,
+.dark-theme .plant-shop,
+.dark-theme .plant-collection,
+.dark-theme .community-garden,
+.dark-theme .achievements {
+    background-color: #1e2a38;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.dark-theme .plant-hero {
+    background: linear-gradient(135deg, #2c3e50 0%, #1e2a38 100%);
+}
+
+.dark-theme .garden-plot.empty {
+    background: linear-gradient(to bottom, #5D4037 0%, #3E2723 100%);
+}
+
+.dark-theme .garden-plot.empty:hover {
+    background: linear-gradient(to bottom, #6D4C41 0%, #4E342E 100%);
+}
+
+.dark-theme .shop-item,
+.dark-theme .collection-item,
+.dark-theme .friend-garden,
+.dark-theme .achievement {
+    background-color: #2c3e50;
+}
+
+.dark-theme .achievement.unlocked {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+}
+
+.dark-theme .modal-content {
+    background-color: #1e2a38;
+    color: #f4f4f4;
+}
+
+.dark-theme .modal-header,
+.dark-theme .modal-footer {
+    border-color: #2c3e50;
+}
+
+.dark-theme .seed-item {
+    background-color: #2c3e50;
+}
+
+.dark-theme .seed-item.selected {
+    background-color: rgba(76, 175, 80, 0.2);
+}
+
+.dark-theme .progress-bar {
+    background-color: #2c3e50;
+}
+
+.dark-theme .achievement-reward {
+    background-color: #2c3e50;
+}
+
+/* Animations */
+@keyframes plantGrow {
+    0% {
+        transform: scale(0.8);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes waterDrop {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+}
+
+.water-animation {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.water-drop {
+    position: absolute;
+    width: 10px;
+    height: 15px;
+    background-color: var(--water-color);
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    animation: waterDrop 1s ease-in forwards;
+}
+
+.grow-animation {
+    animation: plantGrow 0.5s ease-out;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--plant-primary);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--plant-dark);
+}
+
+.dark-theme ::-webkit-scrollbar-track {
+    background: #2c3e50;
+}
+
+.dark-theme ::-webkit-scrollbar-thumb {
+    background: var(--plant-primary);
+}
+
+.dark-theme ::-webkit-scrollbar-thumb:hover {
+    background: var(--plant-secondary);
+}

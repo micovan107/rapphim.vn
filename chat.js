@@ -822,11 +822,8 @@ function formatTimestamp(timestamp) {
     const now = new Date();
     const timeOpts = { hour: '2-digit', minute: '2-digit' };
 
-    if (date.toDateString() === now.toDateString()) {
-        return date.toLocaleTimeString([], timeOpts);
-    }
-    return date.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' +
-           date.toLocaleTimeString([], timeOpts);
+    // Chỉ hiển thị giờ và phút cho tất cả tin nhắn
+    return date.toLocaleTimeString([], timeOpts);
 }
 
 // Chuyển hướng đến trang hồ sơ người dùng

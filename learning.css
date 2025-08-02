@@ -1209,18 +1209,35 @@
 }
 
 .message-time {
-    font-size: 0.7rem;
-    color: #999;
+    font-size: 0.65rem;
+    color: #aaa;
     margin-top: 2px;
     align-self: flex-end;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    position: absolute;
+    right: -65px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(240, 240, 240, 0.8);
+    padding: 2px 5px;
+    border-radius: 3px;
+    white-space: nowrap;
+    z-index: 10;
+}
+
+.message-bubble:hover .message-time {
+    opacity: 1;
 }
 
 .message.outgoing .message-time {
-    margin-right: 5px;
+    right: auto;
+    left: -65px;
 }
 
 .message.incoming .message-time {
-    margin-left: 5px;
+    right: -65px;
+    left: auto;
 }
 
 /* Responsive Styles for Three Column Layout */
@@ -1785,18 +1802,89 @@ img.profile-link:hover {
 }
 
 .message-time {
-    font-size: 11px;
-    color: #999;
+    font-size: 0.65rem;
+    color: #aaa;
     margin-top: 2px;
     align-self: flex-end;
     opacity: 0;
-    height: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.2s ease;
+    position: absolute;
+    right: -65px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(240, 240, 240, 0.8);
+    padding: 2px 5px;
+    border-radius: 3px;
+    white-space: nowrap;
+    z-index: 10;
 }
 
-.chat-message:hover .message-time {
+.chat-message:hover .message-time,
+.message-bubble:hover .message-time {
     opacity: 1;
-    height: auto;
+}
+
+/* Message actions */
+.message-actions {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: -25px;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.sent .message-actions {
+    left: -25px;
+    right: auto;
+}
+
+.chat-message:hover .message-actions {
+    display: block;
+    opacity: 1;
+}
+
+.recall-button {
+    background-color: #f0f2f5;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #65676b;
+    transition: background-color 0.2s;
+    font-size: 10px;
+}
+
+.recall-button:hover {
+    background-color: #e4e6eb;
+    color: #1877f2;
+}
+
+/* Recalled message */
+.message-recalled {
+    font-style: italic;
+    color: #65676b;
+    display: inline-block;
+    padding: 8px 12px;
+    border-radius: 18px;
+    margin-bottom: 4px;
+}
+
+.sent .message-recalled {
+    background-color: rgba(0, 132, 255, 0.3);
+    color: rgba(255, 255, 255, 0.7);
+    border-top-right-radius: 4px;
+}
+
+.received .message-recalled {
+    background-color: rgba(228, 230, 235, 0.5);
+    color: #65676b;
+    border-top-left-radius: 4px;
 }
 
 .date-separator {

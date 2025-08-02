@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#04c2d0">
+    <title>CineSync - Vườn Cây Thư Giãn</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="shortcut icon" href="favicon.svg">
+    <link rel="apple-touch-icon" href="favicon.svg">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="plant-care.css">
+    <link rel="stylesheet" href="weather-effects.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="description" content="CineSync - Chăm sóc vườn cây ảo và thư giãn cùng bạn bè">
+</head>
+<body>
+    <div class="weather-effect-container" id="weatherEffectContainer"></div>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <h1><i class="fas fa-film"></i> CineSync</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html" title="Trang Chủ"><i class="fas fa-home"></i></a></li>
+                    <li><a href="index.html#rooms" title="Phòng Chiếu"><i class="fas fa-tv"></i></a></li>
+                    <li><a href="forum.html" title="Diễn Đàn"><i class="fas fa-comments"></i></a></li>
+                    <li><a href="chat.html" title="Chat"><i class="fas fa-comment-dots"></i></a></li>
+                    <li><a href="learning.html" title="Học Tập"><i class="fas fa-book"></i></a></li>
+                    <li><a href="plant-care.html" class="active" title="Vườn Cây"><i class="fas fa-leaf"></i></a></li>
+                    <li id="adminNavLink" style="display: none;"><a href="admin.html" title="Quản Trị"><i class="fas fa-user-shield"></i></a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons">
+                <button id="loginBtn" class="btn">Đăng Nhập</button>
+                <button id="signupBtn" class="btn btn-primary">Đăng Ký</button>
+            </div>
+        </header>
+
+        <main>
+            <section class="plant-hero">
+                <div class="hero-content">
+                    <h2>Vườn Cây Thư Giãn</h2>
+                    <p>Chăm sóc vườn cây ảo của bạn, thu thập hạt giống hiếm và chia sẻ thành quả với bạn bè. Một không gian thư giãn và kết nối với thiên nhiên.</p>
+                    <button id="startGardenBtn" class="btn btn-primary btn-large">Bắt Đầu Chăm Sóc</button>
+                </div>
+                <div class="hero-image">
+                    <img src="cay.png" alt="Plant care illustration" id="plant-hero-img">
+                </div>
+            </section>
+
+            <section class="garden-container" id="gardenSection">
+                <div class="garden-header">
+                    <h3>Vườn Cây Của Bạn</h3>
+                    <div class="garden-stats">
+                        <div class="stat">
+                            <i class="fas fa-seedling"></i>
+                            <span id="plantCount">0</span> cây
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-water"></i>
+                            <span id="waterCount">10</span> nước
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-sun"></i>
+                            <span id="energyCount">20</span> năng lượng
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-coins"></i>
+                            <span id="coinCount">50</span> xu
+                        </div>
+                    </div>
+                </div>
+
+                <div class="garden-grid" id="gardenGrid">
+                    <!-- Các ô trồng cây sẽ được tạo bằng JavaScript -->
+                </div>
+
+                <div class="garden-controls">
+                    <button id="waterAllBtn" class="btn"><i class="fas fa-tint"></i> Tưới Tất Cả</button>
+                    <button id="harvestAllBtn" class="btn"><i class="fas fa-hand-holding-heart"></i> Thu Hoạch</button>
+                    <button id="shopBtn" class="btn"><i class="fas fa-store"></i> Cửa Hàng</button>
+                </div>
+            </section>
+
+            <section class="plant-shop" id="shopSection">
+                <div class="shop-header">
+                    <h3>Cửa Hàng Hạt Giống</h3>
+                    <button id="closeShopBtn" class="btn-close"><i class="fas fa-times"></i></button>
+                </div>
+                <div id="shopRefreshTime" class="shop-refresh-time">
+                    Làm mới trong: <span id="refreshCountdown">5:00</span>
+                </div>
+                <button id="openInventoryBtn" class="btn btn-inventory"><i class="fas fa-box"></i> Mở Túi Đồ</button>
+                <div class="shop-items" id="shopItems">
+                    <!-- Các mặt hàng sẽ được tạo bằng JavaScript -->
+                </div>
+            </section>
+
+            <section class="plant-collection" id="collectionSection">
+                <div class="collection-header">
+                    <h3>Bộ Sưu Tập Cây</h3>
+                </div>
+                <div class="collection-grid" id="collectionGrid">
+                    <!-- Bộ sưu tập cây sẽ được tạo bằng JavaScript -->
+                </div>
+            </section>
+
+            <section class="community-garden" id="communitySection">
+                <div class="community-header">
+                    <h3>Vườn Cộng Đồng</h3>
+                    <p class="community-description">Khám phá vườn của những người dùng khác và tìm cảm hứng cho vườn của bạn</p>
+                </div>
+                <div class="friend-gardens" id="friendGardens">
+                    <!-- Vườn của bạn bè sẽ được tạo bằng JavaScript -->
+                </div>
+            </section>
+            
+            <!-- Friend Garden Modal -->
+            <div id="friendGardenModal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 id="friendGardenUsername">Vườn của Bạn</h3>
+                        <button class="close-modal"><i class="fas fa-times"></i></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="friend-garden-details">
+                            <div class="friend-garden-stats">
+                                <div class="stat">
+                                    <i class="fas fa-seedling"></i>
+                                    <span id="friendGardenPlantCount">0</span>
+                                    <label>Tổng số cây</label>
+                                </div>
+                                <div class="stat">
+                                    <i class="fas fa-star"></i>
+                                    <span id="friendGardenRareCount">0</span>
+                                    <label>Cây hiếm</label>
+                                </div>
+                            </div>
+                            <div class="friend-garden-grid" id="friendGardenGrid">
+                                <!-- Cây trong vườn bạn bè sẽ được hiển thị ở đây -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inventory Modal -->
+            <div id="inventoryModal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Túi Đồ</h3>
+                        <button class="close-modal"><i class="fas fa-times"></i></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="inventory-section">
+                            <h4>Tài Nguyên</h4>
+                            <div id="inventoryResources" class="inventory-resources">
+                                <!-- Resources will be added here -->
+                            </div>
+                        </div>
+                        <div class="inventory-section">
+                            <h4>Hạt Giống</h4>
+                            <div id="inventorySeeds" class="inventory-grid">
+                                <!-- Seeds will be added here -->
+                            </div>
+                        </div>
+                        <div class="inventory-section">
+                            <h4>Vật Phẩm</h4>
+                            <div id="inventoryItems" class="inventory-grid">
+                                <!-- Items will be added here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <section class="achievements" id="achievementsSection">
+                <div class="achievements-header">
+                    <h3>Thành Tựu</h3>
+                </div>
+                <div class="achievements-grid" id="achievementsGrid">
+                    <!-- Thành tựu sẽ được tạo bằng JavaScript -->
+                </div>
+            </section>
+        </main>
+
+        <!-- Modal trồng cây -->
+        <div class="modal" id="plantModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Chọn Hạt Giống</h3>
+                    <button class="btn-close" id="closePlantModal"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="modal-body">
+                    <div class="seed-selection" id="seedSelection">
+                        <!-- Danh sách hạt giống sẽ được tạo bằng JavaScript -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" id="cancelPlantBtn">Hủy</button>
+                    <button class="btn btn-primary" id="confirmPlantBtn">Trồng</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal thông tin cây -->
+        <div class="modal" id="plantInfoModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="plantInfoName">Thông Tin Cây</h3>
+                    <button class="btn-close" id="closePlantInfoModal"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="modal-body">
+                    <div class="plant-info-details">
+                        <div class="plant-image">
+                            <img id="plantInfoImage" src="" alt="Plant image">
+                        </div>
+                        <div class="plant-stats">
+                            <p><strong>Loại:</strong> <span id="plantInfoType"></span></p>
+                            <p><strong>Tuổi:</strong> <span id="plantInfoAge"></span></p>
+                            <p><strong>Trạng thái:</strong> <span id="plantInfoStatus"></span></p>
+                            <p><strong>Độ ẩm:</strong> <span id="plantInfoWater"></span></p>
+                            <p><strong>Thời gian thu hoạch:</strong> <span id="plantInfoHarvest"></span></p>
+                            <div id="weatherEffectInfo" style="display: none;">
+                                <p><strong>Hiệu ứng thời tiết:</strong> <span id="plantInfoWeatherEffect"></span></p>
+                                <p><strong>Tăng giá trị:</strong> <span id="plantInfoWeatherBoost"></span></p>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress" id="plantInfoProgress"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" id="waterPlantBtn"><i class="fas fa-tint"></i> Tưới Nước</button>
+                    <button class="btn" id="fertilizePlantBtn"><i class="fas fa-seedling"></i> Bón Phân</button>
+                    <button class="btn btn-danger" id="removePlantBtn"><i class="fas fa-trash"></i> Xóa</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal thành tựu mới -->
+        <div class="modal" id="achievementModal">
+            <div class="modal-content achievement-modal">
+                <div class="modal-header">
+                    <h3>Thành Tựu Mới!</h3>
+                    <button class="btn-close" id="closeAchievementModal"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="modal-body">
+                    <div class="achievement-details">
+                        <div class="achievement-icon">
+                            <i id="achievementIcon" class="fas fa-trophy"></i>
+                        </div>
+                        <h4 id="achievementTitle">Tên thành tựu</h4>
+                        <p id="achievementDescription">Mô tả thành tựu</p>
+                        <div class="achievement-reward">
+                            <p>Phần thưởng: <span id="achievementReward">10 xu</span></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" id="claimRewardBtn">Nhận Thưởng</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Về CineSync</h3>
+                    <p>Nền tảng giải trí và học tập trực tuyến kết nối mọi người.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Liên kết</h3>
+                    <ul>
+                        <li><a href="index.html">Trang chủ</a></li>
+                        <li><a href="forum.html">Diễn đàn</a></li>
+                        <li><a href="chat.html">Chat</a></li>
+                        <li><a href="learning.html">Học tập</a></li>
+                        <li><a href="plant-care.html">Vườn cây</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Liên hệ</h3>
+                    <div class="social-icons">
+                        <a href="#" title="Facebook"><i class="fab fa-facebook"></i></a>
+                        <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" title="Discord"><i class="fab fa-discord"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 CineSync. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Đăng Nhập</h3>
+                <button class="btn-close" id="closeLoginModal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Mật khẩu</label>
+                        <input type="password" id="loginPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-block">Đăng Nhập</button>
+                    </div>
+                    <div class="form-group text-center">
+                        <p>Hoặc đăng nhập với</p>
+                        <div class="social-login">
+                            <button type="button" id="googleLoginBtn" class="btn btn-social btn-google">
+                                <i class="fab fa-google"></i> Google
+                            </button>
+                            <button type="button" id="guestLoginBtn" class="btn btn-social btn-guest">
+                                <i class="fas fa-user"></i> Khách
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <p>Chưa có tài khoản? <a href="#" id="showSignupBtn">Đăng ký ngay</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div class="modal" id="signupModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Đăng Ký</h3>
+                <button class="btn-close" id="closeSignupModal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="signupForm">
+                    <div class="form-group">
+                        <label for="signupUsername">Tên người dùng</label>
+                        <input type="text" id="signupUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupEmail">Email</label>
+                        <input type="email" id="signupEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupPassword">Mật khẩu</label>
+                        <input type="password" id="signupPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupConfirmPassword">Xác nhận mật khẩu</label>
+                        <input type="password" id="signupConfirmPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-block">Đăng Ký</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <p>Đã có tài khoản? <a href="#" id="showLoginBtn">Đăng nhập</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="main.js"></script>
+    <script src="plant-care.js"></script>
+</body>
+</html>
