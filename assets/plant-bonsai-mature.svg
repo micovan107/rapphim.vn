@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Decorative pot -->
+  <path d="M25 90 L75 90 L70 70 L30 70 Z" fill="#D7CCC8" />
+  <path d="M30 70 L70 70 L68 65 L32 65 Z" fill="#A1887F" />
+  <path d="M30 80 L70 80" stroke="#8D6E63" stroke-width="1" fill="none" />
+  <path d="M35 85 L65 85" stroke="#8D6E63" stroke-width="1" fill="none" />
+  
+  <!-- Soil -->
+  <ellipse cx="50" cy="65" rx="30" ry="5" fill="#5D4037" />
+  
+  <!-- Main trunk with curve -->
+  <path d="M50 65 C45 60, 40 50, 45 40 C50 30, 55 25, 50 20" stroke="#5D4037" stroke-width="6" fill="none" />
+  
+  <!-- Branches -->
+  <path d="M45 50 C40 48, 35 50, 30 45" stroke="#5D4037" stroke-width="3" fill="none" />
+  <path d="M45 40 C50 38, 55 35, 60 30" stroke="#5D4037" stroke-width="3" fill="none" />
+  <path d="M50 30 C45 28, 40 25, 35 28" stroke="#5D4037" stroke-width="2" fill="none" />
+  <path d="M50 25 C55 23, 60 20, 65 25" stroke="#5D4037" stroke-width="2" fill="none" />
+  
+  <!-- Foliage clusters -->
+  <circle cx="30" cy="45" r="8" fill="#1B5E20" />
+  <circle cx="60" cy="30" r="10" fill="#1B5E20" />
+  <circle cx="35" cy="28" r="7" fill="#1B5E20" />
+  <circle cx="65" cy="25" r="9" fill="#1B5E20" />
+  <circle cx="50" cy="15" r="12" fill="#1B5E20" />
+  
+  <!-- Foliage details -->
+  <circle cx="30" cy="45" r="5" fill="#2E7D32" />
+  <circle cx="60" cy="30" r="6" fill="#2E7D32" />
+  <circle cx="35" cy="28" r="4" fill="#2E7D32" />
+  <circle cx="65" cy="25" r="5" fill="#2E7D32" />
+  <circle cx="50" cy="15" r="7" fill="#2E7D32" />
+  
+  <!-- Trunk texture -->
+  <path d="M48 60 L47 55" stroke="#4E342E" stroke-width="1" fill="none" />
+  <path d="M52 55 L53 50" stroke="#4E342E" stroke-width="1" fill="none" />
+  <path d="M46 45 L45 40" stroke="#4E342E" stroke-width="1" fill="none" />
+  <path d="M49 35 L50 30" stroke="#4E342E" stroke-width="1" fill="none" />
+  
+  <!-- Small decorative rocks -->
+  <ellipse cx="35" cy="65" rx="3" ry="2" fill="#E0E0E0" />
+  <ellipse cx="65" cy="65" rx="4" ry="2" fill="#BDBDBD" />
+</svg>

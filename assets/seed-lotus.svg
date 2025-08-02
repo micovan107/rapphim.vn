@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Seed packet -->
+  <rect x="20" y="25" width="60" height="50" fill="#E1BEE7" />
+  <path d="M20 25 L80 25 L80 75 L20 75 Z" stroke="#BA68C8" stroke-width="2" fill="none" />
+  
+  <!-- Packet design -->
+  <circle cx="50" cy="40" r="15" fill="#F3E5F5" />
+  
+  <!-- Lotus flower -->
+  <path d="M50 40 C45 35, 40 37, 45 45" fill="#EC407A" />
+  <path d="M50 40 C55 35, 60 37, 55 45" fill="#EC407A" />
+  <path d="M50 40 C45 45, 40 47, 45 45" fill="#EC407A" />
+  <path d="M50 40 C55 45, 60 47, 55 45" fill="#EC407A" />
+  <path d="M50 40 C42 40, 40 42, 45 45" fill="#EC407A" />
+  <path d="M50 40 C58 40, 60 42, 55 45" fill="#EC407A" />
+  <path d="M50 40 C42 40, 40 38, 45 45" fill="#EC407A" />
+  <path d="M50 40 C58 40, 60 38, 55 45" fill="#EC407A" />
+  
+  <!-- Flower center -->
+  <circle cx="50" cy="40" r="5" fill="#FFC107" />
+  
+  <!-- Water -->
+  <path d="M35 50 C50 55, 65 55, 65 50" fill="#B3E5FC" />
+  <path d="M35 50 C40 48, 45 52, 50 48 C55 52, 60 48, 65 50" fill="#81D4FA" />
+  
+  <!-- Label -->
+  <rect x="30" y="60" width="40" height="10" fill="#CE93D8" />
+  <text x="50" y="68" font-family="Arial" font-size="8" text-anchor="middle" fill="#4A148C">Hoa Sen</text>
+  
+  <!-- Seeds visible at bottom -->
+  <ellipse cx="35" cy="80" rx="3" ry="2" fill="#6D4C41" />
+  <ellipse cx="45" cy="82" rx="3" ry="2" fill="#6D4C41" />
+  <ellipse cx="55" cy="81" rx="3" ry="2" fill="#6D4C41" />
+  <ellipse cx="65" cy="80" rx="3" ry="2" fill="#6D4C41" />
+</svg>

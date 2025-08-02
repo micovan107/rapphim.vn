@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Water bottle -->
+  <path d="M40 20 L60 20 L65 30 L65 80 C65 85, 60 90, 50 90 C40 90, 35 85, 35 80 L35 30 Z" fill="#E3F2FD" />
+  <path d="M40 20 L60 20 L65 30 L65 80 C65 85, 60 90, 50 90 C40 90, 35 85, 35 80 L35 30 Z" stroke="#2196F3" stroke-width="2" fill="none" />
+  
+  <!-- Bottle cap -->
+  <path d="M40 20 L60 20 L60 15 L40 15 Z" fill="#1976D2" />
+  
+  <!-- Water inside -->
+  <path d="M38 75 C38 82, 62 82, 62 75 L62 35 L38 35 Z" fill="#64B5F6" />
+  
+  <!-- Water waves -->
+  <path d="M38 55 C43 52, 48 58, 53 52 C58 58, 62 52, 62 55" fill="#90CAF9" />
+  <path d="M38 65 C43 62, 48 68, 53 62 C58 68, 62 62, 62 65" fill="#BBDEFB" />
+  
+  <!-- Water drops -->
+  <path d="M30 50 C28 45, 32 45, 30 50" fill="#2196F3" />
+  <path d="M70 60 C68 55, 72 55, 70 60" fill="#2196F3" />
+  <path d="M25 70 C23 65, 27 65, 25 70" fill="#2196F3" />
+</svg>

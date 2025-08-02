@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Water -->
+  <rect x="20" y="75" width="60" height="20" fill="#B3E5FC" />
+  <path d="M20 75 C30 73, 40 77, 50 73 C60 77, 70 73, 80 75" fill="#81D4FA" />
+  
+  <!-- Stem emerging from water -->
+  <path d="M50 75 L50 55" stroke="#43A047" stroke-width="3" />
+  
+  <!-- First leaf -->
+  <ellipse cx="50" cy="55" rx="15" ry="10" fill="#66BB6A" transform="rotate(-10 50 55)" />
+  <path d="M35 55 C50 65, 65 65, 65 55" stroke="#43A047" stroke-width="1" fill="none" transform="rotate(-10 50 55)" />
+  
+  <!-- Water ripples -->
+  <ellipse cx="40" cy="80" rx="5" ry="2" fill="#E1F5FE" opacity="0.5" />
+  <ellipse cx="60" cy="85" rx="4" ry="1.5" fill="#E1F5FE" opacity="0.5" />
+</svg>

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Water -->
+  <rect x="10" y="80" width="80" height="15" fill="#B3E5FC" />
+  <path d="M10 80 C20 78, 30 82, 40 78 C50 82, 60 78, 70 82 C80 78, 90 82, 90 80" fill="#81D4FA" />
+  
+  <!-- Stem -->
+  <path d="M50 80 L50 40" stroke="#43A047" stroke-width="4" />
+  
+  <!-- Leaves -->
+  <ellipse cx="30" cy="70" rx="20" ry="12" fill="#66BB6A" />
+  <path d="M10 70 C30 85, 50 85, 50 70" stroke="#43A047" stroke-width="1" fill="none" />
+  
+  <ellipse cx="70" cy="65" rx="20" ry="12" fill="#66BB6A" />
+  <path d="M50 65 C70 80, 90 80, 90 65" stroke="#43A047" stroke-width="1" fill="none" />
+  
+  <!-- Lotus bud -->
+  <path d="M50 40 C45 35, 40 38, 45 30 C50 25, 55 30, 60 38 C55 35, 50 35, 50 40" fill="#F8BBD0" />
+  <path d="M50 40 C48 38, 46 36, 45 30" stroke="#EC407A" stroke-width="1" fill="none" />
+  <path d="M50 40 C52 38, 54 36, 55 30" stroke="#EC407A" stroke-width="1" fill="none" />
+  
+  <!-- Water ripples -->
+  <ellipse cx="25" cy="85" rx="8" ry="2" fill="#E1F5FE" opacity="0.5" />
+  <ellipse cx="75" cy="87" rx="6" ry="1.5" fill="#E1F5FE" opacity="0.5" />
+</svg>

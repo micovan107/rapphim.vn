@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Pot -->
+  <path d="M30 90 L70 90 L65 75 L35 75 Z" fill="#D7CCC8" />
+  <path d="M35 75 L65 75 L63 70 L37 70 Z" fill="#A1887F" />
+  
+  <!-- Soil -->
+  <ellipse cx="50" cy="70" rx="25" ry="5" fill="#5D4037" />
+  
+  <!-- Trunk -->
+  <path d="M50 70 C48 65, 45 55, 50 45" stroke="#5D4037" stroke-width="5" fill="none" />
+  
+  <!-- Branches -->
+  <path d="M50 55 C55 53, 60 50, 58 45" stroke="#5D4037" stroke-width="3" fill="none" />
+  <path d="M50 60 C45 58, 40 55, 42 50" stroke="#5D4037" stroke-width="3" fill="none" />
+  
+  <!-- Foliage -->
+  <circle cx="58" cy="45" r="8" fill="#2E7D32" />
+  <circle cx="42" cy="50" r="8" fill="#2E7D32" />
+  <circle cx="50" cy="40" r="10" fill="#2E7D32" />
+  
+  <!-- Highlights in foliage -->
+  <circle cx="58" cy="45" r="5" fill="#388E3C" />
+  <circle cx="42" cy="50" r="5" fill="#388E3C" />
+  <circle cx="50" cy="40" r="6" fill="#388E3C" />
+</svg>

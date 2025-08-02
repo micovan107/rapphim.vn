@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Seed packet -->
+  <rect x="20" y="25" width="60" height="50" fill="#FFF9C4" />
+  <path d="M20 25 L80 25 L80 75 L20 75 Z" stroke="#FBC02D" stroke-width="2" fill="none" />
+  
+  <!-- Packet design -->
+  <circle cx="50" cy="40" r="15" fill="#FDD835" />
+  <circle cx="50" cy="40" r="8" fill="#F57F17" />
+  
+  <!-- Petals -->
+  <path d="M50 25 L55 20 L50 15 L45 20 Z" fill="#FDD835" />
+  <path d="M65 40 L70 35 L65 30 L60 35 Z" fill="#FDD835" transform="rotate(45 50 40)" />
+  <path d="M65 40 L70 45 L65 50 L60 45 Z" fill="#FDD835" transform="rotate(90 50 40)" />
+  <path d="M50 55 L55 60 L50 65 L45 60 Z" fill="#FDD835" transform="rotate(135 50 40)" />
+  <path d="M35 40 L30 45 L35 50 L40 45 Z" fill="#FDD835" transform="rotate(180 50 40)" />
+  <path d="M35 40 L30 35 L35 30 L40 35 Z" fill="#FDD835" transform="rotate(225 50 40)" />
+  <path d="M50 25 L45 20 L50 15 L55 20 Z" fill="#FDD835" transform="rotate(270 50 40)" />
+  <path d="M65 40 L60 35 L65 30 L70 35 Z" fill="#FDD835" transform="rotate(315 50 40)" />
+  
+  <!-- Label -->
+  <rect x="30" y="60" width="40" height="10" fill="#FFEB3B" />
+  <text x="50" y="68" font-family="Arial" font-size="8" text-anchor="middle" fill="#5D4037">Hướng Dương</text>
+  
+  <!-- Seeds visible at bottom -->
+  <ellipse cx="40" cy="80" rx="3" ry="2" fill="#5D4037" />
+  <ellipse cx="50" cy="82" rx="3" ry="2" fill="#5D4037" />
+  <ellipse cx="60" cy="80" rx="3" ry="2" fill="#5D4037" />
+</svg>

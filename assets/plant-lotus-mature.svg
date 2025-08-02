@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Water -->
+  <rect x="0" y="85" width="100" height="15" fill="#B3E5FC" />
+  <path d="M0 85 C10 83, 20 87, 30 83 C40 87, 50 83, 60 87 C70 83, 80 87, 90 83 C95 85, 100 83, 100 85" fill="#81D4FA" />
+  
+  <!-- Stem -->
+  <path d="M50 85 L50 25" stroke="#2E7D32" stroke-width="5" />
+  
+  <!-- Leaves -->
+  <ellipse cx="20" cy="75" rx="20" ry="12" fill="#43A047" />
+  <path d="M0 75 C20 90, 40 90, 40 75" stroke="#2E7D32" stroke-width="1" fill="none" />
+  
+  <ellipse cx="80" cy="70" rx="20" ry="12" fill="#43A047" />
+  <path d="M60 70 C80 85, 100 85, 100 70" stroke="#2E7D32" stroke-width="1" fill="none" />
+  
+  <ellipse cx="35" cy="60" rx="15" ry="10" fill="#43A047" />
+  <path d="M20 60 C35 70, 50 70, 50 60" stroke="#2E7D32" stroke-width="1" fill="none" />
+  
+  <!-- Lotus flower -->
+  <circle cx="50" cy="25" r="15" fill="#F06292" />
+  
+  <!-- Outer petals -->
+  <path d="M50 25 C40 15, 30 20, 40 30" fill="#F48FB1" />
+  <path d="M50 25 C60 15, 70 20, 60 30" fill="#F48FB1" />
+  <path d="M50 25 C40 35, 30 40, 40 30" fill="#F48FB1" />
+  <path d="M50 25 C60 35, 70 40, 60 30" fill="#F48FB1" />
+  <path d="M50 25 C35 25, 30 30, 40 30" fill="#F48FB1" />
+  <path d="M50 25 C65 25, 70 30, 60 30" fill="#F48FB1" />
+  <path d="M50 25 C35 25, 30 20, 40 30" fill="#F48FB1" />
+  <path d="M50 25 C65 25, 70 20, 60 30" fill="#F48FB1" />
+  
+  <!-- Inner petals -->
+  <path d="M50 25 C45 20, 40 22, 45 28" fill="#EC407A" />
+  <path d="M50 25 C55 20, 60 22, 55 28" fill="#EC407A" />
+  <path d="M50 25 C45 30, 40 32, 45 28" fill="#EC407A" />
+  <path d="M50 25 C55 30, 60 32, 55 28" fill="#EC407A" />
+  <path d="M50 25 C42 25, 40 27, 45 28" fill="#EC407A" />
+  <path d="M50 25 C58 25, 60 27, 55 28" fill="#EC407A" />
+  <path d="M50 25 C42 25, 40 23, 45 28" fill="#EC407A" />
+  <path d="M50 25 C58 25, 60 23, 55 28" fill="#EC407A" />
+  
+  <!-- Flower center -->
+  <circle cx="50" cy="25" r="5" fill="#FFC107" />
+  <circle cx="50" cy="25" r="3" fill="#FF9800" />
+  
+  <!-- Water ripples -->
+  <ellipse cx="15" cy="90" rx="10" ry="2" fill="#E1F5FE" opacity="0.5" />
+  <ellipse cx="85" cy="92" rx="8" ry="1.5" fill="#E1F5FE" opacity="0.5" />
+  <ellipse cx="50" cy="88" rx="12" ry="2" fill="#E1F5FE" opacity="0.5" />
+</svg>

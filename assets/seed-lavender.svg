@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="25" fill="#8B4513" />
+  <circle cx="50" cy="50" r="20" fill="#A0522D" />
+  <circle cx="45" cy="45" r="3" fill="#6A5ACD" />
+  <circle cx="55" cy="45" r="3" fill="#6A5ACD" />
+  <circle cx="50" cy="55" r="3" fill="#6A5ACD" />
+  <circle cx="43" cy="52" r="2" fill="#6A5ACD" />
+  <circle cx="57" cy="52" r="2" fill="#6A5ACD" />
+  <text x="50" y="80" text-anchor="middle" font-family="Arial" font-size="10" fill="#6A5ACD">Lavender</text>
+</svg>

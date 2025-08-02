@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Soil -->
+  <ellipse cx="50" cy="85" rx="30" ry="10" fill="#795548" />
+  
+  <!-- Stem -->
+  <path d="M50 85 L50 60" stroke="#7D8C3E" stroke-width="2" />
+  
+  <!-- Leaves -->
+  <path d="M50 75 C45 70, 35 72, 40 78" stroke="#7D8C3E" stroke-width="1" fill="#8BC34A" />
+  <path d="M50 75 C55 70, 65 72, 60 78" stroke="#7D8C3E" stroke-width="1" fill="#8BC34A" />
+  
+  <!-- Small bud -->
+  <circle cx="50" cy="60" r="5" fill="#F8BBD0" />
+  <path d="M48 60 C45 57, 47 55, 50 57" fill="#81C784" />
+  <path d="M52 60 C55 57, 53 55, 50 57" fill="#81C784" />
+</svg>

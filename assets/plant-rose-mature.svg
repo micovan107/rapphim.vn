@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Soil -->
+  <ellipse cx="50" cy="95" rx="40" ry="5" fill="#795548" />
+  
+  <!-- Stem -->
+  <path d="M50 95 L50 30" stroke="#2E7D32" stroke-width="4" />
+  
+  <!-- Thorns -->
+  <path d="M50 85 L45 82" stroke="#2E7D32" stroke-width="2" />
+  <path d="M50 75 L55 72" stroke="#2E7D32" stroke-width="2" />
+  <path d="M50 65 L45 62" stroke="#2E7D32" stroke-width="2" />
+  <path d="M50 55 L55 52" stroke="#2E7D32" stroke-width="2" />
+  <path d="M50 45 L45 42" stroke="#2E7D32" stroke-width="2" />
+  
+  <!-- Leaves -->
+  <path d="M45 82 C35 78, 30 82, 35 88" stroke="#2E7D32" stroke-width="1" fill="#43A047" />
+  <path d="M55 72 C65 68, 70 72, 65 78" stroke="#2E7D32" stroke-width="1" fill="#43A047" />
+  <path d="M45 62 C35 58, 30 62, 35 68" stroke="#2E7D32" stroke-width="1" fill="#43A047" />
+  <path d="M55 52 C65 48, 70 52, 65 58" stroke="#2E7D32" stroke-width="1" fill="#43A047" />
+  <path d="M45 42 C35 38, 30 42, 35 48" stroke="#2E7D32" stroke-width="1" fill="#43A047" />
+  
+  <!-- Rose flower -->
+  <circle cx="50" cy="30" r="15" fill="#D81B60" />
+  
+  <!-- Petals -->
+  <path d="M50 30 C40 20, 30 25, 40 35" fill="#EC407A" />
+  <path d="M50 30 C60 20, 70 25, 60 35" fill="#EC407A" />
+  <path d="M50 30 C40 40, 30 45, 40 35" fill="#EC407A" />
+  <path d="M50 30 C60 40, 70 45, 60 35" fill="#EC407A" />
+  <path d="M50 30 C50 15, 60 10, 55 25" fill="#EC407A" />
+  <path d="M50 30 C50 15, 40 10, 45 25" fill="#EC407A" />
+  <path d="M50 30 C50 45, 60 50, 55 35" fill="#EC407A" />
+  <path d="M50 30 C50 45, 40 50, 45 35" fill="#EC407A" />
+  
+  <!-- Inner petals -->
+  <path d="M50 30 C45 25, 40 28, 45 33" fill="#C2185B" />
+  <path d="M50 30 C55 25, 60 28, 55 33" fill="#C2185B" />
+  <path d="M50 30 C45 35, 40 38, 45 33" fill="#C2185B" />
+  <path d="M50 30 C55 35, 60 38, 55 33" fill="#C2185B" />
+  
+  <!-- Sepals -->
+  <path d="M50 45 C45 40, 35 42, 40 47" stroke="#2E7D32" stroke-width="1" fill="#43A047" />
+  <path d="M50 45 C55 40, 65 42, 60 47" stroke="#2E7D32" stroke-width="1" fill="#43A047" />
+  <path d="M50 45 C50 40, 45 35, 48 42" stroke="#2E7D32" stroke-width="1" fill="#43A047" />
+</svg>

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Soil -->
+  <ellipse cx="50" cy="90" rx="35" ry="10" fill="#795548" />
+  
+  <!-- Stem -->
+  <path d="M50 90 L50 40" stroke="#388E3C" stroke-width="3" />
+  
+  <!-- Thorns -->
+  <path d="M50 80 L45 78" stroke="#388E3C" stroke-width="2" />
+  <path d="M50 70 L55 68" stroke="#388E3C" stroke-width="2" />
+  <path d="M50 60 L45 58" stroke="#388E3C" stroke-width="2" />
+  <path d="M50 50 L55 48" stroke="#388E3C" stroke-width="2" />
+  
+  <!-- Leaves -->
+  <path d="M45 78 C40 75, 35 78, 38 83" stroke="#388E3C" stroke-width="1" fill="#66BB6A" />
+  <path d="M55 68 C60 65, 65 68, 62 73" stroke="#388E3C" stroke-width="1" fill="#66BB6A" />
+  <path d="M45 58 C40 55, 35 58, 38 63" stroke="#388E3C" stroke-width="1" fill="#66BB6A" />
+  <path d="M55 48 C60 45, 65 48, 62 53" stroke="#388E3C" stroke-width="1" fill="#66BB6A" />
+  
+  <!-- Rose bud -->
+  <circle cx="50" cy="40" r="8" fill="#EC407A" />
+  <path d="M50 40 C45 35, 55 35, 50 40" fill="#F48FB1" />
+  <path d="M50 40 C45 45, 55 45, 50 40" fill="#F48FB1" />
+  <path d="M50 40 C55 35, 55 45, 50 40" fill="#F48FB1" />
+  <path d="M50 40 C45 35, 45 45, 50 40" fill="#F48FB1" />
+  
+  <!-- Sepals -->
+  <path d="M50 48 C45 45, 40 48, 45 50" stroke="#388E3C" stroke-width="1" fill="#66BB6A" />
+  <path d="M50 48 C55 45, 60 48, 55 50" stroke="#388E3C" stroke-width="1" fill="#66BB6A" />
+</svg>

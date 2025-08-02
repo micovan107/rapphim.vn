@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Soil -->
+  <ellipse cx="50" cy="85" rx="30" ry="10" fill="#795548" />
+  
+  <!-- Stem -->
+  <path d="M50 85 L50 60" stroke="#5D4037" stroke-width="3" />
+  
+  <!-- First leaves -->
+  <path d="M50 65 C45 60, 40 62, 45 67" stroke="#33691E" stroke-width="1" fill="#558B2F" />
+  <path d="M50 65 C55 60, 60 62, 55 67" stroke="#33691E" stroke-width="1" fill="#558B2F" />
+  <path d="M50 70 C45 65, 40 67, 45 72" stroke="#33691E" stroke-width="1" fill="#558B2F" />
+  <path d="M50 70 C55 65, 60 67, 55 72" stroke="#33691E" stroke-width="1" fill="#558B2F" />
+  
+  <!-- Seed shell remnants -->
+  <path d="M48 60 C46 58, 54 58, 52 60" fill="#8D6E63" />
+</svg>

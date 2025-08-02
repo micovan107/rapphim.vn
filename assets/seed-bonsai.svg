@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Seed packet -->
+  <rect x="20" y="25" width="60" height="50" fill="#DCEDC8" />
+  <path d="M20 25 L80 25 L80 75 L20 75 Z" stroke="#8BC34A" stroke-width="2" fill="none" />
+  
+  <!-- Packet design -->
+  <path d="M50 30 C48 28, 45 25, 50 20 C55 25, 52 28, 50 30" stroke="#33691E" stroke-width="2" fill="none" />
+  <path d="M50 30 L50 45" stroke="#5D4037" stroke-width="3" />
+  
+  <!-- Bonsai pot -->
+  <path d="M35 45 L65 45 L60 55 L40 55 Z" fill="#A1887F" />
+  
+  <!-- Foliage -->
+  <circle cx="40" cy="35" r="7" fill="#2E7D32" />
+  <circle cx="50" cy="25" r="8" fill="#2E7D32" />
+  <circle cx="60" cy="35" r="7" fill="#2E7D32" />
+  
+  <!-- Label -->
+  <rect x="30" y="60" width="40" height="10" fill="#AED581" />
+  <text x="50" y="68" font-family="Arial" font-size="8" text-anchor="middle" fill="#33691E">Cây Bonsai</text>
+  
+  <!-- Seeds visible at bottom -->
+  <ellipse cx="40" cy="80" rx="2.5" ry="2" fill="#5D4037" />
+  <ellipse cx="50" cy="81" rx="2.5" ry="2" fill="#5D4037" />
+  <ellipse cx="60" cy="80" rx="2.5" ry="2" fill="#5D4037" />
+</svg>

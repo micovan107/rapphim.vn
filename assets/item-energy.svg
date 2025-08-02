@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Energy potion bottle -->
+  <path d="M40 30 C40 25, 60 25, 60 30 L55 40 L55 80 C55 85, 45 85, 45 80 L45 40 Z" fill="#FFF9C4" />
+  <path d="M40 30 C40 25, 60 25, 60 30 L55 40 L55 80 C55 85, 45 85, 45 80 L45 40 Z" stroke="#FBC02D" stroke-width="2" fill="none" />
+  
+  <!-- Bottle neck -->
+  <path d="M45 25 L55 25 L55 30 L45 30 Z" fill="#F57F17" />
+  
+  <!-- Energy liquid -->
+  <path d="M45 40 L55 40 L55 75 C55 80, 45 80, 45 75 Z" fill="#FFEB3B" />
+  
+  <!-- Energy glow -->
+  <circle cx="50" cy="60" r="15" fill="#FFEE58" opacity="0.7" />
+  
+  <!-- Energy sparks -->
+  <path d="M50 40 L48 50 L53 52 L50 65 L52 55 L47 53 Z" fill="#FF9800" />
+  
+  <!-- External energy rays -->
+  <path d="M50 30 L50 20" stroke="#FFD600" stroke-width="2" />
+  <path d="M60 35 L70 30" stroke="#FFD600" stroke-width="2" />
+  <path d="M40 35 L30 30" stroke="#FFD600" stroke-width="2" />
+  <path d="M55 45 L65 45" stroke="#FFD600" stroke-width="2" />
+  <path d="M45 45 L35 45" stroke="#FFD600" stroke-width="2" />
+  
+  <!-- Energy stars -->
+  <path d="M70 50 L72 53 L75 53 L73 56 L74 59 L70 57 L66 59 L67 56 L65 53 L68 53 Z" fill="#FFEB3B" />
+  <path d="M30 60 L32 63 L35 63 L33 66 L34 69 L30 67 L26 69 L27 66 L25 63 L28 63 Z" fill="#FFEB3B" />
+  <path d="M60 75 L62 78 L65 78 L63 81 L64 84 L60 82 L56 84 L57 81 L55 78 L58 78 Z" fill="#FFEB3B" />
+</svg>

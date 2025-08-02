@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Seed packet -->
+  <rect x="20" y="25" width="60" height="50" fill="#FFCDD2" />
+  <path d="M20 25 L80 25 L80 75 L20 75 Z" stroke="#E57373" stroke-width="2" fill="none" />
+  
+  <!-- Packet design -->
+  <path d="M50 35 C45 30, 40 32, 45 40 C50 45, 55 40, 60 32 C55 30, 50 30, 50 35" fill="#E91E63" />
+  <path d="M50 35 C45 30, 40 32, 45 40" stroke="#C2185B" stroke-width="1" fill="none" />
+  <path d="M50 35 C55 30, 60 32, 55 40" stroke="#C2185B" stroke-width="1" fill="none" />
+  
+  <!-- Stem and leaves -->
+  <path d="M50 40 L50 55" stroke="#43A047" stroke-width="2" />
+  <path d="M50 45 L45 42" stroke="#43A047" stroke-width="1" />
+  <path d="M45 42 C42 40, 40 42, 43 45" stroke="#43A047" stroke-width="1" fill="#66BB6A" />
+  <path d="M50 50 L55 47" stroke="#43A047" stroke-width="1" />
+  <path d="M55 47 C58 45, 60 47, 57 50" stroke="#43A047" stroke-width="1" fill="#66BB6A" />
+  
+  <!-- Label -->
+  <rect x="30" y="60" width="40" height="10" fill="#F8BBD0" />
+  <text x="50" y="68" font-family="Arial" font-size="8" text-anchor="middle" fill="#880E4F">Hoa Hồng</text>
+  
+  <!-- Seeds visible at bottom -->
+  <ellipse cx="35" cy="80" rx="2" ry="1.5" fill="#A1887F" />
+  <ellipse cx="45" cy="82" rx="2" ry="1.5" fill="#A1887F" />
+  <ellipse cx="55" cy="81" rx="2" ry="1.5" fill="#A1887F" />
+  <ellipse cx="65" cy="80" rx="2" ry="1.5" fill="#A1887F" />
+</svg>
