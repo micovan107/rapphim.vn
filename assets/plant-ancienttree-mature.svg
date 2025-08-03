@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Soil/Pot -->
+  <ellipse cx="50" cy="85" rx="25" ry="10" fill="#8a5a44"/>
+  
+  <!-- Main trunk -->
+  <path d="M50 85 C50 70 48 50 50 15" stroke="#5d4037" stroke-width="7" fill="none"/>
+  
+  <!-- Major branches -->
+  <path d="M50 60 C65 55 75 45 85 40" stroke="#5d4037" stroke-width="4" fill="none"/>
+  <path d="M50 50 C35 45 25 35 15 30" stroke="#5d4037" stroke-width="4" fill="none"/>
+  <path d="M50 40 C60 35 65 25 70 15" stroke="#5d4037" stroke-width="3" fill="none"/>
+  <path d="M50 30 C40 25 35 15 30 5" stroke="#5d4037" stroke-width="3" fill="none"/>
+  
+  <!-- Minor branches -->
+  <path d="M85 40 C87 35 90 30 95 25" stroke="#5d4037" stroke-width="2" fill="none"/>
+  <path d="M85 40 C83 35 82 30 80 25" stroke="#5d4037" stroke-width="2" fill="none"/>
+  <path d="M15 30 C13 25 10 20 5 15" stroke="#5d4037" stroke-width="2" fill="none"/>
+  <path d="M15 30 C17 25 18 20 20 15" stroke="#5d4037" stroke-width="2" fill="none"/>
+  <path d="M70 15 C72 10 75 5 80 0" stroke="#5d4037" stroke-width="2" fill="none"/>
+  <path d="M30 5 C28 0 25 -5 20 -10" stroke="#5d4037" stroke-width="2" fill="none"/>
+  
+  <!-- Foliage clusters -->
+  <circle cx="95" cy="25" r="5" fill="#6d4c41"/>
+  <circle cx="80" cy="25" r="5" fill="#6d4c41"/>
+  <circle cx="5" cy="15" r="5" fill="#6d4c41"/>
+  <circle cx="20" cy="15" r="5" fill="#6d4c41"/>
+  <circle cx="80" cy="0" r="5" fill="#6d4c41"/>
+  <circle cx="20" cy="-10" r="5" fill="#6d4c41"/>
+  <circle cx="50" cy="15" r="7" fill="#6d4c41"/>
+  <circle cx="70" cy="15" r="5" fill="#6d4c41"/>
+  <circle cx="30" cy="5" r="5" fill="#6d4c41"/>
+  
+  <!-- Ancient markings on trunk -->
+  <path d="M49 80 L51 80" fill="none" stroke="#8d6e63" stroke-width="1"/>
+  <path d="M49 75 L51 75" fill="none" stroke="#8d6e63" stroke-width="1"/>
+  <path d="M49 70 L51 70" fill="none" stroke="#8d6e63" stroke-width="1"/>
+  <path d="M49 65 L51 65" fill="none" stroke="#8d6e63" stroke-width="1"/>
+  <path d="M49 60 L51 60" fill="none" stroke="#8d6e63" stroke-width="1"/>
+  <path d="M49 55 L51 55" fill="none" stroke="#8d6e63" stroke-width="1"/>
+  <path d="M49 50 L51 50" fill="none" stroke="#8d6e63" stroke-width="1"/>
+  <path d="M49 45 L51 45" fill="none" stroke="#8d6e63" stroke-width="1"/>
+  <path d="M49 40 L51 40" fill="none" stroke="#8d6e63" stroke-width="1"/>
+  <path d="M49 35 L51 35" fill="none" stroke="#8d6e63" stroke-width="1"/>
+  <path d="M49 30 L51 30" fill="none" stroke="#8d6e63" stroke-width="1"/>
+  <path d="M49 25 L51 25" fill="none" stroke="#8d6e63" stroke-width="1"/>
+  <path d="M49 20 L51 20" fill="none" stroke="#8d6e63" stroke-width="1"/>
+  
+  <!-- Roots -->
+  <path d="M50 85 Q35 90 20 95" stroke="#8a5a44" stroke-width="3" fill="none"/>
+  <path d="M50 85 Q65 90 80 95" stroke="#8a5a44" stroke-width="3" fill="none"/>
+  
+  <!-- Ancient glow -->
+  <circle cx="50" cy="40" r="45" fill="#a1887f" opacity="0.1"/>
+</svg>

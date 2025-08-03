@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Seed base -->
+  <ellipse cx="50" cy="60" rx="20" ry="15" fill="#6e6e8f"/>
+  
+  <!-- Seed top detail -->
+  <path d="M50 45 Q60 55 50 65 Q40 55 50 45" fill="#8f8fb3"/>
+  
+  <!-- Seed shine -->
+  <ellipse cx="45" cy="55" rx="5" ry="3" fill="#ffffff" opacity="0.3"/>
+  
+  <!-- Moon glow -->
+  <circle cx="50" cy="55" r="25" fill="#d8d8ff" opacity="0.2"/>
+  
+  <!-- Moon crescent detail -->
+  <path d="M45 50 Q55 45 55 60 Q45 65 45 50" fill="#d0d0ff" opacity="0.5"/>
+  
+  <!-- Star specks -->
+  <circle cx="40" cy="45" r="1" fill="#ffffff"/>
+  <circle cx="60" cy="50" r="1" fill="#ffffff"/>
+  <circle cx="45" cy="65" r="1" fill="#ffffff"/>
+  <circle cx="55" cy="40" r="1" fill="#ffffff"/>
+</svg>

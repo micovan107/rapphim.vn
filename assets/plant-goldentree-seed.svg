@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Seed base -->
+  <ellipse cx="50" cy="60" rx="20" ry="15" fill="#b8860b"/>
+  
+  <!-- Seed top detail -->
+  <path d="M50 45 Q60 55 50 65 Q40 55 50 45" fill="#daa520"/>
+  
+  <!-- Seed shine -->
+  <ellipse cx="45" cy="55" rx="5" ry="3" fill="#ffffff" opacity="0.3"/>
+  
+  <!-- Golden glow -->
+  <circle cx="50" cy="55" r="25" fill="#ffd700" opacity="0.2"/>
+  
+  <!-- Golden specks -->
+  <circle cx="40" cy="50" r="1" fill="#ffd700"/>
+  <circle cx="60" cy="50" r="1" fill="#ffd700"/>
+  <circle cx="45" cy="65" r="1" fill="#ffd700"/>
+  <circle cx="55" cy="65" r="1" fill="#ffd700"/>
+  <circle cx="50" cy="45" r="1" fill="#ffd700"/>
+</svg>

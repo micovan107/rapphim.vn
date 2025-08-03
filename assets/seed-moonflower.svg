@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Seed packet -->
+  <rect x="25" y="30" width="50" height="60" rx="5" ry="5" fill="#e6e6ff"/>
+  
+  <!-- Packet top fold -->
+  <path d="M25 35 L50 25 L75 35" fill="#b3b3d7"/>
+  <path d="M25 35 L50 25 L75 35" fill="none" stroke="#8f8fb3" stroke-width="1"/>
+  
+  <!-- Packet border -->
+  <rect x="25" y="30" width="50" height="60" rx="5" ry="5" fill="none" stroke="#8f8fb3" stroke-width="2"/>
+  
+  <!-- Packet label -->
+  <rect x="30" y="45" width="40" height="30" rx="3" ry="3" fill="#ffffff"/>
+  
+  <!-- Moon icon -->
+  <circle cx="50" cy="55" r="10" fill="#d0d0ff"/>
+  <path d="M45 55 Q55 50 55 60 Q45 65 45 55" fill="#ffffff" opacity="0.7"/>
+  
+  <!-- Star specks -->
+  <circle cx="45" cy="50" r="1" fill="#ffffff"/>
+  <circle cx="55" cy="55" r="1" fill="#ffffff"/>
+  <circle cx="48" cy="60" r="1" fill="#ffffff"/>
+  
+  <!-- Moon glow -->
+  <circle cx="50" cy="55" r="12" fill="#d8d8ff" opacity="0.2"/>
+  
+  <!-- Text lines -->
+  <line x1="35" y1="70" x2="65" y2="70" stroke="#888888" stroke-width="1"/>
+  <line x1="35" y1="75" x2="55" y2="75" stroke="#888888" stroke-width="1"/>
+</svg>

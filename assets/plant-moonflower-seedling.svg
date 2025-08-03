@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Soil/Pot -->
+  <ellipse cx="50" cy="85" rx="25" ry="10" fill="#8a5a44"/>
+  
+  <!-- Main stem -->
+  <path d="M50 85 L50 50" stroke="#6e6e8f" stroke-width="3" fill="none"/>
+  
+  <!-- Small leaves -->
+  <path d="M50 65 Q60 60 65 65 Q60 70 50 65" fill="#8f8fb3"/>
+  <path d="M50 65 Q40 60 35 65 Q40 70 50 65" fill="#8f8fb3"/>
+  
+  <!-- Moon bud -->
+  <circle cx="50" cy="45" r="8" fill="#d0d0ff"/>
+  
+  <!-- Crescent detail on bud -->
+  <path d="M47 45 Q53 40 53 50 Q47 55 47 45" fill="#ffffff" opacity="0.7"/>
+  
+  <!-- Moon glow -->
+  <circle cx="50" cy="45" r="12" fill="#d8d8ff" opacity="0.3"/>
+  
+  <!-- Star specks -->
+  <circle cx="45" cy="40" r="1" fill="#ffffff"/>
+  <circle cx="55" cy="45" r="1" fill="#ffffff"/>
+  <circle cx="48" cy="50" r="1" fill="#ffffff"/>
+  
+  <!-- Roots -->
+  <path d="M50 85 Q40 90 35 95" stroke="#8a5a44" stroke-width="2" fill="none"/>
+  <path d="M50 85 Q60 90 65 95" stroke="#8a5a44" stroke-width="2" fill="none"/>
+</svg>

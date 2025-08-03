@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Soil/Pot -->
+  <ellipse cx="50" cy="85" rx="25" ry="10" fill="#8a5a44"/>
+  
+  <!-- Crystal stem -->
+  <path d="M50 85 C50 70 55 60 50 30" stroke="#88c1d3" stroke-width="3" fill="none"/>
+  
+  <!-- Crystal branches -->
+  <path d="M50 60 C60 55 65 50 70 45" stroke="#88c1d3" stroke-width="2" fill="none"/>
+  <path d="M50 50 C40 45 35 40 30 35" stroke="#88c1d3" stroke-width="2" fill="none"/>
+  
+  <!-- Crystal leaves -->
+  <polygon points="50,70 65,65 70,70 65,80" fill="#a4c2f4"/>
+  <polygon points="50,70 35,65 30,70 35,80" fill="#a4c2f4"/>
+  
+  <!-- Crystal buds -->
+  <polygon points="50,30 55,40 50,50 45,40" fill="#a4c2f4"/>
+  <polygon points="70,45 75,50 70,55 65,50" fill="#a4c2f4"/>
+  <polygon points="30,35 35,40 30,45 25,40" fill="#a4c2f4"/>
+  
+  <!-- Crystal facets on main bud -->
+  <polygon points="50,30 55,40 50,40" fill="#d5e3ff"/>
+  <polygon points="50,30 45,40 50,40" fill="#8ab4f8"/>
+  <polygon points="50,40 55,40 50,50" fill="#7ba4f4"/>
+  <polygon points="50,40 45,40 50,50" fill="#6495ed"/>
+  
+  <!-- Crystal shine -->
+  <polygon points="48,38 52,38 52,42 48,42" fill="#ffffff" opacity="0.5"/>
+  <circle cx="70" cy="50" r="2" fill="#ffffff" opacity="0.5"/>
+  <circle cx="30" cy="40" r="2" fill="#ffffff" opacity="0.5"/>
+  
+  <!-- Crystal glow -->
+  <circle cx="50" cy="50" r="35" fill="#a4c2f4" opacity="0.15"/>
+  
+  <!-- Roots -->
+  <path d="M50 85 Q40 90 30 95" stroke="#8a5a44" stroke-width="2" fill="none"/>
+  <path d="M50 85 Q60 90 70 95" stroke="#8a5a44" stroke-width="2" fill="none"/>
+</svg>

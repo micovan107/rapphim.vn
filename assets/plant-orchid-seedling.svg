@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Soil/Pot -->
+  <ellipse cx="50" cy="85" rx="25" ry="10" fill="#8a5a44"/>
+  
+  <!-- Main stem -->
+  <path d="M50 85 L50 40" stroke="#2d8f45" stroke-width="3" fill="none"/>
+  
+  <!-- Small leaves -->
+  <path d="M50 65 Q60 60 65 65 Q60 70 50 65" fill="#3ca55c"/>
+  <path d="M50 65 Q40 60 35 65 Q40 70 50 65" fill="#3ca55c"/>
+  
+  <!-- Orchid bud -->
+  <circle cx="50" cy="40" r="8" fill="#e6a8e0"/>
+  
+  <!-- Bud details -->
+  <path d="M50 40 Q55 35 60 40 Q55 45 50 40" fill="#d896d2"/>
+  <path d="M50 40 Q45 35 40 40 Q45 45 50 40" fill="#d896d2"/>
+  <path d="M50 40 Q55 45 50 50 Q45 45 50 40" fill="#d896d2"/>
+  
+  <!-- Roots -->
+  <path d="M50 85 Q40 90 35 95" stroke="#8a5a44" stroke-width="2" fill="none"/>
+  <path d="M50 85 Q60 90 65 95" stroke="#8a5a44" stroke-width="2" fill="none"/>
+</svg>

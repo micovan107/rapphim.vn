@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Seed base -->
+  <ellipse cx="50" cy="60" rx="20" ry="15" fill="#8a5a44"/>
+  
+  <!-- Seed top detail -->
+  <path d="M50 45 Q60 55 50 65 Q40 55 50 45" fill="#9b6b55"/>
+  
+  <!-- Seed shine -->
+  <ellipse cx="45" cy="55" rx="5" ry="3" fill="#ffffff" opacity="0.3"/>
+  
+  <!-- Orchid flower bud -->
+  <path d="M50 45 Q65 35 70 25 Q55 30 50 25 Q45 30 30 25 Q35 35 50 45" fill="#e6a8e0" opacity="0.7"/>
+  <path d="M50 45 Q60 30 55 20 Q50 25 50 20 Q50 25 45 20 Q40 30 50 45" fill="#d896d2" opacity="0.8"/>
+  
+  <!-- Stem hint -->
+  <path d="M50 45 L50 35" stroke="#2d8f45" stroke-width="2" fill="none"/>
+</svg>

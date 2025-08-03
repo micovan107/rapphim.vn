@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Seed base -->
+  <polygon points="50,45 60,55 50,65 40,55" fill="#a4c2f4"/>
+  
+  <!-- Crystal facets -->
+  <polygon points="50,45 60,55 50,55" fill="#d5e3ff"/>
+  <polygon points="50,45 40,55 50,55" fill="#8ab4f8"/>
+  <polygon points="50,55 60,55 50,65" fill="#7ba4f4"/>
+  <polygon points="50,55 40,55 50,65" fill="#6495ed"/>
+  
+  <!-- Crystal shine -->
+  <polygon points="48,48 52,48 52,52 48,52" fill="#ffffff" opacity="0.7"/>
+  
+  <!-- Crystal glow -->
+  <circle cx="50" cy="55" r="20" fill="#a4c2f4" opacity="0.2"/>
+  
+  <!-- Light reflections -->
+  <circle cx="45" cy="50" r="1" fill="#ffffff"/>
+  <circle cx="55" cy="50" r="1" fill="#ffffff"/>
+  <circle cx="50" cy="60" r="1" fill="#ffffff"/>
+</svg>

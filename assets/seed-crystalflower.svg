@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Seed packet -->
+  <rect x="25" y="30" width="50" height="60" rx="5" ry="5" fill="#e6f0ff"/>
+  
+  <!-- Packet top fold -->
+  <path d="M25 35 L50 25 L75 35" fill="#a4c2f4"/>
+  <path d="M25 35 L50 25 L75 35" fill="none" stroke="#6495ed" stroke-width="1"/>
+  
+  <!-- Packet border -->
+  <rect x="25" y="30" width="50" height="60" rx="5" ry="5" fill="none" stroke="#6495ed" stroke-width="2"/>
+  
+  <!-- Packet label -->
+  <rect x="30" y="45" width="40" height="30" rx="3" ry="3" fill="#ffffff"/>
+  
+  <!-- Crystal flower icon -->
+  <polygon points="50,50 55,55 50,60 45,55" fill="#a4c2f4"/>
+  <polygon points="50,50 60,50 55,55" fill="#d5e3ff"/>
+  <polygon points="50,50 40,50 45,55" fill="#8ab4f8"/>
+  <polygon points="55,55 60,60 50,60" fill="#7ba4f4"/>
+  <polygon points="45,55 40,60 50,60" fill="#6495ed"/>
+  
+  <!-- Crystal shine -->
+  <circle cx="50" cy="55" r="2" fill="#ffffff"/>
+  
+  <!-- Crystal glow -->
+  <circle cx="50" cy="55" r="12" fill="#a4c2f4" opacity="0.2"/>
+  
+  <!-- Text lines -->
+  <line x1="35" y1="70" x2="65" y2="70" stroke="#888888" stroke-width="1"/>
+  <line x1="35" y1="75" x2="55" y2="75" stroke="#888888" stroke-width="1"/>
+</svg>

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Seed base -->
+  <ellipse cx="50" cy="60" rx="20" ry="15" fill="#5d4037"/>
+  
+  <!-- Seed texture -->
+  <path d="M40 55 Q50 50 60 55" fill="none" stroke="#4e342e" stroke-width="2"/>
+  <path d="M40 60 Q50 55 60 60" fill="none" stroke="#4e342e" stroke-width="2"/>
+  <path d="M40 65 Q50 60 60 65" fill="none" stroke="#4e342e" stroke-width="2"/>
+  
+  <!-- Seed top detail -->
+  <path d="M50 45 Q60 55 50 65 Q40 55 50 45" fill="#6d4c41"/>
+  
+  <!-- Seed shine -->
+  <ellipse cx="45" cy="55" rx="5" ry="3" fill="#8d6e63" opacity="0.5"/>
+  
+  <!-- Ancient markings -->
+  <path d="M45 50 L55 50" fill="none" stroke="#8d6e63" stroke-width="1"/>
+  <path d="M45 53 L55 53" fill="none" stroke="#8d6e63" stroke-width="1"/>
+  <path d="M45 56 L55 56" fill="none" stroke="#8d6e63" stroke-width="1"/>
+  <path d="M45 59 L55 59" fill="none" stroke="#8d6e63" stroke-width="1"/>
+  <path d="M45 62 L55 62" fill="none" stroke="#8d6e63" stroke-width="1"/>
+  
+  <!-- Seed glow -->
+  <circle cx="50" cy="55" r="25" fill="#a1887f" opacity="0.1"/>
+</svg>

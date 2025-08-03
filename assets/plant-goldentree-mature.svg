@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Soil/Pot -->
+  <ellipse cx="50" cy="85" rx="25" ry="10" fill="#8a5a44"/>
+  
+  <!-- Main trunk -->
+  <path d="M50 85 C50 70 48 50 50 15" stroke="#b8860b" stroke-width="5" fill="none"/>
+  
+  <!-- Branches -->
+  <path d="M50 60 C65 55 75 45 80 35" stroke="#b8860b" stroke-width="3" fill="none"/>
+  <path d="M50 50 C35 45 25 35 20 25" stroke="#b8860b" stroke-width="3" fill="none"/>
+  <path d="M50 40 C60 35 65 25 65 15" stroke="#b8860b" stroke-width="2" fill="none"/>
+  <path d="M50 30 C40 25 35 15 35 5" stroke="#b8860b" stroke-width="2" fill="none"/>
+  
+  <!-- Golden leaves clusters -->
+  <circle cx="50" cy="15" r="10" fill="#ffd700"/>
+  <circle cx="80" cy="35" r="8" fill="#ffd700"/>
+  <circle cx="20" cy="25" r="8" fill="#ffd700"/>
+  <circle cx="65" cy="15" r="7" fill="#ffd700"/>
+  <circle cx="35" cy="5" r="7" fill="#ffd700"/>
+  
+  <!-- Golden fruits -->
+  <circle cx="55" cy="25" r="3" fill="#daa520"/>
+  <circle cx="45" cy="35" r="3" fill="#daa520"/>
+  <circle cx="60" cy="45" r="3" fill="#daa520"/>
+  <circle cx="40" cy="55" r="3" fill="#daa520"/>
+  
+  <!-- Golden glow -->
+  <circle cx="50" cy="40" r="45" fill="#ffd700" opacity="0.1"/>
+  
+  <!-- Roots -->
+  <path d="M50 85 Q35 90 20 95" stroke="#8a5a44" stroke-width="2" fill="none"/>
+  <path d="M50 85 Q65 90 80 95" stroke="#8a5a44" stroke-width="2" fill="none"/>
+</svg>

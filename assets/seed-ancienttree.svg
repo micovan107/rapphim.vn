@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Seed packet -->
+  <rect x="25" y="30" width="50" height="60" rx="5" ry="5" fill="#e0d2c5"/>
+  
+  <!-- Packet top fold -->
+  <path d="M25 35 L50 25 L75 35" fill="#c5b8a5"/>
+  <path d="M25 35 L50 25 L75 35" fill="none" stroke="#8d6e63" stroke-width="1"/>
+  
+  <!-- Packet border -->
+  <rect x="25" y="30" width="50" height="60" rx="5" ry="5" fill="none" stroke="#8d6e63" stroke-width="2"/>
+  
+  <!-- Packet label -->
+  <rect x="30" y="45" width="40" height="30" rx="3" ry="3" fill="#ffffff"/>
+  
+  <!-- Ancient tree icon -->
+  <path d="M50 50 L50 65" stroke="#5d4037" stroke-width="3" fill="none"/>
+  <path d="M50 55 L45 50" stroke="#5d4037" stroke-width="2" fill="none"/>
+  <path d="M50 55 L55 50" stroke="#5d4037" stroke-width="2" fill="none"/>
+  <path d="M50 60 L45 55" stroke="#5d4037" stroke-width="2" fill="none"/>
+  <path d="M50 60 L55 55" stroke="#5d4037" stroke-width="2" fill="none"/>
+  <circle cx="45" cy="50" r="3" fill="#6d4c41"/>
+  <circle cx="55" cy="50" r="3" fill="#6d4c41"/>
+  <circle cx="45" cy="55" r="3" fill="#6d4c41"/>
+  <circle cx="55" cy="55" r="3" fill="#6d4c41"/>
+  <circle cx="50" cy="50" r="4" fill="#6d4c41"/>
+  
+  <!-- Ancient markings -->
+  <path d="M49 62 L51 62" fill="none" stroke="#8d6e63" stroke-width="1"/>
+  <path d="M49 60 L51 60" fill="none" stroke="#8d6e63" stroke-width="1"/>
+  <path d="M49 58 L51 58" fill="none" stroke="#8d6e63" stroke-width="1"/>
+  
+  <!-- Ancient glow -->
+  <circle cx="50" cy="55" r="12" fill="#a1887f" opacity="0.1"/>
+  
+  <!-- Text lines -->
+  <line x1="35" y1="70" x2="65" y2="70" stroke="#888888" stroke-width="1"/>
+  <line x1="35" y1="75" x2="55" y2="75" stroke="#888888" stroke-width="1"/>
+</svg>
