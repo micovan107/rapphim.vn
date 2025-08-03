@@ -25,8 +25,36 @@ let userTools = {}; // Công cụ làm vườn
 let currentViewingFriendId = null; // ID của người bạn đang xem
 let currentViewingFriendName = null; // Tên của người bạn đang xem
 
+// Cấu hình hệ thống cấp độ
+const levelConfig = {
+    expPerLevel: 100, // Số kinh nghiệm cần để lên cấp
+    maxLevel: 50, // Cấp độ tối đa
+    rewards: {
+        // Phần thưởng khi lên cấp
+        coins: 50, // Số xu nhận được mỗi khi lên cấp
+        energy: 5, // Năng lượng tối đa tăng thêm mỗi cấp
+        water: 2 // Nước tối đa tăng thêm mỗi cấp
+    },
+    // Các mốc cấp độ đặc biệt
+    milestones: [
+        { level: 5, reward: { seeds: [{ id: 'rose_seed', count: 3 }] } },
+        { level: 10, reward: { seeds: [{ id: 'orchid_seed', count: 2 }] } },
+        { level: 15, reward: { seeds: [{ id: 'goldentree_seed', count: 1 }] } },
+        { level: 20, reward: { seeds: [{ id: 'crystalflower_seed', count: 1 }] } },
+        { level: 30, reward: { seeds: [{ id: 'moonflower_seed', count: 1 }] } },
+        { level: 40, reward: { seeds: [{ id: 'ancienttree_seed', count: 1 }] } }
+    ]
+}
+
 // Weather effect variables
 let currentWeatherEffect = null;
+
+// Biến cho tính năng sâu
+const WORM_SPAWN_CHANCE = 0.3; // 30% cơ hội xuất hiện sâu mỗi lần kiểm tra
+const WORM_CHECK_INTERVAL = 60000; // Kiểm tra sâu mỗi 1 phút
+const WORM_COUNT_MIN = 1; // Số lượng sâu tối thiểu
+const WORM_COUNT_MAX = 5; // Số lượng sâu tối đa
+const PESTICIDE_DURATION = 20 * 60 * 1000; // Thời gian hiệu lực của thuốc trừ sâu (20 phút)
 let weatherEffectTimer = null;
 let weatherEffectDuration = 60000; // 1 minute in milliseconds
 let weatherEffectCooldown = 300000; // 5 minutes in milliseconds
@@ -427,7 +455,7 @@ function initializeShopItems() {
             name: 'Hạt Hoa Pha Lê',
             description: 'Hạt giống hoa pha lê, phát ra ánh sáng lung linh.',
             price: 120,
-            image: 'assets/seed-dragonfruit.svg', // Sử dụng hình ảnh khác
+            image: 'assets/seed-crystalflower.svg', // Sử dụng hình ảnh mới
             plantTypeId: 'crystalflower',
             rarity: 'mythical'
         },
@@ -436,7 +464,7 @@ function initializeShopItems() {
             name: 'Hạt Hoa Mặt Trăng',
             description: 'Hạt giống hoa mặt trăng, phát sáng trong đêm.',
             price: 100,
-            image: 'assets/seed-lotus.svg', // Sử dụng hình ảnh khác với hoa oải hương
+            image: 'assets/seed-moonflower.svg', // Sử dụng hình ảnh khác với hoa oải hương
             plantTypeId: 'moonflower',
             rarity: 'legendary'
         },
@@ -445,7 +473,7 @@ function initializeShopItems() {
             name: 'Hạt Cây Cổ Thụ',
             description: 'Hạt giống cây cổ thụ, chứa đựng sức mạnh cổ xưa.',
             price: 200,
-            image: 'assets/seed-bamboo.svg', // Tạm dùng hình ảnh có sẵn
+            image: 'assets/seed-ancienttree.svg', // Sử dụng hình ảnh mới
             plantTypeId: 'ancienttree',
             rarity: 'mythical'
         },
@@ -586,6 +614,16 @@ function initializeShopItems() {
             effect: { enableCoinConversion: true },
             type: 'tool',
             rarity: 'legendary'
+        },
+        // Thuốc trừ sâu
+        {
+            id: 'pesticide',
+            name: 'Thuốc Trừ Sâu',
+            description: 'Ngăn sâu xuất hiện trên cây trong 20 phút.',
+            price: 30,
+            image: 'assets/item-fertilizer.svg',
+            effect: { pesticide: true },
+            rarity: 'uncommon'
         }
     ];
 }
@@ -696,6 +734,167 @@ function initializeAchievements() {
     ];
 }
 
+// Hàm kiểm tra và tạo sâu cho cây
+function checkAndSpawnWorms() {
+    // Chỉ kiểm tra cây không có thuốc trừ sâu hiệu lực
+    const now = Date.now();
+    let wormAdded = false;
+    
+    userPlants.forEach(plant => {
+        // Bỏ qua cây đã có thuốc trừ sâu hiệu lực
+        if (plant.pesticideUntil > now) {
+            console.log('Cây có thuốc trừ sâu còn hiệu lực, bỏ qua kiểm tra sâu');
+            return;
+        }
+        
+        // Đảm bảo thuộc tính worms được khởi tạo
+        if (!plant.worms) plant.worms = [];
+        
+        // Cơ hội xuất hiện sâu
+        if (Math.random() < WORM_SPAWN_CHANCE) {
+            // Xác định số lượng sâu xuất hiện
+            const wormCount = Math.floor(Math.random() * (WORM_COUNT_MAX - WORM_COUNT_MIN + 1)) + WORM_COUNT_MIN;
+            console.log(`Phát hiện sâu trên cây ${plant.id}, số lượng: ${wormCount}`);
+            
+            // Tạo sâu mới
+            for (let i = 0; i < wormCount; i++) {
+                // Chỉ tạo sâu nếu cây chưa có quá nhiều sâu
+                if (plant.worms.length < WORM_COUNT_MAX) {
+                    const newWorm = {
+                        id: generateId(),
+                        position: {
+                            x: Math.random() * 80 + 10, // Vị trí ngẫu nhiên từ 10% đến 90%
+                            y: Math.random() * 80 + 10
+                        }
+                    };
+                    plant.worms.push(newWorm);
+                    console.log(`Đã thêm sâu mới với id: ${newWorm.id}`);
+                    wormAdded = true;
+                }
+            }
+            
+            // Cập nhật hiển thị nếu đang xem thông tin cây này
+            const plantInfoModal = document.getElementById('plantInfoModal');
+            if (plantInfoModal && plantInfoModal.style.display === 'flex') {
+                // Tìm cây đang hiển thị
+                const displayedPlantId = plantInfoModal.getAttribute('data-plant-id');
+                if (displayedPlantId === plant.id) {
+                    // Cập nhật hiển thị sâu
+                    renderWorms(plant);
+                    
+                    // Cập nhật thông tin hiển thị về sâu
+                    updatePlantInfoModal(plant);
+                }
+            }
+        }
+    });
+    
+    // Chỉ lưu dữ liệu nếu có sâu mới được thêm vào
+    if (wormAdded) {
+        console.log('Đã thêm sâu mới, lưu dữ liệu người dùng');
+        saveUserData();
+        renderGarden(); // Cập nhật hiển thị vườn để hiển thị biểu tượng sâu
+    }
+}
+
+// Hàm hiển thị sâu trên cây
+function renderWorms(plant) {
+    // Tìm container để hiển thị sâu
+    const wormContainer = document.getElementById('plantWorms');
+    if (!wormContainer) return;
+    
+    // Xóa tất cả sâu hiện tại
+    wormContainer.innerHTML = '';
+    
+    // Hiển thị sâu mới
+    if (plant.worms && plant.worms.length > 0) {
+        plant.worms.forEach(worm => {
+            const wormElement = document.createElement('div');
+            wormElement.className = 'worm';
+            wormElement.style.left = `${worm.position.x}%`;
+            wormElement.style.top = `${worm.position.y}%`;
+            wormElement.setAttribute('data-worm-id', worm.id);
+            wormElement.innerHTML = '<i class="fas fa-bug"></i>';
+            
+            // Thêm sự kiện click để bắt sâu
+            wormElement.addEventListener('click', function(e) {
+                e.stopPropagation(); // Ngăn sự kiện lan ra ngoài
+                catchWorm(plant.id, worm.id);
+            });
+            
+            wormContainer.appendChild(wormElement);
+        });
+    }
+}
+
+// Hàm bắt sâu
+function catchWorm(plantId, wormId) {
+    // Tìm cây
+    const plant = userPlants.find(p => p.id === plantId);
+    if (!plant || !plant.worms) return;
+    
+    // Tìm và xóa sâu
+    const wormIndex = plant.worms.findIndex(w => w.id === wormId);
+    if (wormIndex >= 0) {
+        plant.worms.splice(wormIndex, 1);
+        
+        // Lưu dữ liệu người dùng
+        saveUserData();
+        
+        // Cập nhật hiển thị
+        renderWorms(plant);
+        
+        // Hiển thị thông báo
+        showMessage('Đã bắt được 1 con sâu!', 'success');
+    }
+}
+
+// Hàm sử dụng thuốc trừ sâu
+function usePesticide(plantId) {
+    // Tìm cây
+    const plant = userPlants.find(p => p.id === plantId);
+    if (!plant) return;
+    
+    // Kiểm tra xem người dùng có thuốc trừ sâu không
+    const pesticideIndex = userSeeds.findIndex(item => item.id === 'pesticide');
+    if (pesticideIndex < 0 || userSeeds[pesticideIndex].count <= 0) {
+        showMessage('Bạn không có thuốc trừ sâu!', 'error');
+        return;
+    }
+    
+    // Giảm số lượng thuốc trừ sâu
+    userSeeds[pesticideIndex].count--;
+    
+    // Áp dụng thuốc trừ sâu
+    plant.pesticideUntil = Date.now() + PESTICIDE_DURATION;
+    
+    // Xóa tất cả sâu hiện tại
+    plant.worms = [];
+    
+    // Lưu dữ liệu người dùng
+    saveUserData();
+    
+    // Cập nhật hiển thị
+    renderWorms(plant);
+    
+    // Hiển thị thông báo
+    showMessage('Đã sử dụng thuốc trừ sâu! Cây sẽ được bảo vệ trong 20 phút.', 'success');
+    
+    // Cập nhật hiển thị thông tin cây
+    updatePlantInfoModal(plant);
+}
+
+// Hàm tính toán tác động của sâu đến tốc độ phát triển của cây
+function calculateWormEffect(plant) {
+    if (!plant.worms || plant.worms.length === 0) return 1; // Không có sâu, không ảnh hưởng
+    
+    // Mỗi con sâu làm giảm 15% tốc độ phát triển
+    const reductionPerWorm = 0.15;
+    const totalReduction = Math.min(0.9, plant.worms.length * reductionPerWorm); // Tối đa giảm 90%
+    
+    return 1 - totalReduction; // Trả về hệ số tốc độ phát triển
+}
+
 // Setup user interface
 function setupUserInterface() {
     // Show garden section
@@ -768,12 +967,32 @@ function loadUserData() {
             };
         }
         
+        // Khởi tạo cấp độ và kinh nghiệm nếu chưa có
+        if (!userData.level || typeof userData.level !== 'number') {
+            userData.level = 1;
+            console.log('Khởi tạo cấp độ người dùng mới: 1');
+        }
+        
+        if (!userData.exp || typeof userData.exp !== 'number') {
+            userData.exp = 0;
+            console.log('Khởi tạo kinh nghiệm người dùng mới: 0');
+        }
+        
+        console.log('Dữ liệu người dùng đã tải:', userData);
+        
         // Update global variables
         userPlants = userData.plants;
         userSeeds = userData.seeds;
         userResources = userData.resources;
         userAchievements = userData.achievements;
         gardenSize = userData.gardenSize;
+        userLevel = userData.level;
+        userExp = userData.exp;
+        
+        console.log('Cập nhật biến toàn cục - Cấp độ:', userLevel, 'Kinh nghiệm:', userExp);
+        
+        // Kiểm tra và sửa chữa dữ liệu hạt giống
+        fixSeedData();
         
         // Render garden
         renderGarden();
@@ -786,6 +1005,9 @@ function loadUserData() {
         
         // Render achievements
         renderAchievements();
+        
+        // Render level info
+        renderLevelInfo();
         
         // Load friend gardens
         loadFriendGardens();
@@ -924,36 +1146,67 @@ function showPlantModal() {
     // Reset selected seed
     selectedSeedIndex = -1;
     
-    // Populate seed selection
-    userSeeds.forEach((seed, index) => {
-        if (seed.count > 0) {
-            const shopItem = shopItems.find(item => item.id === seed.id);
-            if (!shopItem) return;
-            
-            const seedItem = document.createElement('div');
-            seedItem.className = 'seed-item';
-            seedItem.innerHTML = `
-                <div class="seed-image" style="background-image: url('${shopItem.image}');"></div>
-                <div class="seed-name">${shopItem.name}</div>
-                <div class="seed-count">Số lượng: ${seed.count}</div>
-            `;
-            
-            seedItem.addEventListener('click', function() {
-                // Remove selected class from all seeds
-                document.querySelectorAll('.seed-item').forEach(item => {
-                    item.classList.remove('selected');
+    // Log seeds for debugging
+    console.log('Hiển thị modal trồng cây. Danh sách hạt giống:', JSON.stringify(userSeeds));
+    
+    // Kiểm tra và sửa chữa dữ liệu hạt giống trước khi hiển thị
+    fixSeedData();
+    
+    // Check if we have any seeds
+    if (userSeeds.length === 0 || !userSeeds.some(seed => seed.count > 0)) {
+        seedSelection.innerHTML = '<div class="no-seeds">Bạn không có hạt giống nào. Hãy mua hạt giống từ cửa hàng!</div>';
+    } else {
+        // Hiển thị tổng số loại hạt giống
+        const totalSeedTypes = userSeeds.filter(seed => seed.count > 0).length;
+        const seedCountInfo = document.createElement('div');
+        seedCountInfo.className = 'seed-count-info';
+        seedCountInfo.innerHTML = `<p>Bạn có ${totalSeedTypes} loại hạt giống để trồng</p>`;
+        seedSelection.appendChild(seedCountInfo);
+        
+        // Populate seed selection
+        userSeeds.forEach((seed, index) => {
+            if (seed.count > 0) {
+                const shopItem = shopItems.find(item => item.id === seed.id);
+                if (!shopItem) {
+                    console.log(`Không tìm thấy thông tin cho hạt giống: ${seed.id}`);
+                    return;
+                }
+                
+                console.log(`Hiển thị hạt giống: ${shopItem.name}, Số lượng: ${seed.count}, ID: ${seed.id}`);
+                
+                // Thêm class cho độ hiếm
+                let rarityClass = '';
+                if (shopItem.rarity) {
+                    rarityClass = `rarity-${shopItem.rarity}`;
+                }
+                
+                const seedItem = document.createElement('div');
+                seedItem.className = `seed-item ${rarityClass}`;
+                seedItem.innerHTML = `
+                    <div class="seed-image" style="background-image: url('${shopItem.image}');"></div>
+                    <div class="seed-name">${shopItem.name}</div>
+                    <div class="seed-count">Số lượng: ${seed.count}</div>
+                    <div class="seed-description">${shopItem.description || ''}</div>
+                `;
+                
+                seedItem.addEventListener('click', function() {
+                    // Remove selected class from all seeds
+                    document.querySelectorAll('.seed-item').forEach(item => {
+                        item.classList.remove('selected');
+                    });
+                    
+                    // Add selected class to this seed
+                    seedItem.classList.add('selected');
+                    
+                    // Update selected seed index
+                    selectedSeedIndex = index;
+                    console.log(`Đã chọn hạt giống: ${shopItem.name}, index: ${index}`);
                 });
                 
-                // Add selected class to this seed
-                seedItem.classList.add('selected');
-                
-                // Update selected seed index
-                selectedSeedIndex = index;
-            });
-            
-            seedSelection.appendChild(seedItem);
-        }
-    });
+                seedSelection.appendChild(seedItem);
+            }
+        });
+    }
     
     // Show modal
     modal.style.display = 'flex';
@@ -1015,7 +1268,9 @@ function plantSeed() {
         plotIndex: selectedPlotIndex,
         plantedAt: Date.now(),
         lastWateredAt: Date.now(), // Plants start with full water
-        growthBoosts: []
+        growthBoosts: [],
+        worms: [], // Mảng chứa thông tin về sâu trên cây
+        pesticideUntil: 0 // Thời gian hiệu lực của thuốc trừ sâu (0 = không có thuốc)
     };
     
     // Add plant to user plants
@@ -1025,6 +1280,9 @@ function plantSeed() {
     if (!userData.stats) userData.stats = {};
     userData.stats.plantingCount = (userData.stats.plantingCount || 0) + 1;
     
+    // Thêm kinh nghiệm cho người chơi
+    addExperience(5); // 5 EXP cho mỗi lần trồng cây
+    
     // Save user data
     saveUserData();
     
@@ -1032,7 +1290,7 @@ function plantSeed() {
     renderGarden();
     
     // Show success message
-    showMessage('Đã trồng cây thành công!', 'success');
+    showMessage('Đã trồng cây thành công! +5 EXP', 'success');
     
     // Check for achievements
     checkAchievements();
@@ -1046,10 +1304,20 @@ function showPlantInfo(plotIndex) {
     const plantType = plantTypes.find(type => type.id === plant.typeId);
     if (!plantType) return;
     
+    // Lưu ID của cây đang hiển thị vào modal để sử dụng sau này
+    const plantInfoModal = document.getElementById('plantInfoModal');
+    plantInfoModal.setAttribute('data-plant-id', plant.id);
+    
     // Calculate growth stage and progress
     const now = Date.now();
     const plantAge = (now - plant.plantedAt) / 1000; // in seconds
-    const growthProgress = Math.min(plantAge / plantType.growthTime, 1);
+    
+    // Tính toán ảnh hưởng của sâu đến tốc độ phát triển
+    const wormEffect = calculateWormEffect(plant);
+    
+    // Áp dụng hiệu ứng sâu vào tốc độ phát triển
+    const adjustedPlantAge = plantAge * wormEffect;
+    const growthProgress = Math.min(adjustedPlantAge / plantType.growthTime, 1);
     const stageIndex = Math.min(
         Math.floor(growthProgress * plantType.stages.length),
         plantType.stages.length - 1
@@ -1081,11 +1349,36 @@ function showPlantInfo(plotIndex) {
         }
     }
     
+    // Hiển thị thông tin về sâu
+    const wormInfo = document.getElementById('wormInfo');
+    if (wormInfo) {
+        if (plant.worms && plant.worms.length > 0) {
+            document.getElementById('plantInfoWormCount').textContent = `${plant.worms.length} con`;
+            const wormImpact = Math.round((1 - wormEffect) * 100);
+            document.getElementById('plantInfoWormEffect').textContent = `-${wormImpact}% tốc độ phát triển`;
+            wormInfo.style.display = 'block';
+        } else {
+            wormInfo.style.display = 'none';
+        }
+    }
+    
+    // Hiển thị thông tin về thuốc trừ sâu
+    const pesticideInfo = document.getElementById('pesticideInfo');
+    if (pesticideInfo) {
+        if (plant.pesticideUntil && plant.pesticideUntil > now) {
+            const timeLeft = (plant.pesticideUntil - now) / 1000; // Thời gian còn lại (giây)
+            document.getElementById('plantInfoPesticideTime').textContent = `Còn hiệu lực ${formatTime(timeLeft)}`;
+            pesticideInfo.style.display = 'block';
+        } else {
+            pesticideInfo.style.display = 'none';
+        }
+    }
+    
     if (growthProgress >= 1) {
         document.getElementById('plantInfoHarvest').textContent = 'Sẵn sàng thu hoạch';
         document.getElementById('plantInfoProgress').style.width = '100%';
     } else {
-        const timeLeft = plantType.growthTime - plantAge;
+        const timeLeft = plantType.growthTime - adjustedPlantAge;
         document.getElementById('plantInfoHarvest').textContent = formatTime(timeLeft);
         document.getElementById('plantInfoProgress').style.width = `${growthProgress * 100}%`;
     }
@@ -1106,12 +1399,23 @@ function showPlantInfo(plotIndex) {
         document.getElementById('plantInfoModal').style.display = 'none';
     };
     
+    // Setup pesticide button
+    const pesticideBtn = document.getElementById('pesticidePlantBtn');
+    const hasPesticide = userSeeds.some(item => item.id === 'pesticide' && item.count > 0);
+    pesticideBtn.disabled = !hasPesticide || (plant.pesticideUntil && plant.pesticideUntil > now);
+    pesticideBtn.onclick = function() {
+        usePesticide(plant.id);
+    };
+    
     // Setup remove button
     const removeBtn = document.getElementById('removePlantBtn');
     removeBtn.onclick = function() {
         removePlant(plant.id);
         document.getElementById('plantInfoModal').style.display = 'none';
     };
+    
+    // Hiển thị sâu trên cây
+    renderWorms(plant);
     
     // Show modal
     document.getElementById('plantInfoModal').style.display = 'flex';
@@ -1148,6 +1452,9 @@ function waterPlant(plantId) {
     if (!userData.stats) userData.stats = {};
     userData.stats.wateringCount = (userData.stats.wateringCount || 0) + 1;
     
+    // Thêm kinh nghiệm cho người chơi
+    addExperience(2); // 2 EXP cho mỗi lần tưới cây
+    
     // Save user data
     saveUserData();
     
@@ -1159,9 +1466,9 @@ function waterPlant(plantId) {
     
     // Show success message based on whether rain effect is active
     if (isRainActive) {
-        showMessage('Trời đang mưa! Cây được tưới nước miễn phí!', 'success');
+        showMessage('Trời đang mưa! Cây được tưới nước miễn phí! +2 EXP', 'success');
     } else {
-        showMessage('Đã tưới nước cho cây!', 'success');
+        showMessage('Đã tưới nước cho cây! +2 EXP', 'success');
     }
     
     // Check for achievements
@@ -1193,6 +1500,9 @@ function fertilizePlant(plantId) {
         appliedAt: Date.now()
     });
     
+    // Thêm kinh nghiệm cho người chơi
+    addExperience(3); // 3 EXP cho mỗi lần bón phân
+    
     // Save user data
     saveUserData();
     
@@ -1200,7 +1510,7 @@ function fertilizePlant(plantId) {
     renderGarden();
     
     // Show success message
-    showMessage('Đã bón phân cho cây! Cây sẽ phát triển nhanh hơn.', 'success');
+    showMessage('Đã bón phân cho cây! Cây sẽ phát triển nhanh hơn. +3 EXP', 'success');
 }
 
 // Remove a plant
@@ -1264,6 +1574,10 @@ function harvestPlant(plantId) {
         const finalReward = Math.round(baseReward * rewardMultiplier);
         userResources.coins += finalReward;
         
+        // Thêm kinh nghiệm dựa trên giá trị thu hoạch
+        const expGain = Math.max(5, Math.floor(finalReward / 10)); // Tối thiểu 5 EXP, hoặc 10% giá trị xu
+        addExperience(expGain);
+        
         // Show bonus message if multiplier is greater than 1
         if (rewardMultiplier > 1) {
             showMessage(`Hiệu ứng thời tiết tăng phần thưởng lên ${Math.round((rewardMultiplier - 1) * 100)}%!`, 'success');
@@ -1301,7 +1615,8 @@ function harvestPlant(plantId) {
     
     // Show success message with actual reward
     const actualReward = Math.round(plantType.harvestReward.coins * rewardMultiplier);
-    showMessage(`Đã thu hoạch ${plantType.name}! Nhận được ${actualReward} xu.`, 'success');
+    const expGain = Math.max(5, Math.floor(actualReward / 10)); // Tối thiểu 5 EXP, hoặc 10% giá trị xu
+    showMessage(`Đã thu hoạch ${plantType.name}! Nhận được ${actualReward} xu và ${expGain} EXP.`, 'success');
     
     // Check for achievements
     checkAchievements();
@@ -1350,6 +1665,10 @@ function harvestAllPlants() {
             const finalReward = Math.round(baseReward * rewardMultiplier);
             userResources.coins += finalReward;
             totalCoins += finalReward;
+            
+            // Thêm kinh nghiệm dựa trên giá trị thu hoạch
+            const expGain = Math.max(3, Math.floor(finalReward / 15)); // Tối thiểu 3 EXP, hoặc 6.67% giá trị xu (ít hơn thu hoạch thủ công)
+            addExperience(expGain);
         }
         
         // Add seed of the same type (chance-based)
@@ -1392,7 +1711,9 @@ function harvestAllPlants() {
     
     // Show success message
     if (harvestedCount > 0) {
-        showMessage(`Đã thu hoạch ${harvestedCount} cây! Nhận được ${totalCoins} xu.`, 'success');
+        // Tính tổng kinh nghiệm nhận được (ước tính)
+        const totalExp = Math.max(3 * harvestedCount, Math.floor(totalCoins / 15));
+        showMessage(`Đã thu hoạch ${harvestedCount} cây! Nhận được ${totalCoins} xu và khoảng ${totalExp} EXP.`, 'success');
     } else {
         showMessage('Không có cây nào sẵn sàng để thu hoạch!', 'info');
     }
@@ -1435,6 +1756,9 @@ function waterAllPlants() {
     if (!userData.stats) userData.stats = {};
     userData.stats.wateringCount = (userData.stats.wateringCount || 0) + userPlants.length;
     
+    // Thêm kinh nghiệm cho việc tưới tất cả cây (1 EXP cho mỗi cây)
+    addExperience(userPlants.length);
+    
     // Save user data
     saveUserData();
     
@@ -1443,9 +1767,9 @@ function waterAllPlants() {
     
     // Show success message based on whether rain effect is active
     if (isRainActive) {
-        showMessage(`Trời đang mưa! Tất cả ${userPlants.length} cây được tưới nước miễn phí!`, 'success');
+        showMessage(`Trời đang mưa! Tất cả ${userPlants.length} cây được tưới nước miễn phí! Nhận được ${userPlants.length} EXP.`, 'success');
     } else {
-        showMessage(`Đã tưới nước cho tất cả ${userPlants.length} cây!`, 'success');
+        showMessage(`Đã tưới nước cho tất cả ${userPlants.length} cây! Nhận được ${userPlants.length} EXP.`, 'success');
     }
     
     // Check for achievements
@@ -1776,7 +2100,10 @@ function showInventory() {
 // Buy an item from the shop
 function buyItem(itemId) {
     const item = shopItems.find(item => item.id === itemId);
-    if (!item) return;
+    if (!item) {
+        console.error(`Không tìm thấy vật phẩm với ID: ${itemId}`);
+        return;
+    }
     
     // Check if user has enough coins
     if (userResources.coins < item.price) {
@@ -1793,11 +2120,21 @@ function buyItem(itemId) {
         const seedIndex = userSeeds.findIndex(seed => seed.id === item.id);
         if (seedIndex >= 0) {
             userSeeds[seedIndex].count++;
+            console.log(`Đã tăng số lượng hạt giống ${item.name} lên ${userSeeds[seedIndex].count}`);
         } else {
             userSeeds.push({
                 id: item.id,
                 count: 1
             });
+            console.log(`Đã thêm hạt giống mới: ${item.name} với ID: ${item.id}`);
+        }
+        
+        // Kiểm tra lại để đảm bảo hạt giống đã được thêm
+        const checkSeedIndex = userSeeds.findIndex(seed => seed.id === item.id);
+        if (checkSeedIndex === -1) {
+            console.error(`Lỗi: Không thể thêm hạt giống ${item.name} vào túi đồ!`);
+        } else {
+            console.log(`Xác nhận: Hạt giống ${item.name} đã có trong túi đồ với số lượng ${userSeeds[checkSeedIndex].count}`);
         }
     } else if (item.effect) {
         // It's a resource or special item
@@ -1823,8 +2160,12 @@ function buyItem(itemId) {
     document.getElementById('energyCount').textContent = userResources.energy;
     document.getElementById('coinCount').textContent = userResources.coins;
     
-    // Show success message
-    showMessage(`Đã mua ${item.name}!`, 'success');
+    // Show success message with additional info for seeds
+    if (item.plantTypeId) {
+        showMessage(`Đã mua ${item.name}! Hạt giống đã được thêm vào túi đồ của bạn. Bạn có thể trồng nó bằng cách nhấp vào ô đất trống.`, 'success');
+    } else {
+        showMessage(`Đã mua ${item.name}!`, 'success');
+    }
     
     // Check for achievements
     checkAchievements();
@@ -2188,6 +2529,119 @@ function renderAchievements() {
     });
 }
 
+// Render level information
+function renderLevelInfo() {
+    // Tìm hoặc tạo container cho thông tin cấp độ
+    let levelInfoContainer = document.getElementById('levelInfoContainer');
+    
+    if (!levelInfoContainer) {
+        // Nếu chưa có container, tạo mới và thêm vào DOM
+        const gardenHeader = document.querySelector('.garden-header');
+        if (!gardenHeader) return;
+        
+        levelInfoContainer = document.createElement('div');
+        levelInfoContainer.id = 'levelInfoContainer';
+        levelInfoContainer.className = 'level-info-container';
+        gardenHeader.after(levelInfoContainer);
+    }
+    
+    // Tính toán phần trăm kinh nghiệm
+    const expNeeded = levelConfig.expPerLevel;
+    const expPercent = Math.min(100, (userExp / expNeeded) * 100);
+    
+    levelInfoContainer.innerHTML = `
+        <div class="level-badge">Cấp ${userLevel}</div>
+        <div class="level-exp-container">
+            <div class="level-exp-bar" style="width: ${expPercent}%"></div>
+            <div class="level-exp-text">${userExp}/${expNeeded} EXP</div>
+        </div>
+        <div class="level-rewards">
+            <div class="level-reward-item">
+                <i class="fas fa-tint"></i> ${10 + (userLevel - 1) * levelConfig.rewards.water}
+            </div>
+            <div class="level-reward-item">
+                <i class="fas fa-bolt"></i> ${20 + (userLevel - 1) * levelConfig.rewards.energy}
+            </div>
+        </div>
+    `;
+}
+
+// Add experience points and check for level up
+function addExperience(amount) {
+    if (!amount || amount <= 0) return;
+    
+    console.log('Thêm kinh nghiệm:', amount, 'Hiện tại:', userExp);
+    
+    // Thêm kinh nghiệm
+    userExp += amount;
+    
+    // Kiểm tra lên cấp
+    const expNeeded = levelConfig.expPerLevel;
+    
+    console.log('Kinh nghiệm sau khi thêm:', userExp, 'Cần để lên cấp:', expNeeded);
+    
+    if (userExp >= expNeeded && userLevel < levelConfig.maxLevel) {
+        // Lên cấp
+        userExp -= expNeeded;
+        userLevel++;
+        
+        console.log('Lên cấp! Cấp độ mới:', userLevel, 'Kinh nghiệm còn lại:', userExp);
+        
+        // Cập nhật tài nguyên tối đa
+        const maxWater = 10 + (userLevel - 1) * levelConfig.rewards.water;
+        const maxEnergy = 20 + (userLevel - 1) * levelConfig.rewards.energy;
+        
+        // Thêm phần thưởng lên cấp
+        userResources.coins += levelConfig.rewards.coins;
+        userResources.water = maxWater;
+        userResources.energy = maxEnergy;
+        
+        // Kiểm tra mốc cấp độ đặc biệt
+        const milestone = levelConfig.milestones.find(m => m.level === userLevel);
+        if (milestone) {
+            // Thêm phần thưởng từ mốc cấp độ
+            if (milestone.reward.seeds) {
+                milestone.reward.seeds.forEach(seedReward => {
+                    const seedIndex = userSeeds.findIndex(s => s.id === seedReward.id);
+                    if (seedIndex >= 0) {
+                        userSeeds[seedIndex].count += seedReward.count;
+                    } else {
+                        userSeeds.push({
+                            id: seedReward.id,
+                            count: seedReward.count
+                        });
+                    }
+                });
+            }
+            
+            // Hiển thị thông báo phần thưởng đặc biệt
+            showMessage(`Chúc mừng! Bạn đã đạt cấp độ ${userLevel} và nhận được phần thưởng đặc biệt!`, 'success');
+        } else {
+            // Hiển thị thông báo lên cấp thông thường
+            showMessage(`Chúc mừng! Bạn đã đạt cấp độ ${userLevel}!`, 'success');
+        }
+        
+        // Cập nhật giao diện
+        renderLevelInfo();
+        renderGarden(); // Cập nhật hiển thị tài nguyên
+        
+        // Lưu dữ liệu người dùng
+        saveUserData();
+        
+        // Kiểm tra nếu vẫn đủ kinh nghiệm để lên cấp tiếp
+        if (userExp >= expNeeded) {
+            console.log('Vẫn đủ kinh nghiệm để lên cấp tiếp!');
+            addExperience(0); // Gọi lại hàm để kiểm tra lên cấp tiếp
+        }
+    } else {
+        // Cập nhật giao diện
+        renderLevelInfo();
+        
+        // Lưu dữ liệu người dùng
+        saveUserData();
+    }
+}
+
 // Check for achievements
 function checkAchievements() {
     let newAchievements = [];
@@ -2349,6 +2803,37 @@ function calculateOfflineGrowth() {
 }
 
 
+// Kiểm tra và sửa chữa dữ liệu hạt giống
+function fixSeedData() {
+    console.log('Kiểm tra và sửa chữa dữ liệu hạt giống...');
+    console.log('Danh sách hạt giống hiện tại:', JSON.stringify(userSeeds));
+    
+    // Kiểm tra các hạt giống đặc biệt
+    const specialSeeds = ['goldentree_seed', 'ancienttree_seed', 'crystalflower_seed', 'moonflower_seed'];
+    
+    specialSeeds.forEach(seedId => {
+        // Kiểm tra xem hạt giống đã có trong danh sách chưa
+        const seedIndex = userSeeds.findIndex(seed => seed.id === seedId);
+        
+        if (seedIndex === -1) {
+            // Nếu chưa có, kiểm tra xem có trong localStorage không
+            const shopInventory = localStorage.getItem('shopInventory') ? JSON.parse(localStorage.getItem('shopInventory')) : [];
+            const shopItem = shopInventory.find(item => item.id === seedId);
+            
+            // Nếu số lượng trong cửa hàng là 0, có thể người dùng đã mua
+            if (shopItem && shopItem.quantity === 0) {
+                console.log(`Phát hiện hạt giống ${seedId} có thể đã được mua nhưng không có trong túi đồ. Thêm vào túi đồ.`);
+                userSeeds.push({
+                    id: seedId,
+                    count: 1
+                });
+            }
+        }
+    });
+    
+    console.log('Danh sách hạt giống sau khi sửa chữa:', JSON.stringify(userSeeds));
+}
+
 // Save user data to Firebase
 function saveUserData() {
     if (!currentUser) return;
@@ -2363,13 +2848,24 @@ function saveUserData() {
         resources: userResources,
         achievements: userAchievements,
         gardenSize: gardenSize,
-        stats: userData.stats || {}
+        stats: userData.stats || {},
+        level: userLevel,
+        exp: userExp
     };
     
+    console.log('Saving user data with level:', userLevel, 'and exp:', userExp);
+    
     // Save to Firebase
-    userRef.set(userData).catch((error) => {
+    userRef.set(userData).then(() => {
+        // Đồng bộ dữ liệu sang plantGame để hiển thị thành tựu trên trang cá nhân
+        const plantGameRef = firebase.database().ref(`plantGame/${userId}`);
+        plantGameRef.set(userData).catch((error) => {
+            console.error('Error syncing data to plantGame:', error);
+        });
+    }).catch((error) => {
         console.error('Error saving user data:', error);
     });
+
 }
 
 // Helper function to open modal

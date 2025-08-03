@@ -99,6 +99,7 @@
     padding: 8px 12px;
     border-radius: 20px;
     font-weight: 500;
+    font-weight: 500;
 }
 
 .stat i {
@@ -1661,4 +1662,73 @@
 
 .dark-theme ::-webkit-scrollbar-thumb:hover {
     background: var(--plant-secondary);
+}
+
+/* Level Info Styles */
+.level-info-container {
+    background-color: var(--plant-light);
+    border-radius: 10px;
+    padding: 15px;
+    margin: 15px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.level-badge {
+    background-color: var(--plant-primary);
+    color: white;
+    font-weight: bold;
+    padding: 5px 15px;
+    border-radius: 20px;
+    display: inline-block;
+    align-self: flex-start;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.level-exp-container {
+    background-color: #e0e0e0;
+    height: 15px;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.level-exp-bar {
+    background: linear-gradient(90deg, var(--plant-primary), var(--plant-secondary));
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
+
+.level-exp-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #333;
+    text-shadow: 0 0 2px rgba(255,255,255,0.8);
+}
+
+.level-rewards {
+    display: flex;
+    gap: 15px;
+}
+
+.level-reward-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background-color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.9rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.level-reward-item i {
+    color: var(--plant-primary);
 }

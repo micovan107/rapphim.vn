@@ -16,6 +16,44 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <meta name="description" content="CineSync - Chăm sóc vườn cây ảo và thư giãn cùng bạn bè">
+    <style>
+        /* Styles for worms */
+        .plant-worms {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: all;
+        }
+        
+        .plant-image {
+            position: relative;
+        }
+        
+        .worm {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+            z-index: 10;
+        }
+        
+        .worm:hover {
+            transform: scale(1.2);
+        }
+        
+        .worm i {
+            color: #8B4513;
+            font-size: 16px;
+        }
+    </style>
 </head>
 <body>
     <div class="weather-effect-container" id="weatherEffectContainer"></div>
@@ -219,6 +257,7 @@
                     <div class="plant-info-details">
                         <div class="plant-image">
                             <img id="plantInfoImage" src="" alt="Plant image">
+                            <div id="plantWorms" class="plant-worms"></div>
                         </div>
                         <div class="plant-stats">
                             <p><strong>Loại:</strong> <span id="plantInfoType"></span></p>
@@ -230,6 +269,13 @@
                                 <p><strong>Hiệu ứng thời tiết:</strong> <span id="plantInfoWeatherEffect"></span></p>
                                 <p><strong>Tăng giá trị:</strong> <span id="plantInfoWeatherBoost"></span></p>
                             </div>
+                            <div id="wormInfo" style="display: none;">
+                                <p><strong>Sâu:</strong> <span id="plantInfoWormCount"></span></p>
+                                <p><strong>Ảnh hưởng:</strong> <span id="plantInfoWormEffect"></span></p>
+                            </div>
+                            <div id="pesticideInfo" style="display: none;">
+                                <p><strong>Thuốc trừ sâu:</strong> <span id="plantInfoPesticideTime"></span></p>
+                            </div>
                             <div class="progress-bar">
                                 <div class="progress" id="plantInfoProgress"></div>
                             </div>
@@ -239,6 +285,7 @@
                 <div class="modal-footer">
                     <button class="btn" id="waterPlantBtn"><i class="fas fa-tint"></i> Tưới Nước</button>
                     <button class="btn" id="fertilizePlantBtn"><i class="fas fa-seedling"></i> Bón Phân</button>
+                    <button class="btn" id="pesticidePlantBtn"><i class="fas fa-bug"></i> Thuốc Trừ Sâu</button>
                     <button class="btn btn-danger" id="removePlantBtn"><i class="fas fa-trash"></i> Xóa</button>
                 </div>
             </div>
