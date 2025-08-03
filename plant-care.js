@@ -7,7 +7,8 @@ let userSeeds = [];
 let userResources = {
     water: 10,
     energy: 20,
-    coins: 50
+    coins: 50,
+    minicoins: 0 // Thêm minicoins để có thể rút ra
 };
 let userAchievements = [];
 let selectedPlotIndex = -1;
@@ -18,6 +19,11 @@ let shopItems = [];
 let achievements = [];
 let gardenSize = 9; // Initial garden size (3x3)
 let userData = {}; // Add userData as global variable
+let userLevel = 1; // Cấp độ người chơi
+let userExp = 0; // Kinh nghiệm người chơi
+let userTools = {}; // Công cụ làm vườn
+let currentViewingFriendId = null; // ID của người bạn đang xem
+let currentViewingFriendName = null; // Tên của người bạn đang xem
 
 // Weather effect variables
 let currentWeatherEffect = null;
@@ -96,7 +102,8 @@ function initializePlantTypes() {
                 { name: 'Phát triển', image: 'assets/plant-sunflower-growing.svg' },
                 { name: 'Trưởng thành', image: 'assets/plant-sunflower-mature.svg' }
             ],
-            rarity: 'common'
+            rarity: 'common',
+            shopProbability: 0.9 // 90% xuất hiện trong cửa hàng
         },
         {
             id: 'rose',
@@ -111,7 +118,8 @@ function initializePlantTypes() {
                 { name: 'Phát triển', image: 'assets/plant-rose-growing.svg' },
                 { name: 'Trưởng thành', image: 'assets/plant-rose-mature.svg' }
             ],
-            rarity: 'uncommon'
+            rarity: 'uncommon',
+            shopProbability: 0.8 // 80% xuất hiện trong cửa hàng
         },
         {
             id: 'lavender',
@@ -126,7 +134,8 @@ function initializePlantTypes() {
                 { name: 'Phát triển', image: 'assets/plant-lavender-growing.svg' },
                 { name: 'Trưởng thành', image: 'assets/plant-lavender-mature.svg' }
             ],
-            rarity: 'uncommon'
+            rarity: 'uncommon',
+            shopProbability: 0.7 // 70% xuất hiện trong cửa hàng
         },
         {
             id: 'cactus',
@@ -141,7 +150,8 @@ function initializePlantTypes() {
                 { name: 'Phát triển', image: 'assets/plant-cactus-growing.svg' },
                 { name: 'Trưởng thành', image: 'assets/plant-cactus-mature.svg' }
             ],
-            rarity: 'rare'
+            rarity: 'rare',
+            shopProbability: 0.5 // 50% xuất hiện trong cửa hàng
         },
         {
             id: 'bonsai',
@@ -156,7 +166,8 @@ function initializePlantTypes() {
                 { name: 'Phát triển', image: 'assets/plant-bonsai-growing.svg' },
                 { name: 'Trưởng thành', image: 'assets/plant-bonsai-mature.svg' }
             ],
-            rarity: 'rare'
+            rarity: 'rare',
+            shopProbability: 0.4 // 40% xuất hiện trong cửa hàng
         },
         {
             id: 'lotus',
@@ -171,7 +182,8 @@ function initializePlantTypes() {
                 { name: 'Phát triển', image: 'assets/plant-lotus-growing.svg' },
                 { name: 'Trưởng thành', image: 'assets/plant-lotus-mature.svg' }
             ],
-            rarity: 'legendary'
+            rarity: 'legendary',
+            shopProbability: 0.2 // 20% xuất hiện trong cửa hàng
         },
         {
             id: 'cherry',
@@ -186,7 +198,8 @@ function initializePlantTypes() {
                 { name: 'Phát triển', image: 'assets/plant-cherry-growing.svg' },
                 { name: 'Trưởng thành', image: 'assets/plant-cherry-mature.svg' }
             ],
-            rarity: 'rare'
+            rarity: 'rare',
+            shopProbability: 0.5 // 50% xuất hiện trong cửa hàng
         },
         {
             id: 'bamboo',
@@ -201,7 +214,8 @@ function initializePlantTypes() {
                 { name: 'Phát triển', image: 'assets/plant-bamboo-growing.svg' },
                 { name: 'Trưởng thành', image: 'assets/plant-bamboo-mature.svg' }
             ],
-            rarity: 'uncommon'
+            rarity: 'uncommon',
+            shopProbability: 0.7 // 70% xuất hiện trong cửa hàng
         },
         {
             id: 'dragonfruit',
@@ -216,7 +230,89 @@ function initializePlantTypes() {
                 { name: 'Phát triển', image: 'assets/plant-dragonfruit-growing.svg' },
                 { name: 'Trưởng thành', image: 'assets/plant-dragonfruit-mature.svg' }
             ],
-            rarity: 'legendary'
+            rarity: 'legendary',
+            shopProbability: 0.15 // 15% xuất hiện trong cửa hàng
+        },
+        // Thêm các loại cây mới
+        {
+            id: 'orchid',
+            name: 'Hoa Lan',
+            growthTime: 40 * 60, // 40 minutes in seconds
+            waterNeeded: 4,
+            waterInterval: 8 * 60, // 8 minutes in seconds
+            harvestReward: { coins: 150 },
+            stages: [
+                { name: 'Hạt giống', image: 'assets/plant-orchid-seed.svg' }, // Sử dụng hình ảnh mới cho hoa lan
+                { name: 'Nảy mầm', image: 'assets/plant-orchid-seedling.svg' },
+                { name: 'Phát triển', image: 'assets/plant-orchid-growing.svg' },
+                { name: 'Trưởng thành', image: 'assets/plant-orchid-mature.svg' }
+            ],
+            rarity: 'legendary',
+            shopProbability: 0.1 // 10% xuất hiện trong cửa hàng
+        },
+        {
+            id: 'goldentree',
+            name: 'Cây Vàng',
+            growthTime: 60 * 60, // 60 minutes in seconds
+            waterNeeded: 6,
+            waterInterval: 10 * 60, // 10 minutes in seconds
+            harvestReward: { coins: 300 },
+            stages: [
+                { name: 'Hạt giống', image: 'assets/plant-goldentree-seed.svg' }, // Sử dụng hình ảnh mới cho cây vàng
+                { name: 'Nảy mầm', image: 'assets/plant-goldentree-seedling.svg' },
+                { name: 'Phát triển', image: 'assets/plant-goldentree-growing.svg' },
+                { name: 'Trưởng thành', image: 'assets/plant-goldentree-mature.svg' }
+            ],
+            rarity: 'mythical', // Độ hiếm mới: thần thoại
+            shopProbability: 0.05 // 5% xuất hiện trong cửa hàng
+        },
+        {
+            id: 'crystalflower',
+            name: 'Hoa Pha Lê',
+            growthTime: 50 * 60, // 50 minutes in seconds
+            waterNeeded: 5,
+            waterInterval: 9 * 60, // 9 minutes in seconds
+            harvestReward: { coins: 250 },
+            stages: [
+                { name: 'Hạt giống', image: 'assets/plant-crystalflower-seed.svg' }, // Sử dụng hình ảnh mới cho hoa pha lê
+                { name: 'Nảy mầm', image: 'assets/plant-crystalflower-seedling.svg' },
+                { name: 'Phát triển', image: 'assets/plant-crystalflower-growing.svg' },
+                { name: 'Trưởng thành', image: 'assets/plant-crystalflower-mature.svg' }
+            ],
+            rarity: 'mythical',
+            shopProbability: 0.05 // 5% xuất hiện trong cửa hàng
+        },
+        {
+            id: 'moonflower',
+            name: 'Hoa Mặt Trăng',
+            growthTime: 45 * 60, // 45 minutes in seconds
+            waterNeeded: 4,
+            waterInterval: 8 * 60, // 8 minutes in seconds
+            harvestReward: { coins: 200 },
+            stages: [
+                { name: 'Hạt giống', image: 'assets/plant-moonflower-seed.svg' }, // Sử dụng hình ảnh mới cho hoa mặt trăng
+                { name: 'Nảy mầm', image: 'assets/plant-moonflower-seedling.svg' },
+                { name: 'Phát triển', image: 'assets/plant-moonflower-growing.svg' },
+                { name: 'Trưởng thành', image: 'assets/plant-moonflower-mature.svg' }
+            ],
+            rarity: 'legendary',
+            shopProbability: 0.1 // 10% xuất hiện trong cửa hàng
+        },
+        {
+            id: 'ancienttree',
+            name: 'Cây Cổ Thụ',
+            growthTime: 90 * 60, // 90 minutes in seconds
+            waterNeeded: 7,
+            waterInterval: 12 * 60, // 12 minutes in seconds
+            harvestReward: { coins: 500 },
+            stages: [
+                { name: 'Hạt giống', image: 'assets/plant-ancienttree-seed.svg' }, // Sử dụng hình ảnh mới cho cây cổ thụ
+                { name: 'Nảy mầm', image: 'assets/plant-ancienttree-seedling.svg' },
+                { name: 'Phát triển', image: 'assets/plant-ancienttree-growing.svg' },
+                { name: 'Trưởng thành', image: 'assets/plant-ancienttree-mature.svg' }
+            ],
+            rarity: 'mythical',
+            shopProbability: 0.03 // 3% xuất hiện trong cửa hàng
         }
     ];
 }
@@ -224,13 +320,15 @@ function initializePlantTypes() {
 // Initialize shop items
 function initializeShopItems() {
     shopItems = [
+        // Hạt giống cây thông thường
         {
             id: 'sunflower_seed',
             name: 'Hạt Hướng Dương',
             description: 'Hạt giống hoa hướng dương, dễ trồng và phát triển nhanh.',
             price: 5,
             image: 'assets/seed-sunflower.svg',
-            plantTypeId: 'sunflower'
+            plantTypeId: 'sunflower',
+            rarity: 'common'
         },
         {
             id: 'rose_seed',
@@ -238,7 +336,8 @@ function initializeShopItems() {
             description: 'Hạt giống hoa hồng, cần chăm sóc kỹ nhưng cho hoa đẹp.',
             price: 15,
             image: 'assets/seed-rose.svg',
-            plantTypeId: 'rose'
+            plantTypeId: 'rose',
+            rarity: 'uncommon'
         },
         {
             id: 'lavender_seed',
@@ -246,7 +345,8 @@ function initializeShopItems() {
             description: 'Hạt giống hoa oải hương, mùi thơm dễ chịu và màu tím đẹp mắt.',
             price: 20,
             image: 'assets/seed-lavender.svg',
-            plantTypeId: 'lavender'
+            plantTypeId: 'lavender',
+            rarity: 'uncommon'
         },
         {
             id: 'cactus_seed',
@@ -254,7 +354,8 @@ function initializeShopItems() {
             description: 'Hạt giống xương rồng, ít cần nước và dễ chăm sóc.',
             price: 25,
             image: 'assets/seed-cactus.svg',
-            plantTypeId: 'cactus'
+            plantTypeId: 'cactus',
+            rarity: 'rare'
         },
         {
             id: 'bonsai_seed',
@@ -262,7 +363,8 @@ function initializeShopItems() {
             description: 'Hạt giống cây bonsai, cần nhiều thời gian nhưng rất quý giá.',
             price: 30,
             image: 'assets/seed-bonsai.svg',
-            plantTypeId: 'bonsai'
+            plantTypeId: 'bonsai',
+            rarity: 'rare'
         },
         {
             id: 'lotus_seed',
@@ -270,7 +372,8 @@ function initializeShopItems() {
             description: 'Hạt giống hoa sen, hiếm và đặc biệt, mang lại nhiều phần thưởng.',
             price: 50,
             image: 'assets/seed-lotus.svg',
-            plantTypeId: 'lotus'
+            plantTypeId: 'lotus',
+            rarity: 'legendary'
         },
         {
             id: 'cherry_seed',
@@ -278,7 +381,8 @@ function initializeShopItems() {
             description: 'Hạt giống hoa anh đào, nở hoa đẹp và mang lại nhiều may mắn.',
             price: 35,
             image: 'assets/seed-cherry.svg',
-            plantTypeId: 'cherry'
+            plantTypeId: 'cherry',
+            rarity: 'rare'
         },
         {
             id: 'bamboo_seed',
@@ -286,7 +390,8 @@ function initializeShopItems() {
             description: 'Hạt giống cây tre, phát triển nhanh và mang lại sự bình yên.',
             price: 25,
             image: 'assets/seed-bamboo.svg',
-            plantTypeId: 'bamboo'
+            plantTypeId: 'bamboo',
+            rarity: 'uncommon'
         },
         {
             id: 'dragonfruit_seed',
@@ -294,15 +399,75 @@ function initializeShopItems() {
             description: 'Hạt giống thanh long, cực kỳ hiếm và cho quả có giá trị cao.',
             price: 60,
             image: 'assets/seed-dragonfruit.svg',
-            plantTypeId: 'dragonfruit'
+            plantTypeId: 'dragonfruit',
+            rarity: 'legendary'
         },
+        
+        // Hạt giống cây mới
+        {
+            id: 'orchid_seed',
+            name: 'Hạt Lan',
+            description: 'Hạt giống hoa lan, cực kỳ quý hiếm và đẹp mắt.',
+            price: 80,
+            image: 'assets/seed-orchid.svg', // Sử dụng hình ảnh mới
+            plantTypeId: 'orchid',
+            rarity: 'legendary'
+        },
+        {
+            id: 'goldentree_seed',
+            name: 'Hạt Cây Vàng',
+            description: 'Hạt giống cây vàng, cực kỳ hiếm và có giá trị cao.',
+            price: 150,
+            image: 'assets/seed-goldentree.svg', // Sử dụng hình ảnh mới
+            plantTypeId: 'goldentree',
+            rarity: 'mythical'
+        },
+        {
+            id: 'crystalflower_seed',
+            name: 'Hạt Hoa Pha Lê',
+            description: 'Hạt giống hoa pha lê, phát ra ánh sáng lung linh.',
+            price: 120,
+            image: 'assets/seed-dragonfruit.svg', // Sử dụng hình ảnh khác
+            plantTypeId: 'crystalflower',
+            rarity: 'mythical'
+        },
+        {
+            id: 'moonflower_seed',
+            name: 'Hạt Hoa Mặt Trăng',
+            description: 'Hạt giống hoa mặt trăng, phát sáng trong đêm.',
+            price: 100,
+            image: 'assets/seed-lotus.svg', // Sử dụng hình ảnh khác với hoa oải hương
+            plantTypeId: 'moonflower',
+            rarity: 'legendary'
+        },
+        {
+            id: 'ancienttree_seed',
+            name: 'Hạt Cây Cổ Thụ',
+            description: 'Hạt giống cây cổ thụ, chứa đựng sức mạnh cổ xưa.',
+            price: 200,
+            image: 'assets/seed-bamboo.svg', // Tạm dùng hình ảnh có sẵn
+            plantTypeId: 'ancienttree',
+            rarity: 'mythical'
+        },
+        
+        // Vật phẩm tiêu hao
         {
             id: 'water_pack',
             name: 'Bình Nước',
             description: 'Thêm 10 đơn vị nước để tưới cây.',
             price: 10,
             image: 'assets/item-water.svg',
-            effect: { water: 10 }
+            effect: { water: 10 },
+            rarity: 'common'
+        },
+        {
+            id: 'large_water_pack',
+            name: 'Bình Nước Lớn',
+            description: 'Thêm 25 đơn vị nước để tưới cây.',
+            price: 20,
+            image: 'assets/item-water.svg',
+            effect: { water: 25 },
+            rarity: 'uncommon'
         },
         {
             id: 'energy_pack',
@@ -310,7 +475,17 @@ function initializeShopItems() {
             description: 'Thêm 10 đơn vị năng lượng để chăm sóc vườn.',
             price: 10,
             image: 'assets/item-energy.svg',
-            effect: { energy: 10 }
+            effect: { energy: 10 },
+            rarity: 'common'
+        },
+        {
+            id: 'large_energy_pack',
+            name: 'Năng Lượng Lớn',
+            description: 'Thêm 25 đơn vị năng lượng để chăm sóc vườn.',
+            price: 20,
+            image: 'assets/item-energy.svg',
+            effect: { energy: 25 },
+            rarity: 'uncommon'
         },
         {
             id: 'fertilizer',
@@ -318,15 +493,99 @@ function initializeShopItems() {
             description: 'Giúp cây phát triển nhanh hơn 50%.',
             price: 20,
             image: 'assets/item-fertilizer.svg',
-            effect: { growthBoost: 0.5 }
+            effect: { growthBoost: 0.5 },
+            rarity: 'uncommon'
         },
+        {
+            id: 'premium_fertilizer',
+            name: 'Phân Bón Cao Cấp',
+            description: 'Giúp cây phát triển nhanh hơn 100%.',
+            price: 40,
+            image: 'assets/item-fertilizer.svg',
+            effect: { growthBoost: 1.0 },
+            rarity: 'rare'
+        },
+        
+        // Vật phẩm nâng cấp
         {
             id: 'garden_expansion',
             name: 'Mở Rộng Vườn',
             description: 'Thêm 3 ô trồng cây mới vào vườn của bạn.',
             price: 100,
             image: 'assets/item-expansion.svg',
-            effect: { expandGarden: 3 }
+            effect: { expandGarden: 3 },
+            rarity: 'rare'
+        },
+        {
+            id: 'large_garden_expansion',
+            name: 'Mở Rộng Vườn Lớn',
+            description: 'Thêm 6 ô trồng cây mới vào vườn của bạn.',
+            price: 180,
+            image: 'assets/item-expansion.svg',
+            effect: { expandGarden: 6 },
+            rarity: 'legendary'
+        },
+        
+        // Công cụ làm vườn
+        {
+            id: 'watering_can',
+            name: 'Bình Tưới Cây',
+            description: 'Giảm 20% lượng nước cần thiết khi tưới cây.',
+            price: 150,
+            image: 'assets/item-water.svg',
+            effect: { waterEfficiency: 0.2 },
+            type: 'tool',
+            rarity: 'rare'
+        },
+        {
+            id: 'gardening_gloves',
+            name: 'Găng Tay Làm Vườn',
+            description: 'Giảm 20% năng lượng tiêu hao khi trồng cây.',
+            price: 150,
+            image: 'assets/item-energy.svg',
+            effect: { energyEfficiency: 0.2 },
+            type: 'tool',
+            rarity: 'rare'
+        },
+        {
+            id: 'rain_collector',
+            name: 'Bộ Thu Nước Mưa',
+            description: 'Tăng 50% hiệu quả của hiệu ứng thời tiết mưa.',
+            price: 200,
+            image: 'assets/item-water.svg',
+            effect: { rainBoost: 0.5 },
+            type: 'tool',
+            rarity: 'legendary'
+        },
+        {
+            id: 'seed_bag',
+            name: 'Túi Đựng Hạt',
+            description: 'Tăng 20% cơ hội nhận được hạt giống khi thu hoạch.',
+            price: 180,
+            image: 'assets/seed-sunflower.svg',
+            effect: { seedDropChance: 0.2 },
+            type: 'tool',
+            rarity: 'rare'
+        },
+        {
+            id: 'gift_box',
+            name: 'Hộp Quà Tặng',
+            description: 'Cho phép tặng hạt giống cho bạn bè.',
+            price: 50,
+            image: 'assets/item-expansion.svg',
+            effect: { enableGifting: true },
+            type: 'tool',
+            rarity: 'uncommon'
+        },
+        {
+            id: 'coin_converter',
+            name: 'Máy Đổi Xu',
+            description: 'Cho phép đổi xu thành minicoins.',
+            price: 300,
+            image: 'assets/item-expansion.svg',
+            effect: { enableCoinConversion: true },
+            type: 'tool',
+            rarity: 'legendary'
         }
     ];
 }
@@ -1332,29 +1591,53 @@ function refreshShopInventory() {
     
     // Tạo danh sách hàng hóa với số lượng giới hạn
     shopItems.forEach(item => {
-        // Xác định độ hiếm và số lượng dựa trên giá
-        let rarity, quantity;
+        // Xác định số lượng dựa trên độ hiếm
+        let quantity;
+        let appearChance;
         
-        if (item.price < 50) {
-            rarity = 'common';
-            quantity = Math.floor(Math.random() * 5) + 5; // 5-10
-        } else if (item.price < 100) {
-            rarity = 'uncommon';
-            quantity = Math.floor(Math.random() * 3) + 3; // 3-5
-        } else if (item.price < 200) {
-            rarity = 'rare';
-            quantity = Math.floor(Math.random() * 2) + 1; // 1-2
-        } else {
-            rarity = 'legendary';
-            quantity = Math.random() < 0.5 ? 1 : 0; // 50% có 1, 50% không có
+        // Sử dụng độ hiếm từ item nếu có, nếu không thì xác định dựa trên giá
+        const itemRarity = item.rarity || (
+            item.price < 50 ? 'common' :
+            item.price < 100 ? 'uncommon' :
+            item.price < 200 ? 'rare' :
+            'legendary'
+        );
+        
+        // Xác định số lượng và cơ hội xuất hiện dựa trên độ hiếm
+        switch(itemRarity) {
+            case 'common':
+                quantity = Math.floor(Math.random() * 5) + 5; // 5-10
+                appearChance = 0.9;
+                break;
+            case 'uncommon':
+                quantity = Math.floor(Math.random() * 3) + 3; // 3-5
+                appearChance = 0.7;
+                break;
+            case 'rare':
+                quantity = Math.floor(Math.random() * 2) + 1; // 1-2
+                appearChance = 0.5;
+                break;
+            case 'legendary':
+                quantity = Math.random() < 0.5 ? 1 : 0; // 50% có 1, 50% không có
+                appearChance = 0.3;
+                break;
+            case 'mythical':
+                quantity = Math.random() < 0.3 ? 1 : 0; // 30% có 1, 70% không có
+                appearChance = 0.1;
+                break;
+            default:
+                quantity = Math.floor(Math.random() * 3) + 1; // 1-3
+                appearChance = 0.6;
         }
         
+        // Vật phẩm cần thiết luôn xuất hiện
+        const isEssentialItem = item.id === 'water_pack' || item.id === 'energy_pack';
+        
         // Thêm vào danh sách nếu có hàng
-        if (Math.random() < 0.8 || item.id === 'water_pack' || item.id === 'energy_pack') { // 80% xuất hiện, nước và năng lượng luôn có
+        if (isEssentialItem || Math.random() < appearChance) {
             shopInventory.push({
                 ...item,
-                rarity,
-                quantity
+                quantity: isEssentialItem ? Math.max(quantity, 5) : quantity // Đảm bảo vật phẩm cần thiết luôn có ít nhất 5
             });
         }
     });
@@ -1747,10 +2030,41 @@ function visitFriendGarden(userId) {
         return;
     }
     
+    // Lưu ID người dùng đang xem để sử dụng cho chức năng tặng quà
+    currentViewingFriendId = userId;
+    currentViewingFriendName = friendGarden.username;
+    
     // Hiển thị thông tin vườn trong modal
     document.getElementById('friendGardenUsername').textContent = `Vườn của ${friendGarden.username}`;
     document.getElementById('friendGardenPlantCount').textContent = friendGarden.stats.plantCount;
     document.getElementById('friendGardenRareCount').textContent = friendGarden.stats.rareCount;
+    
+    // Kiểm tra xem người dùng có công cụ tặng quà không
+    const hasGiftingTool = userTools && userTools['gift_box'];
+    const giftButtonContainer = document.getElementById('friendGardenGiftButtons');
+    
+    if (giftButtonContainer) {
+        if (hasGiftingTool) {
+            giftButtonContainer.innerHTML = `
+                <button id="giftSeedBtn" class="btn-small"><i class="fas fa-seedling"></i> Tặng Hạt Giống</button>
+                <button id="giftPlantBtn" class="btn-small"><i class="fas fa-leaf"></i> Tặng Cây</button>
+            `;
+            
+            // Thêm sự kiện cho nút tặng hạt giống
+            document.getElementById('giftSeedBtn').addEventListener('click', () => {
+                showGiftSeedModal(userId, friendGarden.username);
+            });
+            
+            // Thêm sự kiện cho nút tặng cây
+            document.getElementById('giftPlantBtn').addEventListener('click', () => {
+                showGiftPlantModal(userId, friendGarden.username);
+            });
+        } else {
+            giftButtonContainer.innerHTML = `
+                <div class="gift-info"><i class="fas fa-info-circle"></i> Mua Hộp Quà Tặng từ cửa hàng để tặng quà cho bạn bè</div>
+            `;
+        }
+    }
     
     // Tải dữ liệu chi tiết về vườn từ Firebase
     const friendRef = firebase.database().ref(`users/${userId}/garden`);
