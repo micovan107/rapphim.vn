@@ -1,0 +1,154 @@
+{
+  "properties": [
+    {
+      "property": "color",
+      "description": "Màu chữ",
+      "example": "color: #ff0000;",
+      "usage": "Thiết lập màu cho văn bản. Có thể sử dụng tên màu, mã hex, rgb, rgba, hsl hoặc hsla."
+    },
+    {
+      "property": "background-color",
+      "description": "Màu nền",
+      "example": "background-color: #f0f0f0;",
+      "usage": "Thiết lập màu nền cho phần tử. Có thể sử dụng tên màu, mã hex, rgb, rgba, hsl hoặc hsla."
+    },
+    {
+      "property": "font-size",
+      "description": "Kích thước chữ",
+      "example": "font-size: 16px;",
+      "usage": "Thiết lập kích thước chữ. Đơn vị có thể là px, em, rem, %, vw, vh."
+    },
+    {
+      "property": "font-weight",
+      "description": "Độ đậm của chữ",
+      "example": "font-weight: bold;",
+      "usage": "Thiết lập độ đậm của chữ. Giá trị có thể là normal, bold, bolder, lighter hoặc số từ 100 đến 900."
+    },
+    {
+      "property": "font-family",
+      "description": "Kiểu chữ",
+      "example": "font-family: Arial, sans-serif;",
+      "usage": "Thiết lập kiểu chữ. Nên liệt kê nhiều font để dự phòng và kết thúc bằng một họ font chung."
+    },
+    {
+      "property": "text-align",
+      "description": "Căn chỉnh văn bản",
+      "example": "text-align: center;",
+      "usage": "Căn chỉnh văn bản trong phần tử. Giá trị có thể là left, right, center, justify."
+    },
+    {
+      "property": "margin",
+      "description": "Lề ngoài",
+      "example": "margin: 10px 20px 10px 20px;",
+      "usage": "Thiết lập lề ngoài cho phần tử. Có thể chỉ định 1-4 giá trị (top, right, bottom, left)."
+    },
+    {
+      "property": "padding",
+      "description": "Lề trong",
+      "example": "padding: 10px;",
+      "usage": "Thiết lập lề trong cho phần tử. Có thể chỉ định 1-4 giá trị (top, right, bottom, left)."
+    },
+    {
+      "property": "border",
+      "description": "Viền",
+      "example": "border: 1px solid #000;",
+      "usage": "Thiết lập viền cho phần tử. Bao gồm độ rộng, kiểu và màu sắc."
+    },
+    {
+      "property": "border-radius",
+      "description": "Bo góc",
+      "example": "border-radius: 5px;",
+      "usage": "Bo tròn các góc của phần tử. Có thể chỉ định 1-4 giá trị cho các góc khác nhau."
+    },
+    {
+      "property": "width",
+      "description": "Chiều rộng",
+      "example": "width: 100px;",
+      "usage": "Thiết lập chiều rộng cho phần tử. Có thể sử dụng px, %, vw, hoặc auto."
+    },
+    {
+      "property": "height",
+      "description": "Chiều cao",
+      "example": "height: 100px;",
+      "usage": "Thiết lập chiều cao cho phần tử. Có thể sử dụng px, %, vh, hoặc auto."
+    },
+    {
+      "property": "display",
+      "description": "Kiểu hiển thị",
+      "example": "display: flex;",
+      "usage": "Xác định cách phần tử được hiển thị. Giá trị phổ biến: block, inline, inline-block, flex, grid, none."
+    },
+    {
+      "property": "position",
+      "description": "Vị trí",
+      "example": "position: relative;",
+      "usage": "Xác định phương thức định vị cho phần tử. Giá trị: static, relative, absolute, fixed, sticky."
+    },
+    {
+      "property": "top",
+      "description": "Vị trí từ trên xuống",
+      "example": "top: 10px;",
+      "usage": "Xác định khoảng cách từ cạnh trên của phần tử đến cạnh trên của phần tử cha (khi position không phải static)."
+    },
+    {
+      "property": "left",
+      "description": "Vị trí từ trái sang",
+      "example": "left: 10px;",
+      "usage": "Xác định khoảng cách từ cạnh trái của phần tử đến cạnh trái của phần tử cha (khi position không phải static)."
+    },
+    {
+      "property": "z-index",
+      "description": "Thứ tự chồng lớp",
+      "example": "z-index: 100;",
+      "usage": "Xác định thứ tự chồng lớp của phần tử. Giá trị cao hơn sẽ hiển thị phía trên."
+    },
+    {
+      "property": "flex",
+      "description": "Thuộc tính flex",
+      "example": "flex: 1 0 auto;",
+      "usage": "Viết tắt cho flex-grow, flex-shrink và flex-basis. Sử dụng trong container flex."
+    },
+    {
+      "property": "grid-template-columns",
+      "description": "Cấu trúc cột trong grid",
+      "example": "grid-template-columns: 1fr 2fr 1fr;",
+      "usage": "Xác định số lượng và kích thước các cột trong grid layout."
+    },
+    {
+      "property": "transition",
+      "description": "Hiệu ứng chuyển đổi",
+      "example": "transition: all 0.3s ease;",
+      "usage": "Tạo hiệu ứng chuyển đổi mượt mà khi thuộc tính của phần tử thay đổi."
+    },
+    {
+      "property": "box-shadow",
+      "description": "Đổ bóng",
+      "example": "box-shadow: 0 2px 5px rgba(0,0,0,0.3);",
+      "usage": "Tạo hiệu ứng đổ bóng cho phần tử. Bao gồm vị trí x, y, độ mờ, độ lan và màu sắc."
+    },
+    {
+      "property": "opacity",
+      "description": "Độ trong suốt",
+      "example": "opacity: 0.5;",
+      "usage": "Thiết lập độ trong suốt cho phần tử. Giá trị từ 0 (hoàn toàn trong suốt) đến 1 (hoàn toàn đục)."
+    },
+    {
+      "property": "transform",
+      "description": "Biến đổi",
+      "example": "transform: rotate(45deg);",
+      "usage": "Áp dụng các biến đổi 2D hoặc 3D cho phần tử. Ví dụ: rotate, scale, translate, skew."
+    },
+    {
+      "property": "animation",
+      "description": "Hoạt ảnh",
+      "example": "animation: slide 2s ease infinite;",
+      "usage": "Áp dụng hoạt ảnh cho phần tử. Cần định nghĩa keyframes riêng."
+    },
+    {
+      "property": "overflow",
+      "description": "Xử lý nội dung tràn",
+      "example": "overflow: auto;",
+      "usage": "Xác định cách xử lý khi nội dung vượt quá kích thước của phần tử. Giá trị: visible, hidden, scroll, auto."
+    }
+  ]
+}

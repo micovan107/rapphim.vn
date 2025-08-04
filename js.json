@@ -1,0 +1,76 @@
+{
+  "concepts": [
+    {
+      "name": "Biến",
+      "description": "Khai báo biến",
+      "example": "let name = 'John';\nconst age = 30;\nvar isActive = true;",
+      "usage": "let: biến có thể thay đổi giá trị, phạm vi block.\nconst: hằng số, không thể gán lại, phạm vi block.\nvar: biến có thể thay đổi giá trị, phạm vi function."
+    },
+    {
+      "name": "Hàm",
+      "description": "Khai báo hàm",
+      "example": "function sayHello(name) {\n  return 'Hello, ' + name;\n}\n\n// Hàm arrow\nconst add = (a, b) => a + b;",
+      "usage": "Hàm thông thường sử dụng từ khóa function.\nHàm arrow (=>) ngắn gọn hơn và không có this riêng."
+    },
+    {
+      "name": "Điều kiện",
+      "description": "Câu lệnh điều kiện",
+      "example": "if (age >= 18) {\n  console.log('Đủ tuổi');\n} else {\n  console.log('Chưa đủ tuổi');\n}\n\n// Toán tử ba ngôi\nlet status = age >= 18 ? 'Đủ tuổi' : 'Chưa đủ tuổi';",
+      "usage": "if/else: thực hiện code dựa trên điều kiện.\nToán tử ba ngôi (?:): cú pháp ngắn gọn cho điều kiện đơn giản."
+    },
+    {
+      "name": "Vòng lặp",
+      "description": "Các loại vòng lặp",
+      "example": "// for\nfor (let i = 0; i < 5; i++) {\n  console.log(i);\n}\n\n// while\nlet i = 0;\nwhile (i < 5) {\n  console.log(i);\n  i++;\n}\n\n// for...of (cho mảng)\nfor (const item of [1, 2, 3]) {\n  console.log(item);\n}\n\n// for...in (cho object)\nfor (const key in {a: 1, b: 2}) {\n  console.log(key);\n}",
+      "usage": "for: lặp với số lần xác định.\nwhile: lặp khi điều kiện đúng.\nfor...of: lặp qua các phần tử của mảng.\nfor...in: lặp qua các thuộc tính của object."
+    },
+    {
+      "name": "Mảng",
+      "description": "Thao tác với mảng",
+      "example": "// Khai báo mảng\nlet fruits = ['apple', 'banana', 'orange'];\n\n// Thêm phần tử\nfruits.push('grape');\n\n// Xóa phần tử cuối\nfruits.pop();\n\n// Lặp qua mảng\nfruits.forEach(fruit => console.log(fruit));\n\n// Lọc mảng\nlet longFruits = fruits.filter(fruit => fruit.length > 5);\n\n// Biến đổi mảng\nlet upperFruits = fruits.map(fruit => fruit.toUpperCase());",
+      "usage": "push/pop: thêm/xóa phần tử ở cuối mảng.\nforEach: thực hiện hàm cho mỗi phần tử.\nfilter: tạo mảng mới với các phần tử thỏa điều kiện.\nmap: tạo mảng mới bằng cách biến đổi từng phần tử."
+    },
+    {
+      "name": "Object",
+      "description": "Thao tác với object",
+      "example": "// Khai báo object\nlet person = {\n  name: 'John',\n  age: 30,\n  sayHello: function() {\n    return 'Hello, ' + this.name;\n  }\n};\n\n// Truy cập thuộc tính\nconsole.log(person.name);\nconsole.log(person['age']);\n\n// Thêm thuộc tính\nperson.job = 'Developer';\n\n// Xóa thuộc tính\ndelete person.age;",
+      "usage": "Object lưu trữ dữ liệu dưới dạng cặp key-value.\nTruy cập thuộc tính bằng dấu chấm hoặc dấu ngoặc vuông.\nCó thể chứa phương thức (hàm)."
+    },
+    {
+      "name": "DOM",
+      "description": "Thao tác với DOM",
+      "example": "// Lấy phần tử theo ID\nlet element = document.getElementById('myId');\n\n// Lấy phần tử theo class\nlet elements = document.getElementsByClassName('myClass');\n\n// Lấy phần tử theo selector\nlet el = document.querySelector('.myClass');\nlet els = document.querySelectorAll('div');\n\n// Thay đổi nội dung\nelement.textContent = 'Nội dung mới';\nelement.innerHTML = '<strong>HTML mới</strong>';\n\n// Thay đổi style\nelement.style.color = 'red';\n\n// Thêm/xóa class\nelement.classList.add('active');\nelement.classList.remove('hidden');\n\n// Tạo phần tử mới\nlet newEl = document.createElement('div');\nnewEl.textContent = 'Phần tử mới';\ndocument.body.appendChild(newEl);",
+      "usage": "getElementById/getElementsByClassName: lấy phần tử theo ID/class.\nquerySelector/querySelectorAll: lấy phần tử theo CSS selector.\ntextContent/innerHTML: thay đổi nội dung văn bản/HTML.\nstyle: thay đổi CSS inline.\nclassList: thêm/xóa/toggle class.\ncreateElement/appendChild: tạo và thêm phần tử mới."
+    },
+    {
+      "name": "Sự kiện",
+      "description": "Xử lý sự kiện",
+      "example": "// Thêm sự kiện bằng addEventListener\ndocument.getElementById('myButton').addEventListener('click', function(event) {\n  console.log('Button clicked!');\n  event.preventDefault(); // Ngăn hành động mặc định\n});\n\n// Thêm sự kiện inline\n<button onclick=\"alert('Clicked!')\">Click me</button>\n\n// Xóa sự kiện\nfunction handleClick() {\n  console.log('Clicked');\n}\nelement.addEventListener('click', handleClick);\nelement.removeEventListener('click', handleClick);",
+      "usage": "addEventListener: thêm sự kiện cho phần tử.\nremoveEventListener: xóa sự kiện.\nevent.preventDefault(): ngăn hành động mặc định.\nevent.stopPropagation(): ngăn sự kiện nổi bọt."
+    },
+    {
+      "name": "Promise",
+      "description": "Xử lý bất đồng bộ với Promise",
+      "example": "// Tạo Promise\nlet promise = new Promise((resolve, reject) => {\n  // Xử lý bất đồng bộ\n  setTimeout(() => {\n    let success = true;\n    if (success) {\n      resolve('Thành công');\n    } else {\n      reject('Lỗi');\n    }\n  }, 1000);\n});\n\n// Sử dụng Promise\npromise\n  .then(result => console.log(result))\n  .catch(error => console.error(error))\n  .finally(() => console.log('Hoàn thành'));",
+      "usage": "Promise giải quyết vấn đề callback hell.\nresolve: trả về kết quả thành công.\nreject: trả về lỗi.\nthen: xử lý khi thành công.\ncatch: xử lý khi có lỗi.\nfinally: luôn thực hiện sau cùng."
+    },
+    {
+      "name": "Async/Await",
+      "description": "Xử lý bất đồng bộ với Async/Await",
+      "example": "// Hàm async\nasync function fetchData() {\n  try {\n    // await chờ Promise hoàn thành\n    let response = await fetch('https://api.example.com/data');\n    let data = await response.json();\n    return data;\n  } catch (error) {\n    console.error('Lỗi:', error);\n  }\n}\n\n// Gọi hàm async\nfetchData().then(data => console.log(data));",
+      "usage": "async: khai báo hàm bất đồng bộ, luôn trả về Promise.\nawait: tạm dừng thực thi cho đến khi Promise hoàn thành.\ntry/catch: xử lý lỗi trong async/await."
+    },
+    {
+      "name": "Fetch API",
+      "description": "Gửi HTTP request",
+      "example": "// GET request\nfetch('https://api.example.com/data')\n  .then(response => response.json())\n  .then(data => console.log(data))\n  .catch(error => console.error('Lỗi:', error));\n\n// POST request\nfetch('https://api.example.com/data', {\n  method: 'POST',\n  headers: {\n    'Content-Type': 'application/json'\n  },\n  body: JSON.stringify({\n    name: 'John',\n    age: 30\n  })\n})\n  .then(response => response.json())\n  .then(data => console.log(data));",
+      "usage": "fetch: gửi HTTP request và trả về Promise.\nmethod: GET, POST, PUT, DELETE, etc.\nheaders: thiết lập header cho request.\nbody: dữ liệu gửi đi (cần JSON.stringify cho object)."
+    },
+    {
+      "name": "LocalStorage",
+      "description": "Lưu trữ dữ liệu trên trình duyệt",
+      "example": "// Lưu dữ liệu\nlocalStorage.setItem('username', 'john');\nlocalStorage.setItem('user', JSON.stringify({name: 'John', age: 30}));\n\n// Đọc dữ liệu\nlet username = localStorage.getItem('username');\nlet user = JSON.parse(localStorage.getItem('user'));\n\n// Xóa dữ liệu\nlocalStorage.removeItem('username');\n\n// Xóa tất cả\nlocalStorage.clear();",
+      "usage": "setItem: lưu dữ liệu (key-value).\ngetItem: đọc dữ liệu theo key.\nremoveItem: xóa dữ liệu theo key.\nclear: xóa tất cả dữ liệu.\nJSON.stringify/JSON.parse: chuyển đổi object sang/từ chuỗi JSON."
+    }
+  ]
+}

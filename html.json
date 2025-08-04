@@ -1,0 +1,124 @@
+{
+  "elements": [
+    {
+      "tag": "p",
+      "description": "Thẻ đoạn văn bản",
+      "example": "<p>Đây là một đoạn văn bản</p>",
+      "usage": "Sử dụng để hiển thị đoạn văn bản thông thường. Mỗi thẻ <p> tạo ra một đoạn văn bản mới với khoảng cách phía trên và dưới."
+    },
+    {
+      "tag": "h1",
+      "description": "Tiêu đề cấp 1",
+      "example": "<h1>Tiêu đề chính</h1>",
+      "usage": "Sử dụng cho tiêu đề quan trọng nhất của trang. Mỗi trang nên có duy nhất một thẻ <h1>."
+    },
+    {
+      "tag": "h2",
+      "description": "Tiêu đề cấp 2",
+      "example": "<h2>Tiêu đề phụ</h2>",
+      "usage": "Sử dụng cho các tiêu đề phụ, nằm dưới cấp độ của h1."
+    },
+    {
+      "tag": "h3",
+      "description": "Tiêu đề cấp 3",
+      "example": "<h3>Tiêu đề phụ cấp 3</h3>",
+      "usage": "Sử dụng cho các tiêu đề phụ, nằm dưới cấp độ của h2."
+    },
+    {
+      "tag": "div",
+      "description": "Thẻ khối",
+      "example": "<div>Nội dung</div>",
+      "usage": "Thẻ container để nhóm các phần tử HTML khác. Thường được sử dụng với CSS để tạo bố cục."
+    },
+    {
+      "tag": "span",
+      "description": "Thẻ nội dòng",
+      "example": "<span>Văn bản</span>",
+      "usage": "Sử dụng để định dạng một phần nhỏ của văn bản hoặc một phần tử nội dòng."
+    },
+    {
+      "tag": "a",
+      "description": "Thẻ liên kết",
+      "example": "<a href=\"https://example.com\">Liên kết</a>",
+      "usage": "Tạo liên kết đến trang web khác hoặc vị trí khác trong cùng trang. Thuộc tính href chỉ định URL đích."
+    },
+    {
+      "tag": "img",
+      "description": "Thẻ hình ảnh",
+      "example": "<img src=\"image.jpg\" alt=\"Mô tả hình ảnh\">",
+      "usage": "Hiển thị hình ảnh. Thuộc tính src chỉ định đường dẫn đến hình ảnh, alt cung cấp văn bản thay thế khi hình ảnh không thể hiển thị."
+    },
+    {
+      "tag": "ul",
+      "description": "Danh sách không thứ tự",
+      "example": "<ul>\n  <li>Mục 1</li>\n  <li>Mục 2</li>\n</ul>",
+      "usage": "Tạo danh sách không có thứ tự, mỗi mục được đánh dấu bằng dấu chấm tròn (bullet)."
+    },
+    {
+      "tag": "ol",
+      "description": "Danh sách có thứ tự",
+      "example": "<ol>\n  <li>Mục 1</li>\n  <li>Mục 2</li>\n</ol>",
+      "usage": "Tạo danh sách có thứ tự, mỗi mục được đánh số."
+    },
+    {
+      "tag": "li",
+      "description": "Mục danh sách",
+      "example": "<li>Mục danh sách</li>",
+      "usage": "Định nghĩa một mục trong danh sách. Phải được sử dụng trong thẻ <ul> hoặc <ol>."
+    },
+    {
+      "tag": "table",
+      "description": "Bảng",
+      "example": "<table>\n  <tr>\n    <td>Ô 1</td>\n    <td>Ô 2</td>\n  </tr>\n</table>",
+      "usage": "Tạo bảng dữ liệu với hàng và cột."
+    },
+    {
+      "tag": "tr",
+      "description": "Hàng trong bảng",
+      "example": "<tr>\n  <td>Ô 1</td>\n  <td>Ô 2</td>\n</tr>",
+      "usage": "Định nghĩa một hàng trong bảng. Chứa các thẻ <td> hoặc <th>."
+    },
+    {
+      "tag": "td",
+      "description": "Ô dữ liệu trong bảng",
+      "example": "<td>Dữ liệu</td>",
+      "usage": "Định nghĩa một ô dữ liệu trong bảng."
+    },
+    {
+      "tag": "form",
+      "description": "Biểu mẫu",
+      "example": "<form action=\"/submit\" method=\"post\">\n  <!-- Các trường nhập liệu -->\n</form>",
+      "usage": "Tạo biểu mẫu để thu thập dữ liệu người dùng. Thuộc tính action chỉ định URL xử lý dữ liệu, method chỉ định phương thức gửi dữ liệu."
+    },
+    {
+      "tag": "input",
+      "description": "Trường nhập liệu",
+      "example": "<input type=\"text\" name=\"username\" placeholder=\"Tên đăng nhập\">",
+      "usage": "Tạo trường nhập liệu trong biểu mẫu. Thuộc tính type xác định loại trường (text, password, checkbox, radio, etc.)."
+    },
+    {
+      "tag": "button",
+      "description": "Nút",
+      "example": "<button type=\"submit\">Gửi</button>",
+      "usage": "Tạo nút có thể nhấp. Thuộc tính type xác định hành động của nút (submit, reset, button)."
+    },
+    {
+      "tag": "textarea",
+      "description": "Vùng văn bản",
+      "example": "<textarea rows=\"4\" cols=\"50\">Nội dung mặc định</textarea>",
+      "usage": "Tạo vùng nhập văn bản nhiều dòng. Thuộc tính rows và cols xác định kích thước."
+    },
+    {
+      "tag": "select",
+      "description": "Danh sách thả xuống",
+      "example": "<select name=\"country\">\n  <option value=\"vn\">Việt Nam</option>\n  <option value=\"us\">Hoa Kỳ</option>\n</select>",
+      "usage": "Tạo danh sách thả xuống cho phép người dùng chọn một hoặc nhiều tùy chọn."
+    },
+    {
+      "tag": "option",
+      "description": "Tùy chọn trong danh sách thả xuống",
+      "example": "<option value=\"vn\">Việt Nam</option>",
+      "usage": "Định nghĩa một tùy chọn trong thẻ <select>. Thuộc tính value xác định giá trị được gửi khi biểu mẫu được gửi."
+    }
+  ]
+}

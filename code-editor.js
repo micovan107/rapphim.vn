@@ -10,6 +10,8 @@ let autoSaveInterval = null;
 let lastChangeTime = null;
 let changeTimeout = null;
 let isPreviewDirty = true;
+let lookupData = null;
+let currentLookupType = 'html';
 
 // Khởi tạo khi trang được tải
 document.addEventListener('DOMContentLoaded', function() {
@@ -119,6 +121,21 @@ function setupEventListeners() {
     document.getElementById('themeToggleBtn').addEventListener('click', function() {
         toggleDarkTheme();
     });
+    
+    // Sự kiện cho nút bật/tắt bảng tra cứu
+    document.getElementById('lookupToggleBtn').addEventListener('click', function() {
+        toggleLookupTable();
+    });
+    
+    // Sự kiện cho nút đóng bảng tra cứu
+    document.getElementById('lookupCloseBtn').addEventListener('click', function() {
+        document.getElementById('lookupTableContainer').classList.remove('active');
+    });
+    
+    // Sự kiện cho ô tìm kiếm trong bảng tra cứu
+    document.getElementById('lookupSearchInput').addEventListener('input', function() {
+        filterLookupItems(this.value);
+    });
 
     // Sự kiện cho nút tạo file mới
     document.getElementById('newFileBtn').addEventListener('click', function() {
@@ -171,6 +188,11 @@ function setupEventListeners() {
     document.getElementById('languageSelect').addEventListener('change', function() {
         if (editor) {
             editor.setOption('mode', this.value);
+        }
+        
+        // Cập nhật bảng tra cứu nếu đang hiển thị
+        if (document.getElementById('lookupTableContainer').classList.contains('active')) {
+            updateLookupType();
         }
     });
 
@@ -1230,3 +1252,144 @@ setInterval(function() {
         updatePreview();
     }
 }, 2000); // Cập nhật mỗi 2 giây nếu có thay đổi
+
+// Bật/tắt bảng tra cứu
+function toggleLookupTable() {
+    const lookupContainer = document.getElementById('lookupTableContainer');
+    lookupContainer.classList.toggle('active');
+    
+    // Nếu đang hiển thị và chưa có dữ liệu, tải dữ liệu
+    if (lookupContainer.classList.contains('active') && !lookupData) {
+        loadLookupData();
+    }
+    
+    // Cập nhật loại tra cứu dựa trên ngôn ngữ hiện tại
+    updateLookupType();
+}
+
+// Cập nhật loại tra cứu dựa trên ngôn ngữ hiện tại
+function updateLookupType() {
+    const languageSelect = document.getElementById('languageSelect');
+    const selectedLanguage = languageSelect.value;
+    
+    if (selectedLanguage === 'htmlmixed') {
+        currentLookupType = 'html';
+    } else if (selectedLanguage === 'css') {
+        currentLookupType = 'css';
+    } else if (selectedLanguage === 'javascript') {
+        currentLookupType = 'js';
+    }
+    
+    // Hiển thị dữ liệu tra cứu cho loại hiện tại
+    if (lookupData) {
+        displayLookupData();
+    }
+}
+
+// Tải dữ liệu tra cứu từ các file JSON
+function loadLookupData() {
+    // Tải dữ liệu HTML
+    fetch('html.json')
+        .then(response => response.json())
+        .then(data => {
+            if (!lookupData) lookupData = {};
+            lookupData.html = data;
+            if (currentLookupType === 'html') {
+                displayLookupData();
+            }
+        })
+        .catch(error => console.error('Lỗi khi tải dữ liệu HTML:', error));
+    
+    // Tải dữ liệu CSS
+    fetch('css.json')
+        .then(response => response.json())
+        .then(data => {
+            if (!lookupData) lookupData = {};
+            lookupData.css = data;
+            if (currentLookupType === 'css') {
+                displayLookupData();
+            }
+        })
+        .catch(error => console.error('Lỗi khi tải dữ liệu CSS:', error));
+    
+    // Tải dữ liệu JavaScript
+    fetch('js.json')
+        .then(response => response.json())
+        .then(data => {
+            if (!lookupData) lookupData = {};
+            lookupData.js = data;
+            if (currentLookupType === 'js') {
+                displayLookupData();
+            }
+        })
+        .catch(error => console.error('Lỗi khi tải dữ liệu JavaScript:', error));
+}
+
+// Hiển thị dữ liệu tra cứu cho loại hiện tại
+function displayLookupData() {
+    const lookupContent = document.getElementById('lookupContent');
+    lookupContent.innerHTML = '';
+    
+    if (!lookupData || !lookupData[currentLookupType]) {
+        lookupContent.innerHTML = '<p>Đang tải dữ liệu...</p>';
+        return;
+    }
+    
+    // Hiển thị tiêu đề phù hợp với loại dữ liệu
+    let title = '';
+    let items = [];
+    
+    if (currentLookupType === 'html') {
+        title = 'Thẻ HTML';
+        items = lookupData.html.elements;
+    } else if (currentLookupType === 'css') {
+        title = 'Thuộc tính CSS';
+        items = lookupData.css.properties;
+    } else if (currentLookupType === 'js') {
+        title = 'JavaScript';
+        items = lookupData.js.concepts;
+    }
+    
+    // Cập nhật tiêu đề
+    document.querySelector('.lookup-table-header h3').textContent = title;
+    
+    // Hiển thị các mục
+    items.forEach(item => {
+        const itemElement = document.createElement('div');
+        itemElement.className = 'lookup-item';
+        
+        // Xác định tên hiển thị dựa trên loại dữ liệu
+        let itemName = '';
+        if (currentLookupType === 'html') {
+            itemName = item.tag;
+        } else if (currentLookupType === 'css') {
+            itemName = item.property;
+        } else if (currentLookupType === 'js') {
+            itemName = item.name;
+        }
+        
+        itemElement.innerHTML = `
+            <h4>${itemName}</h4>
+            <div class="lookup-item-description">${item.description}</div>
+            <div class="lookup-item-example">${item.example}</div>
+            <div class="lookup-item-usage">${item.usage}</div>
+        `;
+        
+        lookupContent.appendChild(itemElement);
+    });
+}
+
+// Lọc các mục tra cứu theo từ khóa tìm kiếm
+function filterLookupItems(keyword) {
+    const lookupItems = document.querySelectorAll('.lookup-item');
+    const lowerKeyword = keyword.toLowerCase();
+    
+    lookupItems.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        if (text.includes(lowerKeyword)) {
+            item.style.display = 'block';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}

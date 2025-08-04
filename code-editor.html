@@ -47,15 +47,16 @@
                     <button id="publishBtn" class="toolbar-btn primary" title="Xuất bản dự án"><i class="fas fa-upload"></i> Xuất bản</button>
                 </div>
                 <div class="editor-settings">
-                    <select id="languageSelect" title="Chọn ngôn ngữ">
-                        <option value="htmlmixed">HTML</option>
-                        <option value="css">CSS</option>
-                        <option value="javascript">JavaScript</option>
-                    </select>
-                    <button id="formatCodeBtn" class="toolbar-btn" title="Format code"><i class="fas fa-indent"></i></button>
-                    <button id="undoBtn" class="toolbar-btn" title="Hoàn tác"><i class="fas fa-undo"></i></button>
-                    <button id="redoBtn" class="toolbar-btn" title="Làm lại"><i class="fas fa-redo"></i></button>
-                </div>
+                <select id="languageSelect" title="Chọn ngôn ngữ">
+                    <option value="htmlmixed">HTML</option>
+                    <option value="css">CSS</option>
+                    <option value="javascript">JavaScript</option>
+                </select>
+                <button id="formatCodeBtn" class="toolbar-btn" title="Format code"><i class="fas fa-indent"></i></button>
+                <button id="undoBtn" class="toolbar-btn" title="Hoàn tác"><i class="fas fa-undo"></i></button>
+                <button id="redoBtn" class="toolbar-btn" title="Làm lại"><i class="fas fa-redo"></i></button>
+                <button id="lookupToggleBtn" class="lookup-toggle-btn" title="Bảng tra cứu"><i class="fas fa-book"></i> <span>Tra cứu</span></button>
+            </div>
             </div>
 
             <!-- Khu vực soạn thảo -->
@@ -91,6 +92,20 @@
                         </div>
                     </div>
                     <iframe id="previewFrame" sandbox="allow-scripts allow-same-origin allow-forms" title="Xem trước"></iframe>
+                </div>
+                
+                <!-- Bảng tra cứu -->
+                <div id="lookupTableContainer" class="lookup-table-container">
+                    <div class="lookup-table-header">
+                        <h3>Bảng tra cứu</h3>
+                        <button id="lookupCloseBtn" class="lookup-close-btn"><i class="fas fa-times"></i></button>
+                    </div>
+                    <div class="lookup-search">
+                        <input type="text" id="lookupSearchInput" placeholder="Tìm kiếm...">
+                    </div>
+                    <div id="lookupContent" class="lookup-content">
+                        <!-- Nội dung tra cứu sẽ được thêm vào đây bằng JavaScript -->
+                    </div>
                 </div>
             </div>
         </main>
