@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dự Án Lập Trình - Xem Và Chạy Code</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="code-editor.css">
+    <link rel="stylesheet" href="code-projects.css">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Thanh điều hướng chính -->
+        <nav class="main-nav">
+            <div class="logo">
+                <a href="index.html"><img src="favicon.svg" alt="Logo" width="32" height="32"> Lập Trình Trực Tuyến</a>
+            </div>
+            <div class="nav-links">
+                <a href="index.html"><i class="fas fa-home"></i> Trang Chủ</a>
+                <a href="code-editor.html"><i class="fas fa-code"></i> Trình Soạn Thảo</a>
+                <a href="code-projects.html" class="active"><i class="fas fa-folder"></i> Dự Án</a>
+                <a href="#" id="communityLink"><i class="fas fa-users"></i> Cộng Đồng</a>
+            </div>
+            <div class="user-controls">
+                <div class="search-container">
+                    <input type="text" id="searchProjects" placeholder="Tìm kiếm dự án...">
+                    <button id="searchBtn"><i class="fas fa-search"></i></button>
+                </div>
+                <div class="user-profile" id="userProfileBtn">
+                    <img src="avatarlazi.png" alt="Avatar" id="userAvatar">
+                    <span id="userName">Người dùng</span>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Khu vực chính -->
+        <main class="projects-main">
+            <!-- Thanh bên trái - Bộ lọc -->
+            <aside class="filters-sidebar">
+                <div class="filter-section">
+                    <h3>Bộ lọc</h3>
+                    <div class="filter-group">
+                        <label>Sắp xếp theo:</label>
+                        <select id="sortFilter">
+                            <option value="newest">Mới nhất</option>
+                            <option value="oldest">Cũ nhất</option>
+                            <option value="name">Tên (A-Z)</option>
+                            <option value="popular">Phổ biến nhất</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Loại dự án:</label>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" value="html" checked> HTML/CSS</label>
+                            <label><input type="checkbox" value="javascript" checked> JavaScript</label>
+                            <label><input type="checkbox" value="other" checked> Khác</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="filter-actions">
+                    <button id="applyFiltersBtn" class="btn primary"><i class="fas fa-filter"></i> Áp dụng</button>
+                    <button id="resetFiltersBtn" class="btn"><i class="fas fa-undo"></i> Đặt lại</button>
+                </div>
+            </aside>
+
+            <!-- Khu vực hiển thị dự án -->
+            <section class="projects-container">
+                <div class="projects-header">
+                    <h2>Dự Án Cộng Đồng</h2>
+                    <p>Khám phá và chạy các dự án được tạo bởi cộng đồng</p>
+                </div>
+                
+                <div id="projectsGrid" class="projects-grid">
+                    <!-- Dự án sẽ được tải từ JavaScript -->
+                    <div class="loading-container" id="loadingProjects">
+                        <div class="spinner"></div>
+                        <p>Đang tải dự án...</p>
+                    </div>
+                </div>
+
+                <div class="pagination">
+                    <button id="prevPageBtn" disabled><i class="fas fa-chevron-left"></i> Trước</button>
+                    <span id="pageInfo">Trang 1</span>
+                    <button id="nextPageBtn"><i class="fas fa-chevron-right"></i> Sau</button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div class="footer-content">
+                <p>&copy; 2023 Lập Trình Trực Tuyến. Tất cả quyền được bảo lưu.</p>
+                <div class="footer-links">
+                    <a href="#">Điều khoản sử dụng</a>
+                    <a href="#">Chính sách bảo mật</a>
+                    <a href="#">Liên hệ</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modal xem dự án -->
+    <div class="modal" id="viewProjectModal">
+        <div class="modal-content large-modal">
+            <div class="modal-header">
+                <h3 id="viewProjectTitle">Tên Dự Án</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="project-info">
+                    <p id="viewProjectDescription">Mô tả dự án</p>
+                    <div class="project-meta">
+                        <span><i class="fas fa-user"></i> <span id="viewProjectAuthor">Tác giả</span></span>
+                        <span><i class="fas fa-calendar"></i> <span id="viewProjectDate">Ngày tạo</span></span>
+                    </div>
+                </div>
+                <div class="project-preview-container">
+                    <div class="preview-header">
+                        <h4>Xem trước</h4>
+                        <button id="openFullscreenBtn" class="btn"><i class="fas fa-expand"></i> Toàn màn hình</button>
+                    </div>
+                    <iframe id="projectPreviewFrame" sandbox="allow-scripts allow-same-origin allow-forms" frameborder="0"></iframe>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="deleteProjectBtn" class="btn danger"><i class="fas fa-trash"></i> Xóa dự án</button>
+                <div class="modal-footer-right">
+                    <button id="viewSourceBtn" class="btn"><i class="fas fa-code"></i> Xem mã nguồn</button>
+                    <button id="cloneProjectBtn" class="btn primary"><i class="fas fa-copy"></i> Sao chép dự án</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal xem mã nguồn -->
+    <div class="modal" id="viewSourceModal">
+        <div class="modal-content large-modal">
+            <div class="modal-header">
+                <h3>Mã nguồn: <span id="sourceProjectTitle">Tên Dự Án</span></h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="source-file-list">
+                    <h4>Danh sách file</h4>
+                    <ul id="sourceFileList">
+                        <!-- Danh sách file sẽ được tải từ JavaScript -->
+                    </ul>
+                </div>
+                <div class="source-code-container">
+                    <div class="source-header">
+                        <h4 id="currentFileName">index.html</h4>
+                        <button id="copySourceBtn" class="btn"><i class="fas fa-copy"></i> Sao chép</button>
+                    </div>
+                    <pre id="sourceCodeDisplay"><code></code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thêm các thư viện cần thiết -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="code-projects.js"></script>
+</body>
+</html>

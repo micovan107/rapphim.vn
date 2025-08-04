@@ -1,0 +1,585 @@
+/* Styles cho trình soạn thảo mã */
+
+/* Reset và styles chung */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Màu sắc chủ đạo - Chế độ sáng */
+    --primary-color: #4a6cf7;
+    --secondary-color: #6c757d;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+    --background-color: #f5f7fb;
+    --card-bg-color: #ffffff;
+    --border-color: #e1e5eb;
+    --text-color: #333;
+    --text-muted: #6c757d;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --border-radius: 8px;
+    --transition: all 0.3s ease;
+    
+    /* Kích thước */
+    --file-explorer-width: 250px;
+    --preview-width: 40%;
+    --editor-toolbar-height: 50px;
+}
+
+/* Chế độ tối */
+body.dark-theme {
+    --primary-color: #5d7bf9;
+    --secondary-color: #8c8c8c;
+    --background-color: #1e1e2d;
+    --card-bg-color: #2a2a3c;
+    --border-color: #3a3a4c;
+    --text-color: #e1e1e1;
+    --text-muted: #a0a0a0;
+    --light-color: #2c2c3c;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* Thanh điều hướng */
+.main-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 1.5rem;
+    background-color: var(--card-bg-color);
+    box-shadow: var(--shadow);
+    z-index: 100;
+}
+
+.logo a {
+    display: flex;
+    align-items: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.logo img {
+    margin-right: 0.5rem;
+}
+
+.nav-links {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.nav-links a {
+    color: var(--text-color);
+    text-decoration: none;
+    padding: 0.5rem 0.8rem;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.user-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.theme-toggle button {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.3rem;
+    border-radius: 50%;
+    transition: var(--transition);
+}
+
+.theme-toggle button:hover {
+    background-color: var(--light-color);
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.user-profile img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Khu vực chính */
+.editor-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+}
+
+/* Thanh công cụ */
+.editor-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background-color: var(--card-bg-color);
+    border-bottom: 1px solid var(--border-color);
+    height: var(--editor-toolbar-height);
+}
+
+.file-controls,
+.editor-settings {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.toolbar-btn {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: var(--transition);
+    font-size: 0.9rem;
+}
+
+.toolbar-btn:hover {
+    background-color: var(--light-color);
+}
+
+.toolbar-btn.primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.toolbar-btn.primary:hover {
+    background-color: #3a57d0;
+}
+
+#languageSelect {
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    background-color: var(--card-bg-color);
+    color: var(--text-color);
+    font-size: 0.9rem;
+}
+
+/* Khu vực soạn thảo */
+.editor-workspace {
+    display: flex;
+    flex: 1;
+    overflow: auto;
+}
+
+/* Thanh bên trái - Quản lý file */
+.file-explorer {
+    width: var(--file-explorer-width);
+    background-color: var(--card-bg-color);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.file-explorer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.file-explorer-header h3 {
+    font-size: 1rem;
+    margin: 0;
+}
+
+.file-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.file-actions button {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 0.3rem;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+}
+
+.file-actions button:hover {
+    background-color: var(--light-color);
+}
+
+.file-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.5rem 0;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: var(--transition);
+    border-left: 3px solid transparent;
+}
+
+.file-item:hover {
+    background-color: var(--light-color);
+}
+
+.file-item.active {
+    background-color: rgba(74, 108, 247, 0.1);
+    border-left-color: var(--primary-color);
+}
+
+.file-item i {
+    margin-right: 0.8rem;
+    font-size: 1rem;
+    width: 20px;
+    text-align: center;
+}
+
+.file-item.html i {
+    color: #e44d26;
+}
+
+.file-item.css i {
+    color: #264de4;
+}
+
+.file-item.js i {
+    color: #f7df1e;
+}
+
+.file-item.image i {
+    color: #4caf50;
+}
+
+/* Khu vực soạn thảo chính */
+.editor-container {
+    flex: 1;
+    overflow: auto;
+    position: relative;
+}
+
+/* Khu vực xem trước */
+.preview-container {
+    width: var(--preview-width);
+    background-color: var(--card-bg-color);
+    border-left: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.preview-header h3 {
+    font-size: 1rem;
+    margin: 0;
+}
+
+.preview-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.preview-actions button {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 0.3rem;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+}
+
+.preview-actions button:hover {
+    background-color: var(--light-color);
+}
+
+#previewFrame {
+    flex: 1;
+    border: none;
+    background-color: white;
+}
+
+/* CodeMirror customization */
+.CodeMirror {
+    height: 100% !important;
+    font-family: 'Fira Code', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.CodeMirror-scroll {
+    /* Không cần thêm overflow: auto ở đây vì CodeMirror tự quản lý thanh cuộn */
+    max-height: 100%;
+}
+
+.CodeMirror-sizer {
+    min-height: auto !important;
+}
+
+/* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.modal-content {
+    background-color: var(--card-bg-color);
+    margin: 2rem auto;
+    border-radius: var(--border-radius);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 500px;
+    animation: modalFadeIn 0.3s;
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: translateY(-50px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h3 {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--secondary-color);
+    transition: var(--transition);
+}
+
+.close-btn:hover {
+    color: var(--danger-color);
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+/* Form styles */
+.form-group {
+    margin-bottom: 1.2rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.form-group input[type="text"],
+.form-group input[type="file"],
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 0.8rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    background-color: var(--light-color);
+    color: var(--text-color);
+    font-size: 1rem;
+}
+
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* Image preview */
+.image-preview {
+    margin-top: 1rem;
+    padding: 1rem;
+    border: 1px dashed var(--border-color);
+    border-radius: var(--border-radius);
+    text-align: center;
+}
+
+.image-preview img {
+    max-width: 100%;
+    max-height: 200px;
+    margin-top: 1rem;
+}
+
+/* Button styles */
+.btn {
+    padding: 0.7rem 1.2rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    background-color: var(--light-color);
+    color: var(--text-color);
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: var(--transition);
+}
+
+.btn:hover {
+    background-color: #e9ecef;
+}
+
+.btn.primary {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.btn.primary:hover {
+    background-color: #3a57d0;
+}
+
+/* Responsive styles */
+@media (max-width: 1200px) {
+    :root {
+        --preview-width: 35%;
+    }
+}
+
+@media (max-width: 992px) {
+    :root {
+        --file-explorer-width: 200px;
+        --preview-width: 30%;
+    }
+    
+    .toolbar-btn span {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-nav {
+        flex-direction: column;
+        padding: 1rem;
+    }
+    
+    .nav-links {
+        margin: 1rem 0;
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .user-controls {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .editor-workspace {
+        flex-direction: column;
+    }
+    
+    :root {
+        --file-explorer-width: 100%;
+        --preview-width: 100%;
+    }
+    
+    .file-explorer {
+        height: 200px;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .preview-container {
+        height: 300px;
+        border-left: none;
+        border-top: 1px solid var(--border-color);
+    }
+}
+
+@media (max-width: 576px) {
+    .editor-toolbar {
+        flex-direction: column;
+        height: auto;
+        padding: 0.5rem;
+    }
+    
+    .file-controls,
+    .editor-settings {
+        width: 100%;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 1rem auto;
+    }
+}

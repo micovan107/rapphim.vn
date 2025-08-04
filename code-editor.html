@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trình Soạn Thảo Mã - Lập Trình Trực Tuyến</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/dracula.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/eclipse.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/show-hint.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/fold/foldgutter.min.css">
+    <link rel="stylesheet" href="code-editor.css">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Thanh điều hướng chính -->
+        <nav class="main-nav">
+            <div class="logo">
+                <a href="index.html"><img src="favicon.svg" alt="Logo" width="32" height="32"> Lập Trình Trực Tuyến</a>
+            </div>
+            <div class="nav-links">
+                <a href="index.html"><i class="fas fa-home"></i> Trang Chủ</a>
+                <a href="code-editor.html" class="active"><i class="fas fa-code"></i> Trình Soạn Thảo</a>
+                <a href="code-projects.html"><i class="fas fa-folder"></i> Dự Án</a>
+                <a href="#" id="communityLink"><i class="fas fa-users"></i> Cộng Đồng</a>
+            </div>
+            <div class="user-controls">
+                <div class="theme-toggle">
+                    <button id="themeToggleBtn"><i class="fas fa-moon"></i></button>
+                </div>
+                <div class="user-profile" id="userProfileBtn">
+                    <img src="avatarlazi.png" alt="Avatar" id="userAvatar">
+                    <span id="userName">Người dùng</span>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Khu vực chính -->
+        <main class="editor-main">
+            <!-- Thanh công cụ -->
+            <div class="editor-toolbar">
+                <div class="file-controls">
+                    <button id="newFileBtn" class="toolbar-btn" title="Tạo file mới"><i class="fas fa-file"></i> Mới</button>
+                    <button id="saveBtn" class="toolbar-btn" title="Lưu file"><i class="fas fa-save"></i> Lưu</button>
+                    <button id="publishBtn" class="toolbar-btn primary" title="Xuất bản dự án"><i class="fas fa-upload"></i> Xuất bản</button>
+                </div>
+                <div class="editor-settings">
+                    <select id="languageSelect" title="Chọn ngôn ngữ">
+                        <option value="htmlmixed">HTML</option>
+                        <option value="css">CSS</option>
+                        <option value="javascript">JavaScript</option>
+                    </select>
+                    <button id="formatCodeBtn" class="toolbar-btn" title="Format code"><i class="fas fa-indent"></i></button>
+                    <button id="undoBtn" class="toolbar-btn" title="Hoàn tác"><i class="fas fa-undo"></i></button>
+                    <button id="redoBtn" class="toolbar-btn" title="Làm lại"><i class="fas fa-redo"></i></button>
+                </div>
+            </div>
+
+            <!-- Khu vực soạn thảo -->
+            <div class="editor-workspace">
+                <!-- Thanh bên trái - Quản lý file -->
+                <aside class="file-explorer">
+                    <div class="file-explorer-header">
+                        <h3>Files</h3>
+                        <div class="file-actions">
+                            <button id="addFileBtn" title="Thêm file"><i class="fas fa-plus"></i></button>
+                            <button id="addImageBtn" title="Thêm ảnh"><i class="fas fa-image"></i></button>
+                            <button id="renameFileBtn" title="Đổi tên file"><i class="fas fa-edit"></i></button>
+                            <button id="deleteFileBtn" title="Xóa file"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                    <div class="file-list" id="fileList">
+                        <!-- Danh sách file sẽ được tạo bằng JavaScript -->
+                    </div>
+                </aside>
+
+                <!-- Khu vực soạn thảo chính -->
+                <div class="editor-container">
+                    <div id="codeEditor"></div>
+                </div>
+
+                <!-- Khu vực xem trước -->
+                <div class="preview-container">
+                    <div class="preview-header">
+                        <h3>Xem trước</h3>
+                        <div class="preview-actions">
+                            <button id="refreshPreviewBtn" title="Làm mới"><i class="fas fa-sync-alt"></i></button>
+                            <button id="openPreviewBtn" title="Mở trong tab mới"><i class="fas fa-external-link-alt"></i></button>
+                        </div>
+                    </div>
+                    <iframe id="previewFrame" sandbox="allow-scripts allow-same-origin allow-forms" title="Xem trước"></iframe>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal tạo file mới -->
+    <div class="modal" id="newFileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Tạo file mới</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="newFileName">Tên file:</label>
+                    <input type="text" id="newFileName" placeholder="Nhập tên file...">
+                </div>
+                <div class="form-group">
+                    <label for="newFileType">Loại file:</label>
+                    <select id="newFileType">
+                        <option value=".html">HTML (.html)</option>
+                        <option value=".css">CSS (.css)</option>
+                        <option value=".js">JavaScript (.js)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="createFileBtn" class="btn primary">Tạo</button>
+                <button class="btn close-modal">Hủy</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal tải lên ảnh -->
+    <div class="modal" id="uploadImageModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Tải lên ảnh</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="imageFileName">Tên file:</label>
+                    <input type="text" id="imageFileName" placeholder="Nhập tên file...">
+                </div>
+                <div class="form-group">
+                    <label for="imageFileInput">Chọn ảnh:</label>
+                    <input type="file" id="imageFileInput" accept="image/*">
+                </div>
+                <div class="image-preview" id="imagePreview">
+                    <p>Xem trước ảnh</p>
+                    <img id="previewImage" src="#" alt="Xem trước" style="display: none;">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="uploadImageBtn" class="btn primary">Tải lên</button>
+                <button class="btn close-modal">Hủy</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal đổi tên file -->
+    <div class="modal" id="renameModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Đổi tên file</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="newFileNameInput">Tên mới:</label>
+                    <input type="text" id="newFileNameInput" placeholder="Nhập tên mới...">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="confirmRenameBtn" class="btn primary">Đổi tên</button>
+                <button class="btn close-modal">Hủy</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal xuất bản dự án -->
+    <div class="modal" id="publishModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Xuất bản dự án</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="projectName">Tên dự án:</label>
+                    <input type="text" id="projectName" placeholder="Nhập tên dự án...">
+                </div>
+                <div class="form-group">
+                    <label for="projectDescription">Mô tả:</label>
+                    <textarea id="projectDescription" placeholder="Mô tả dự án của bạn..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="projectPublic" checked>
+                        Công khai (Mọi người có thể xem dự án của bạn)
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="confirmPublishBtn" class="btn primary">Xuất bản</button>
+                <button class="btn close-modal">Hủy</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thêm các thư viện cần thiết -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/htmlmixed/htmlmixed.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/xml/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/css/css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/closetag.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/closebrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/fold/foldcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/fold/foldgutter.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/fold/brace-fold.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/fold/xml-fold.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/fold/comment-fold.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/show-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/html-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/css-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/javascript-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.0/beautify.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.0/beautify-css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.0/beautify-html.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="code-editor.js"></script>
+</body>
+</html>
