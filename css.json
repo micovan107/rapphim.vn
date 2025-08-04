@@ -149,6 +149,12 @@
       "description": "Xử lý nội dung tràn",
       "example": "overflow: auto;",
       "usage": "Xác định cách xử lý khi nội dung vượt quá kích thước của phần tử. Giá trị: visible, hidden, scroll, auto."
+    },
+     {
+      "property": "hover",
+      "description": "chạm",
+      "example": "button:hover {}",
+      "usage": "Tạo hiệu ứng khi chuột chạm vào được chỉ định."
     }
   ]
 }
