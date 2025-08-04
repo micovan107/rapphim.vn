@@ -12,38 +12,52 @@ const firebaseConfig = {
   measurementId: "G-QNS4GVQ178"
 };
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+// Khởi tạo Firebase và các dịch vụ
+function initFirebase() {
+    // Kiểm tra xem Firebase đã được tải chưa
+    if (typeof firebase === 'undefined') {
+        console.error('Firebase chưa được tải. Vui lòng đảm bảo thư viện Firebase đã được tải.');
+        return { auth: null, database: null };
+    }
+    
+    // Khởi tạo Firebase nếu chưa được khởi tạo
+    if (!firebase.apps.length) {
+        try {
+            firebase.initializeApp(firebaseConfig);
+        } catch (error) {
+            console.error('Lỗi khi khởi tạo Firebase:', error);
+            return { auth: null, database: null };
+        }
+    }
+    
+    try {
+        // Lấy các dịch vụ Firebase
+        const auth = firebase.auth();
+        const database = firebase.database();
 
-// Get references to Firebase services
-const auth = firebase.auth();
-const database = firebase.database();
-const storage = firebase.storage();
-// Kiểm tra xem firestore có tồn tại không trước khi sử dụng
-let firestore = null;
-if (typeof firebase.firestore === 'function') {
-    firestore = firebase.firestore();
-} else {
-    console.warn('Firebase Firestore không được hỗ trợ hoặc chưa được tải. Một số chức năng có thể không hoạt động.');
+        // Bật xác thực ẩn danh
+        auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+          .then(() => {
+            console.log('Đã thiết lập persistence thành công');
+          })
+          .catch((error) => {
+            console.error('Lỗi khi thiết lập persistence:', error);
+          });
+          
+        return { auth, database };
+    } catch (error) {
+        console.error('Lỗi khi lấy các dịch vụ Firebase:', error);
+        return { auth: null, database: null };
+    }
 }
 
-// Bật xác thực ẩn danh
-auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-  .then(() => {
-    console.log('Đã thiết lập persistence thành công');
-  })
-  .catch((error) => {
-    console.error('Lỗi khi thiết lập persistence:', error);
-  });
+// Khởi tạo các biến toàn cục
+let auth, database;
 
-// Bật xác thực ẩn danh nếu cần
-auth.onAuthStateChanged((user) => {
-  if (!user) {
-    console.log('Không có người dùng đăng nhập, chuẩn bị đăng nhập ẩn danh nếu cần');
-  } else {
-    console.log('Người dùng đã đăng nhập:', user.uid);
-  }
-});
+// Khởi tạo Firebase ngay lập tức
+const services = initFirebase();
+auth = services.auth;
+database = services.database;
 
 // Cloudinary configuration
 const cloudinaryConfig = {
@@ -53,12 +67,39 @@ const cloudinaryConfig = {
     apiKey: '338841869745923' // Thêm API key của bạn
 };
 
-// Export Firebase services and Cloudinary config for use in other files
-window.auth = auth;
-window.database = database;
-window.storage = storage;
-window.firestore = firestore;
-window.cloudinaryConfig = cloudinaryConfig;
+// Thiết lập xử lý trạng thái xác thực
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        // Kiểm tra xem Firebase và auth đã được khởi tạo chưa
+        if (!auth || !database) {
+            console.log('Auth hoặc database chưa được khởi tạo, đang khởi tạo lại...');
+            const services = initFirebase();
+            auth = services.auth;
+            database = services.database;
+        }
+        
+        // Đảm bảo Firebase đã được khởi tạo
+        if (auth) {
+            // Bật xác thực ẩn danh nếu cần
+            auth.onAuthStateChanged((user) => {
+                if (!user) {
+                    console.log('Không có người dùng đăng nhập, chuẩn bị đăng nhập ẩn danh nếu cần');
+                } else {
+                    console.log('Người dùng đã đăng nhập:', user.uid);
+                }
+            });
+        }
+        
+        // Export Firebase services and Cloudinary config for use in other files
+        window.auth = auth;
+        window.database = database;
+        window.cloudinaryConfig = cloudinaryConfig;
+        
+        console.log('Firebase đã được khởi tạo và xuất ra window thành công');
+    } catch (error) {
+        console.error('Lỗi khi khởi tạo Firebase:', error);
+    }
+});
 
 // Helper function to generate a unique ID
 function generateId(length = 6) {
@@ -139,14 +180,6 @@ async function getCurrentUserData() {
 }
 
 // Export helper functions
-// Kiểm tra xem firestore có tồn tại không trước khi khởi tạo db
-let db = null;
-if (typeof firebase.firestore === 'function') {
-    db = firebase.firestore();
-    window.db = db;
-} else {
-    console.warn('Firebase Firestore không được hỗ trợ hoặc chưa được tải. Một số chức năng có thể không hoạt động.');
-}
 
 window.generateId = generateId;
 window.formatTimestamp = formatTimestamp;
