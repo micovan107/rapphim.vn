@@ -119,6 +119,13 @@
       "description": "Tùy chọn trong danh sách thả xuống",
       "example": "<option value=\"vn\">Việt Nam</option>",
       "usage": "Định nghĩa một tùy chọn trong thẻ <select>. Thuộc tính value xác định giá trị được gửi khi biểu mẫu được gửi."
+    },
+    {
+      "tag": "class",
+      "description": "Thuộc tính dùng để gán tên cho phần tử HTML, nhằm áp dụng kiểu dáng CSS hoặc xử lý bằng JavaScript.",
+      "example": "<p class=\"highlight\">Đây là đoạn văn nổi bật</p>",
+      "usage": "Dùng để nhóm nhiều phần tử cùng kiểu lại với nhau, giúp dễ dàng áp dụng CSS chung hoặc thao tác bằng JavaScript. Một phần tử có thể có nhiều class, cách nhau bằng dấu cách."
     }
+
   ]
 }
