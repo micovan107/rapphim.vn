@@ -125,7 +125,14 @@
       "description": "Thuộc tính dùng để gán tên cho phần tử HTML, nhằm áp dụng kiểu dáng CSS hoặc xử lý bằng JavaScript.",
       "example": "<p class=\"highlight\">Đây là đoạn văn nổi bật</p>",
       "usage": "Dùng để nhóm nhiều phần tử cùng kiểu lại với nhau, giúp dễ dàng áp dụng CSS chung hoặc thao tác bằng JavaScript. Một phần tử có thể có nhiều class, cách nhau bằng dấu cách."
+    },
+    {
+      "tag": "id",
+      "description": "Thuộc tính định danh duy nhất cho một phần tử HTML. Mỗi id phải là duy nhất trong toàn bộ tài liệu HTML.",
+      "example": "<h1 id=\"tieu-de-chinh\">Trang chủ</h1>",
+      "usage": "Dùng để định danh riêng một phần tử để áp dụng CSS hoặc thao tác bằng JavaScript. Thường dùng cho định vị (liên kết đến vị trí trên trang) hoặc thao tác chính xác với 1 phần tử cụ thể."
     }
+
 
   ]
 }
