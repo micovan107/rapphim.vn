@@ -154,7 +154,13 @@
       "property": "hover",
       "description": "chạm",
       "example": "button:hover {}",
-      "usage": "Tạo hiệu ứng khi chuột chạm vào được chỉ định."
+      "usage": "Tạo hiệu ứng khi chuột chạm vào biến được chỉ định."
+    },
+     {
+      "property": "active",
+      "description": "ấn",
+      "example": "button:active {}",
+      "usage": "Tạo hiệu ứng khi chuột ấn vào biến được chỉ định."
     }
   ]
 }
