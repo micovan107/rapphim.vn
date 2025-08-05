@@ -161,6 +161,12 @@
       "description": "ấn",
       "example": "button:active {}",
       "usage": "Tạo hiệu ứng khi chuột ấn vào biến được chỉ định."
+    },
+     {
+      "property": "cursor",
+      "description": "con trỏ",
+      "example": "cursor: pointer(bàn tay),cursor: default(mũi tên),cursor: text(gạch đứng),cursor: wait(chờ)",
+      "usage": "Tạo hình dạng con trỏ khi nó di chuyển qua 1 phần tử trên web."
     }
   ]
 }
