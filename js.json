@@ -71,6 +71,39 @@
       "description": "Lưu trữ dữ liệu trên trình duyệt",
       "example": "// Lưu dữ liệu\nlocalStorage.setItem('username', 'john');\nlocalStorage.setItem('user', JSON.stringify({name: 'John', age: 30}));\n\n// Đọc dữ liệu\nlet username = localStorage.getItem('username');\nlet user = JSON.parse(localStorage.getItem('user'));\n\n// Xóa dữ liệu\nlocalStorage.removeItem('username');\n\n// Xóa tất cả\nlocalStorage.clear();",
       "usage": "setItem: lưu dữ liệu (key-value).\ngetItem: đọc dữ liệu theo key.\nremoveItem: xóa dữ liệu theo key.\nclear: xóa tất cả dữ liệu.\nJSON.stringify/JSON.parse: chuyển đổi object sang/từ chuỗi JSON."
-    }
+    },
+    {
+  "name": "document.body",
+  "description": "Đại diện cho phần tử <body> trong HTML",
+  "example": "document.body.style.backgroundColor = 'red';",
+  "usage": "Dùng để thay đổi hoặc thao tác với toàn bộ thân trang HTML.\nVí dụ: đổi màu nền, thêm phần tử, hoặc đọc nội dung."
+},
+    {
+  "name": "textContent",
+  "description": "Lấy hoặc thay đổi nội dung văn bản của phần tử",
+  "example": "let el = document.getElementById('demo');\nel.textContent = 'Xin chào';",
+  "usage": "textContent thay đổi nội dung bên trong phần tử HTML mà không chứa HTML.\nKhác với innerHTML: textContent chỉ nhận văn bản thường."
+},
+{
+  "name": "setTimeout",
+  "description": "Chạy một đoạn mã sau một khoảng thời gian rồi kết thúc",
+  "example": "setTimeout(() => {\n  console.log('Chạy sau 2 giây');\n}, 2000);",
+  "usage": "setTimeout(function, thời_gian_ms): chỉ chạy một lần sau khoảng thời gian chỉ định."
+},
+{
+  "name": "setInterval",
+  "description": "Chạy lặp lại một đoạn mã sau mỗi khoảng thời gian nhất định",
+  "example": "const timer = setInterval(() => {\n  console.log('Lặp lại mỗi 1 giây');\n}, 1000);",
+  "usage": "setInterval(function, thời_gian_ms): chạy mã lặp đi lặp lại sau mỗi khoảng thời gian.\nthời_gian tính bằng mili giây (1000 = 1 giây).\nDùng clearInterval(id) để dừng lại."
+},
+    {
+  "name": "clearInterval",
+  "description": "Dừng vòng lặp đã tạo bằng setInterval",
+  "example": "const timer = setInterval(() => {\n  console.log('Đang chạy');\n}, 1000);\n\nsetTimeout(() => {\n  clearInterval(timer);\n  console.log('Đã dừng');\n}, 5000);",
+  "usage": "clearInterval(id): dừng lặp lại được tạo bởi setInterval.\nThường dùng kết hợp với setTimeout để dừng sau 1 thời gian."
+}
+
+
+
   ]
 }
