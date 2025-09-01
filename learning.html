@@ -482,8 +482,8 @@
     <script src="auth.js"></script>
     <script src="learning.js"></script>
     <script src="emoji-picker.js"></script>
-    <script>
-/* ==== Gemini AI Auto Solve ==== */
+ <script>
+// ==== Cấu hình Gemini API ====
 const GEMINI_KEYS = [
   "AIzaSyCtriQNobhKfljTWAtCDEwIRwMaqJI4NdU",
   "AIzaSyDYfxWJiBDUH6PeHMSIKS0xyK-E0KkX_Zo",
@@ -498,6 +498,7 @@ function getGeminiKey() {
   __geminiKeyIndex++;
   return k;
 }
+
 async function generateSolutionWithGemini(prompt) {
   for (let i = 0; i < GEMINI_KEYS.length; i++) {
     const key = getGeminiKey();
@@ -518,11 +519,12 @@ async function generateSolutionWithGemini(prompt) {
       const text = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
       if (text) return text;
     } catch (e) {
-      console.warn("Gemini key failed", e);
+      console.warn("Gemini key failed:", e);
     }
   }
-  throw new Error("Gemini call failed");
+  throw new Error("Tất cả key Gemini đều lỗi");
 }
+
 function buildAISolvePrompt({ title, content, category, imageUrl }) {
   return [
     "Bạn là trợ lý học tập tiếng Việt.",
@@ -536,7 +538,7 @@ function buildAISolvePrompt({ title, content, category, imageUrl }) {
   ].join("\n");
 }
 
-/* ==== thêm checkbox AI vào form ==== */
+// ==== Thêm checkbox AI nếu chưa có ====
 const form = document.getElementById("createExerciseForm");
 if (form && !document.getElementById("aiAutoSolveToggle")) {
   const div = document.createElement("div");
@@ -550,50 +552,84 @@ if (form && !document.getElementById("aiAutoSolveToggle")) {
   form.insertBefore(div, submitBtn);
 }
 
-/* ==== hook khi submit ==== */
-document.addEventListener("DOMContentLoaded", () => {
-  const createForm = document.getElementById("createExerciseForm");
-  if (!createForm) return;
+// ==== Hook lại handleCreateExercise ====
+const oldHandleCreateExercise = window.handleCreateExercise;
+window.handleCreateExercise = async function(e) {
+  e.preventDefault();
+  if (!currentUser) {
+    showNotification('Vui lòng đăng nhập để đăng bài tập', 'warning');
+    return;
+  }
 
-  createForm.addEventListener("submit", async (e) => {
-    // đợi learning.js xử lý xong (Firebase set)
-    setTimeout(async () => {
-      const aiToggle = document.getElementById("aiAutoSolveToggle");
-      if (aiToggle && aiToggle.checked && window.lastCreatedExerciseId) {
-        try {
-          alert("AI đang tạo lời giải...");
-          // lấy dữ liệu bài tập từ firebase
-          const snap = await firebase.database().ref("exercises/" + window.lastCreatedExerciseId).once("value");
-          if (!snap.exists()) return;
-          const data = snap.val();
-          const prompt = buildAISolvePrompt({
-            title: data.title || "",
-            content: data.content || "",
-            category: data.category || "other",
-            imageUrl: data.imageUrl || ""
-          });
-          const aiText = await generateSolutionWithGemini(prompt);
-          const newSolution = {
-            id: Math.random().toString(36).substring(2, 10),
-            content: aiText,
-            imageUrl: null,
-            authorId: "ai-bot",
-            createdAt: Date.now(),
-            ratings: []
-          };
-          const solutions = Array.isArray(data.solutions) ? data.solutions : [];
-          solutions.push(newSolution);
-          await firebase.database().ref("exercises/" + window.lastCreatedExerciseId).update({ solutions });
-          alert("✅ AI đã gửi lời giải!");
-        } catch (err) {
-          console.error(err);
-          alert("❌ AI không thể tạo lời giải.");
-        }
+  const title = document.getElementById('exerciseTitle').value;
+  const content = document.getElementById('exerciseContent').value;
+  const category = document.getElementById('exerciseCategory').value;
+  const imageUrl = document.getElementById('exerciseImageUrl').value;
+  const aiToggle = document.getElementById('aiAutoSolveToggle');
+
+  if (!title || !content || !category) {
+    showNotification('Vui lòng điền đầy đủ thông tin bài tập', 'error');
+    return;
+  }
+
+  const submitBtn = createExerciseForm.querySelector('button[type="submit"]');
+  const originalBtnText = submitBtn.textContent;
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Đang đăng bài tập...';
+
+  try {
+    // Tạo bài tập trong Firebase
+    const exerciseData = {
+      title, content, category,
+      imageUrl: imageUrl || null,
+      authorId: currentUser.uid,
+      createdAt: Date.now(),
+      solutions: []
+    };
+    const newExerciseRef = firebase.database().ref('exercises').push();
+    await newExerciseRef.set(exerciseData);
+    const exerciseId = newExerciseRef.key;
+
+    // Nếu tick AI → gọi Gemini
+    if (aiToggle && aiToggle.checked) {
+      try {
+        showNotification("AI đang tạo lời giải...", "info");
+        const prompt = buildAISolvePrompt(exerciseData);
+        const aiText = await generateSolutionWithGemini(prompt);
+
+        const newSolution = {
+          id: Math.random().toString(36).substring(2, 10),
+          content: aiText,
+          imageUrl: null,
+          authorId: "ai-bot",
+          createdAt: Date.now(),
+          ratings: []
+        };
+        await firebase.database().ref("exercises/" + exerciseId + "/solutions").set([newSolution]);
+
+        showNotification("✅ AI đã gửi lời giải!", "success");
+      } catch (err) {
+        console.error("AI error:", err);
+        showNotification("❌ AI không thể tạo lời giải.", "error");
       }
-    }, 1500); // delay 1.5s cho chắc đã lưu xong
-  });
-});
+    }
+
+    // Reset form + reload danh sách
+    closeModal(createExerciseModal);
+    createExerciseForm.reset();
+    document.getElementById('imagePreview').innerHTML = '';
+    loadExercises();
+
+  } catch (error) {
+    console.error('Error creating exercise:', error);
+    showNotification('Đã xảy ra lỗi khi đăng bài tập.', 'error');
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = originalBtnText;
+  }
+};
 </script>
+
 
 </body>
 </html>
