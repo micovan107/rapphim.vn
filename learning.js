@@ -604,19 +604,31 @@ async function openExerciseDetail(exerciseId) {
             
             for (const solution of sortedSolutions) {
                 // Get solution author data
-                let solutionAuthorData = { displayName: 'Người dùng ẩn danh', photoURL: 'https://ui-avatars.com/api/?name=Anonymous' };
-                try {
-                    const solutionAuthorSnapshot = await firebase.database().ref(`users/${solution.authorId}`).once('value');
-                    const solutionAuthorVal = solutionAuthorSnapshot.val();
-                    if (solutionAuthorVal) {
-                        solutionAuthorData = {
-                            displayName: solutionAuthorVal.displayName || 'Người dùng ẩn danh',
-                            photoURL: solutionAuthorVal.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(solutionAuthorVal.displayName || 'Anonymous')}`
-                        };
-                    }
-                } catch (error) {
-                    console.error('Error fetching solution author data:', error);
-                }
+              let solutionAuthorData;
+
+if (solution.authorId === "ai-bot") {
+  // ✅ Nếu là AI → hiển thị Dikey AI
+  solutionAuthorData = {
+    displayName: solution.authorName || "Dikey AI",
+    photoURL: "https://ui-avatars.com/api/?name=Dikey+AI"
+  };
+} else {
+  // Người dùng bình thường → lấy từ Firebase
+  solutionAuthorData = { displayName: 'Người dùng ẩn danh', photoURL: 'https://ui-avatars.com/api/?name=Anonymous' };
+  try {
+    const solutionAuthorSnapshot = await firebase.database().ref(`users/${solution.authorId}`).once('value');
+    const solutionAuthorVal = solutionAuthorSnapshot.val();
+    if (solutionAuthorVal) {
+      solutionAuthorData = {
+        displayName: solutionAuthorVal.displayName || 'Người dùng ẩn danh',
+        photoURL: solutionAuthorVal.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(solutionAuthorVal.displayName || 'Anonymous')}`
+      };
+    }
+  } catch (error) {
+    console.error('Error fetching solution author data:', error);
+  }
+}
+
                 
                 // Format solution date
                 const solutionDate = new Date(solution.createdAt);
