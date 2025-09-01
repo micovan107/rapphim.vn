@@ -482,5 +482,118 @@
     <script src="auth.js"></script>
     <script src="learning.js"></script>
     <script src="emoji-picker.js"></script>
+    <script>
+/* ==== Gemini AI Auto Solve ==== */
+const GEMINI_KEYS = [
+  "AIzaSyCtriQNobhKfljTWAtCDEwIRwMaqJI4NdU",
+  "AIzaSyDYfxWJiBDUH6PeHMSIKS0xyK-E0KkX_Zo",
+  "AIzaSyBvlN3BsGCjY2qenAWva_3BxRNleDSagAk",
+  "AIzaSyAYXslsrZr0E8-ifnMP5VHKcrxc9bv1EU",
+  "AIzaSyCewhHZdbuD8JVi5mPjoIJp2AXxQF8n5EM",
+  "AIzaSyCaz71rHot4yz90ufkl7unspl2s_lNf6Ew"
+];
+let __geminiKeyIndex = 0;
+function getGeminiKey() {
+  const k = GEMINI_KEYS[__geminiKeyIndex % GEMINI_KEYS.length];
+  __geminiKeyIndex++;
+  return k;
+}
+async function generateSolutionWithGemini(prompt) {
+  for (let i = 0; i < GEMINI_KEYS.length; i++) {
+    const key = getGeminiKey();
+    try {
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { temperature: 0.2, maxOutputTokens: 1024 }
+          })
+        }
+      );
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const text = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+      if (text) return text;
+    } catch (e) {
+      console.warn("Gemini key failed", e);
+    }
+  }
+  throw new Error("Gemini call failed");
+}
+function buildAISolvePrompt({ title, content, category, imageUrl }) {
+  return [
+    "Bạn là trợ lý học tập tiếng Việt.",
+    "Giải bài tập từng bước, rõ ràng, súc tích.",
+    "Nếu Toán/Lý/Hóa: công thức + đáp số; nếu Văn/Anh: dàn ý/ngữ pháp; môn khác: giải thích logic.",
+    "",
+    `Tiêu đề: ${title}`,
+    `Môn: ${category}`,
+    `Đề bài: ${content}`,
+    imageUrl ? `Hình đính kèm: ${imageUrl}` : ""
+  ].join("\n");
+}
+
+/* ==== thêm checkbox AI vào form ==== */
+const form = document.getElementById("createExerciseForm");
+if (form && !document.getElementById("aiAutoSolveToggle")) {
+  const div = document.createElement("div");
+  div.className = "form-group";
+  div.style = "display:flex;align-items:center;gap:8px;";
+  div.innerHTML = `
+    <input type="checkbox" id="aiAutoSolveToggle">
+    <label for="aiAutoSolveToggle" style="margin:0;cursor:pointer;">Cho AI tự giải ngay sau khi đăng</label>
+  `;
+  const submitBtn = form.querySelector('button[type="submit"]');
+  form.insertBefore(div, submitBtn);
+}
+
+/* ==== hook khi submit ==== */
+document.addEventListener("DOMContentLoaded", () => {
+  const createForm = document.getElementById("createExerciseForm");
+  if (!createForm) return;
+
+  createForm.addEventListener("submit", async (e) => {
+    // đợi learning.js xử lý xong (Firebase set)
+    setTimeout(async () => {
+      const aiToggle = document.getElementById("aiAutoSolveToggle");
+      if (aiToggle && aiToggle.checked && window.lastCreatedExerciseId) {
+        try {
+          alert("AI đang tạo lời giải...");
+          // lấy dữ liệu bài tập từ firebase
+          const snap = await firebase.database().ref("exercises/" + window.lastCreatedExerciseId).once("value");
+          if (!snap.exists()) return;
+          const data = snap.val();
+          const prompt = buildAISolvePrompt({
+            title: data.title || "",
+            content: data.content || "",
+            category: data.category || "other",
+            imageUrl: data.imageUrl || ""
+          });
+          const aiText = await generateSolutionWithGemini(prompt);
+          const newSolution = {
+            id: Math.random().toString(36).substring(2, 10),
+            content: aiText,
+            imageUrl: null,
+            authorId: "ai-bot",
+            createdAt: Date.now(),
+            ratings: []
+          };
+          const solutions = Array.isArray(data.solutions) ? data.solutions : [];
+          solutions.push(newSolution);
+          await firebase.database().ref("exercises/" + window.lastCreatedExerciseId).update({ solutions });
+          alert("✅ AI đã gửi lời giải!");
+        } catch (err) {
+          console.error(err);
+          alert("❌ AI không thể tạo lời giải.");
+        }
+      }
+    }, 1500); // delay 1.5s cho chắc đã lưu xong
+  });
+});
+</script>
+
 </body>
 </html>
