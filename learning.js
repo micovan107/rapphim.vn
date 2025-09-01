@@ -794,6 +794,8 @@ async function handleCreateExercise(e) {
         // Generate a new key for the exercise
         const newExerciseRef = firebase.database().ref('exercises').push();
         await newExerciseRef.set(exerciseData);
+        window.lastCreatedExerciseId = newExerciseRef.key;
+
         
         // Close modal and reset form
         closeModal(createExerciseModal);
