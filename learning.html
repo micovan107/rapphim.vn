@@ -631,6 +631,7 @@ window.handleCreateExercise = async function(e) {
 };
 </script>
     <!-- MathJax để hiển thị công thức Toán học -->
+<!-- MathJax để hiển thị công thức Toán học -->
 <script>
 window.MathJax = {
   tex: {
@@ -641,6 +642,52 @@ window.MathJax = {
 };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<!-- Highlight.js để hiển thị code đẹp -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js/styles/github.css">
+<script src="https://cdn.jsdelivr.net/npm/highlight.js/lib/common.min.js"></script>
+<script>hljs.highlightAll();</script>
+
+<!-- Xử lý text AI -->
+<script>
+function cleanAISolution(text) {
+  if (!text) return "";
+
+  // 1. Chặn script XSS
+  text = text.replace(/<script.*?>.*?<\/script>/gi, "");
+
+  // 2. Cho in đậm bằng <b> thay cho **
+  text = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+
+  // 3. Đổi xuống dòng thành <br>
+  text = text.replace(/\n/g, '<br>');
+
+  // 4. Chuyển a/b thành LaTeX phân số (chỉ khi a và b là đơn giản)
+  text = text.replace(/([a-zA-Zα-ωΑ-Ω0-9]+)\/([a-zA-Zα-ωΑ-Ω0-9]+)/g, '\\tfrac{$1}{$2}');
+
+  return text;
+}
+
+function renderSolution(rawText, containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = cleanAISolution(rawText);
+
+  // Gọi MathJax để render công thức
+  if (window.MathJax) {
+    MathJax.typesetPromise([container]);
+  }
+
+  // Gọi highlight.js để tô màu code
+  if (window.hljs) {
+    container.querySelectorAll("pre code").forEach(el => {
+      hljs.highlightElement(el);
+    });
+  }
+}
+</script>
+</body>
+</html>
 
 
 
