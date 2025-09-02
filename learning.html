@@ -629,8 +629,6 @@ window.handleCreateExercise = async function(e) {
     submitBtn.textContent = originalBtnText;
   }
 };
-</script>
-    <!-- MathJax để hiển thị công thức Toán học -->
 <!-- MathJax để hiển thị công thức Toán học -->
 <script>
 window.MathJax = {
@@ -643,49 +641,51 @@ window.MathJax = {
 </script>
 <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
-<!-- Highlight.js để hiển thị code đẹp -->
+<!-- marked.js để parse Markdown -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<!-- highlight.js để hiển thị code đẹp -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js/styles/github.css">
 <script src="https://cdn.jsdelivr.net/npm/highlight.js/lib/common.min.js"></script>
 <script>hljs.highlightAll();</script>
 
-<!-- Xử lý text AI -->
+<!-- Hàm xử lý output AI -->
 <script>
 function cleanAISolution(text) {
   if (!text) return "";
 
-  // 1. Chặn script XSS
+  // 1. Chặn script độc hại
   text = text.replace(/<script.*?>.*?<\/script>/gi, "");
 
-  // 2. Cho in đậm bằng <b> thay cho **
-  text = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+  // 2. Parse Markdown thành HTML
+  let html = marked.parse(text);
 
-  // 3. Đổi xuống dòng thành <br>
-  text = text.replace(/\n/g, '<br>');
+  // 3. Biến a/b thành phân số LaTeX (chỉ với ký tự đơn giản)
+  html = html.replace(/([a-zA-Zα-ωΑ-Ω0-9]+)\/([a-zA-Zα-ωΑ-Ω0-9]+)/g, '\\tfrac{$1}{$2}');
 
-  // 4. Chuyển a/b thành LaTeX phân số (chỉ khi a và b là đơn giản)
-  text = text.replace(/([a-zA-Zα-ωΑ-Ω0-9]+)\/([a-zA-Zα-ωΑ-Ω0-9]+)/g, '\\tfrac{$1}{$2}');
-
-  return text;
+  return html;
 }
 
 function renderSolution(rawText, containerId) {
   const container = document.getElementById(containerId);
   if (!container) return;
+
   container.innerHTML = cleanAISolution(rawText);
 
-  // Gọi MathJax để render công thức
+  // Gọi MathJax để render công thức toán
   if (window.MathJax) {
     MathJax.typesetPromise([container]);
   }
 
-  // Gọi highlight.js để tô màu code
+  // Gọi highlight.js để tô màu code nếu có
   if (window.hljs) {
-    container.querySelectorAll("pre code").forEach(el => {
-      hljs.highlightElement(el);
-    });
+    container.querySelectorAll("pre code").forEach(el => hljs.highlightElement(el));
   }
 }
 </script>
+</body>
+</html>
+
 </body>
 </html>
 
