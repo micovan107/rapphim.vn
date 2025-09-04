@@ -2429,7 +2429,7 @@ footer {
     padding: 20px 10px;
     overflow-y: auto;
     height: 100%;
-    max-height: calc(100vh - 300px);
+    max-height: calc(100vh - 180px);
     width: 100%;
     background-color: #f9f9f9;
     border-radius: 10px;
@@ -2564,7 +2564,7 @@ footer {
 .online-chat {
     display: flex;
     flex-direction: column;
-    height: 75vh;
+    height: 95vh;
     background-color: #f9f9f9;
     border-radius: 15px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.08);
@@ -4737,6 +4737,53 @@ input:checked + .toggle-slider:before {
     margin-top: 4px;
     line-height: 1.4;
 }
+@media (max-width: 768px) {
+  header {
+    padding: 0 8px;
+    height: 50px;               /* Chiều cao tối đa */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  /* Logo nhỏ gọn */
+  header .logo h1 {
+    font-size: 1rem;
+    margin: 0;
+    line-height: 1;
+  }
+
+  /* Menu nav thành thanh icon ngang */
+  header nav ul {
+    display: flex;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  header nav ul li a {
+    padding: 0;
+    font-size: 1.2rem;          /* Chỉ giữ icon */
+  }
+
+  /* Ẩn text, chỉ giữ icon */
+  header nav ul li a span {
+    display: none !important;
+  }
+
+  /* Nút đăng nhập/đăng ký nhỏ lại */
+  .auth-buttons {
+    display: flex;
+    gap: 5px;
+  }
+
+  .auth-buttons .btn {
+    padding: 2px 6px;
+    font-size: 0.75rem;
+  }
+}
+
 
 
 
