@@ -1,7 +1,8 @@
 /* Base Styles */
 :root {
-    --primary-color: #04c2d0;
-    --secondary-color: #04c2d0;    --dark-color: #2c3e50;
+    --primary-color: #4285f4
+;
+    --secondary-color: #4285f4;    --dark-color: #2c3e50;
     --light-color: #f4f4f4;
     --success-color: #28a745;
     --danger-color: #dc3545;
@@ -99,7 +100,7 @@ header {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
     box-shadow: var(--box-shadow);
-    border-radius: 0 0 15px 15px;
+    
     transition: padding 0.3s ease, height 0.3s ease;
 }
 
@@ -644,7 +645,7 @@ header.header-landscape.header-compact {
 
 .room-card {
     background: white;
-    border-radius: 15px;
+    
     overflow: hidden;
     box-shadow: var(--box-shadow);
     transition: var(--transition);
@@ -4782,6 +4783,86 @@ input:checked + .toggle-slider:before {
     padding: 2px 6px;
     font-size: 0.75rem;
   }
+}
+/* Thu nhỏ icon, ảnh, văn bản, nút khi mobile */
+@media (max-width: 768px) {
+    /* Icon nhỏ hơn */
+    i, .fas, .far, .fab {
+        font-size: 0.85rem !important;
+    }
+
+    /* Ảnh nhỏ hơn */
+    img {
+        max-width: 80%;
+        height: auto;
+    }
+
+    /* Văn bản nhỏ hơn */
+    body, p, span, a, li, button, input, textarea {
+        font-size: 0.85rem !important;
+    }
+
+    h1 { font-size: 1.5rem; }
+    h2 { font-size: 1.2rem; }
+    h3 { font-size: 1rem; }
+
+    /* Nút gọn lại */
+    .btn, button {
+        padding: 6px 12px;
+        font-size: 0.8rem !important;
+    }
+
+    /* Các badge nhỏ lại */
+    .points-badge, .filter-btn, .category {
+        font-size: 0.75rem !important;
+        padding: 3px 6px;
+    }
+
+    /* Ảnh trong card gọn hơn */
+    .exercise-image {
+        height: 100px;
+    }
+}
+@media (max-width: 768px) {
+    .user-profile-mini {
+        font-size: 0.75rem;
+        gap: 4px;
+    }
+    .user-profile-mini img {
+        width: 24px;
+        height: 24px;
+    }
+    .user-profile-mini .btn {
+        padding: 3px 6px;
+        font-size: 0.7rem;
+    }
+}
+@media (max-width: 768px) {
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 12px;
+        flex-direction: row !important; /* ép header nằm ngang */
+    }
+
+    header .logo h1 {
+        font-size: 1.2rem;
+    }
+
+    header nav ul {
+        display: none; /* Ẩn menu khi mobile, có thể thay bằng nút ☰ sau */
+    }
+
+    .auth-buttons {
+        display: flex;
+        gap: 6px;
+    }
+
+    .auth-buttons .btn {
+        font-size: 0.75rem;
+        padding: 5px 8px;
+    }
 }
 
 

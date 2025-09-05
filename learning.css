@@ -165,7 +165,7 @@
 
 .exercise-card {
     background-color: white;
-    border-radius: 8px;
+    border-radius: 1px;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -2086,6 +2086,45 @@ img.profile-link:hover {
     padding: 2px 6px;
     font-size: 0.75rem;
   }
+}
+/* Thu nhỏ icon, ảnh, văn bản, nút khi mobile */
+@media (max-width: 768px) {
+    /* Icon nhỏ hơn */
+    i, .fas, .far, .fab {
+        font-size: 0.85rem !important;
+    }
+
+    /* Ảnh nhỏ hơn */
+    img {
+        max-width: 80%;
+        height: auto;
+    }
+
+    /* Văn bản nhỏ hơn */
+    body, p, span, a, li, button, input, textarea {
+        font-size: 0.85rem !important;
+    }
+
+    h1 { font-size: 1.5rem; }
+    h2 { font-size: 1.2rem; }
+    h3 { font-size: 1rem; }
+
+    /* Nút gọn lại */
+    .btn, button {
+        padding: 6px 12px;
+        font-size: 0.8rem !important;
+    }
+
+    /* Các badge nhỏ lại */
+    .points-badge, .filter-btn, .category {
+        font-size: 0.75rem !important;
+        padding: 3px 6px;
+    }
+
+    /* Ảnh trong card gọn hơn */
+    .exercise-image {
+        height: 100px;
+    }
 }
 
 
