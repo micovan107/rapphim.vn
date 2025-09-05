@@ -207,6 +207,10 @@ function updateUIForLoggedInUser(userData) {
         <div class="dropdown-content">
             <a href="#" id="myRoomsBtn">Phòng Của Tôi</a>
             <a href="profile.html" id="profileBtn">Hồ Sơ</a>
+            <a href="learning.html" id="hoctap">Học tập</a>
+            <a href="https://micovan107.github.io/dikey_chat/" id="chatv2">Chat</a>
+            <a href="forum.html" id="dien_dan">Diễn đàn</a>
+            <a href="plant-care.html" id="minigame">Minigame</a>
             <a href="library.html" id="thuvien">Thư viện</a>
             <a href="news.html" id="tinTuc">Tin Tức</a>
             <a href="code-editor.html" id="laptrinh">Viết code</a>
