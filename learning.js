@@ -672,7 +672,7 @@ if (solution.authorId === "ai-bot") {
                             </div>
                         </div>
                         <div class="solution-content">
-                            <p>${solution.content}</p>
+                            <div>${solution.content}</div>
                             ${solution.imageUrl ? `<img src="${solution.imageUrl}" alt="Hình ảnh lời giải" class="solution-image">` : ''}
                         </div>
                         <div class="solution-footer">
