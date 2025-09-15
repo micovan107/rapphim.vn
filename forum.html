@@ -484,5 +484,76 @@
     <script src="auth.js"></script>
     <script src="forum.js"></script>
     <script src="main.js"></script>
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+  // ====== FORM TẠO BÀI VIẾT ======
+  const videoUploadContainer = document.getElementById("videoUploadContainer");
+  if (videoUploadContainer) {
+    const directVideoInput = document.createElement("div");
+    directVideoInput.innerHTML = `
+      <label for="directVideoLink">Link video trực tiếp (.mp4):</label>
+      <input type="text" id="directVideoLink" placeholder="Dán link .mp4 vào đây" style="width:100%;margin:5px 0;">
+      <button type="button" id="addDirectVideoBtn">Thêm video từ link</button>
+    `;
+    videoUploadContainer.appendChild(directVideoInput);
+
+    document.getElementById("addDirectVideoBtn").addEventListener("click", () => {
+      const link = document.getElementById("directVideoLink").value.trim();
+      if (link && link.endsWith(".mp4")) {
+        document.getElementById("postVideoUrl").value = link;
+        document.getElementById("videoPreview").src = link;
+        document.getElementById("videoPreviewContainer").style.display = "block";
+
+        // Ẩn YouTube preview nếu có
+        document.getElementById("youtubePreviewContainer").style.display = "none";
+        document.getElementById("youtubeVideoId").value = "";
+        if (typeof showNotification === "function") {
+          showNotification("Đã thêm video trực tiếp", "success");
+        }
+      } else {
+        if (typeof showNotification === "function") {
+          showNotification("Link phải kết thúc bằng .mp4", "error");
+        } else {
+          alert("Link phải kết thúc bằng .mp4");
+        }
+      }
+    });
+  }
+
+  // ====== FORM CHỈNH SỬA BÀI VIẾT ======
+  const editVideoUploadContainer = document.getElementById("editVideoUploadContainer");
+  if (editVideoUploadContainer) {
+    const editDirectVideoInput = document.createElement("div");
+    editDirectVideoInput.innerHTML = `
+      <label for="editDirectVideoLink">Link video trực tiếp (.mp4):</label>
+      <input type="text" id="editDirectVideoLink" placeholder="Dán link .mp4 vào đây" style="width:100%;margin:5px 0;">
+      <button type="button" id="editAddDirectVideoBtn">Cập nhật video từ link</button>
+    `;
+    editVideoUploadContainer.appendChild(editDirectVideoInput);
+
+    document.getElementById("editAddDirectVideoBtn").addEventListener("click", () => {
+      const link = document.getElementById("editDirectVideoLink").value.trim();
+      if (link && link.endsWith(".mp4")) {
+        document.getElementById("editPostVideoUrl").value = link;
+        document.getElementById("editVideoPreview").src = link;
+        document.getElementById("editVideoPreviewContainer").style.display = "block";
+
+        // Ẩn YouTube preview nếu có
+        document.getElementById("editYoutubePreviewContainer").style.display = "none";
+        document.getElementById("editYoutubeVideoId").value = "";
+        if (typeof showNotification === "function") {
+          showNotification("Đã cập nhật video trực tiếp", "success");
+        }
+      } else {
+        if (typeof showNotification === "function") {
+          showNotification("Link phải kết thúc bằng .mp4", "error");
+        } else {
+          alert("Link phải kết thúc bằng .mp4");
+        }
+      }
+    });
+  }
+});
+</script>
 </body>
 </html>
